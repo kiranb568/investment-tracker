@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Tracker - India</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 Investment Tracker</h1>
+            <p>Track your investments and calculate returns in Indian Rupees (₹)</p>
+        </header>
+
+        <div class="content">
+            <!-- Selection Mode -->
+            <section class="mode-selector">
+                <h2>Select Mode</h2>
+                <label>
+                    <input type="radio" name="mode" value="single" checked> Single Selection
+                </label>
+                <label>
+                    <input type="radio" name="mode" value="multi"> Multi-Selection
+                </label>
+            </section>
+
+            <!-- Investment Selection -->
+            <section class="investment-section">
+                <h2>Investment Amount (₹)</h2>
+                <p class="info">Base Unit: ₹20,000 | Monthly Return: ₹5,000 | Daily Return: ₹325 (16 days)</p>
+                
+                <div class="investment-options" id="investmentContainer">
+                    <!-- Generated dynamically -->
+                </div>
+
+                <button class="reset-btn" onclick="resetSelection()">Reset All</button>
+            </section>
+
+            <!-- Results Display -->
+            <section class="results-section">
+                <h2>Investment Summary</h2>
+                
+                <div class="metrics">
+                    <div class="metric-card">
+                        <h3>Total Investment</h3>
+                        <p class="value" id="totalInvestment">₹0</p>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>Daily Return</h3>
+                        <p class="value" id="dailyReturn">₹0</p>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>Monthly Return (16 days)</h3>
+                        <p class="value" id="monthlyReturn">₹0</p>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>Principal</h3>
+                        <p class="value" id="principal">₹0</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transaction Details -->
+            <section class="transactions-section">
+                <h2>Transaction Breakdown</h2>
+                <div class="transactions-table" id="transactionsContainer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Investment (₹)</th>
+                                <th>Multiplier</th>
+                                <th>Daily Return (₹)</th>
+                                <th>Monthly Return (₹)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionBody">
+                            <!-- Generated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 Investment Tracker | All calculations in Indian Rupees (₹)</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
