@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Investment Tracker</title>
+    <title>Admin Dashboard - Investment Tracker</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         .admin-container {
             display: flex;
@@ -192,6 +195,16 @@
             transform: translateY(-2px);
         }
         
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+        
         .customers-table {
             width: 100%;
             border-collapse: collapse;
@@ -263,6 +276,12 @@
             font-weight: 600;
         }
         
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -285,9 +304,11 @@
             padding: 30px;
             border-radius: 12px;
             width: 90%;
-            max-width: 500px;
+            max-width: 600px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             animation: slideIn 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
         @keyframes slideIn {
@@ -336,15 +357,21 @@
         }
         
         .success-msg {
-            color: #00d4ff;
+            color: #27ae60;
             margin-top: 10px;
             font-weight: 600;
         }
         
         .error-msg {
-            color: #ff6b6b;
+            color: #e74c3c;
             margin-top: 10px;
             font-weight: 600;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
         }
         
         @media (max-width: 1024px) {
@@ -376,23 +403,25 @@
             .metrics-grid {
                 grid-template-columns: 1fr;
             }
-            .top-bar {
-                flex-direction: column;
+            .chart-container {
+                height: 300px;
             }
         }
     </style>
 </head>
 <body>
     <div class="admin-container">
+        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <h2>🔧 Admin</h2>
             </div>
             <ul class="sidebar-menu">
-                <li><a onclick="showTab('dashboard')" class="active">📊 Dashboard</a></li>
-                <li><a onclick="showTab('customers')">👥 Customers</a></li>
-                <li><a onclick="showTab('analytics')">📈 Analytics</a></li>
-                <li><a onclick="showTab('profile')">⚙️ Settings</a></li>
+                <li><a onclick="showAdminTab('dashboard')" class="active">📊 Dashboard</a></li>
+                <li><a onclick="showAdminTab('customers')">👥 Customers</a></li>
+                <li><a onclick="showAdminTab('analytics')">📈 Analytics</a></li>
+                <li><a onclick="showAdminTab('reports')">📄 Reports</a></li>
+                <li><a onclick="showAdminTab('settings')">⚙️ Settings</a></li>
                 <li style="margin-top: 30px; border-top: 1px solid #00d4ff; padding-top: 30px;">
                     <a onclick="goToDashboard()" style="color: #667eea;">◀ Back to Tracker</a>
                 </li>
@@ -402,12 +431,13 @@
             </ul>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
             <div class="top-bar">
                 <div class="user-info" id="admin-info"></div>
-                <button class="btn btn-secondary" onclick="openChangePasswordModal()">🔐 Change Password</button>
             </div>
 
+            <!-- Dashboard Tab -->
             <div id="dashboard" class="content-section active">
                 <div class="page-header">
                     <h1>📊 Admin Dashboard</h1>
@@ -420,6 +450,7 @@
                 </div>
             </div>
 
+            <!-- Customers Tab -->
             <div id="customers" class="content-section">
                 <div class="page-header">
                     <h1>👥 Customer Management</h1>
@@ -446,7 +477,7 @@
                         </div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-primary" onclick="addCustomer()">✓ Add Customer</button>
+                        <button class="btn btn-primary" onclick="addAdminCustomer()">✓ Add Customer</button>
                     </div>
                 </div>
                 <div class="card">
@@ -468,16 +499,42 @@
                 </div>
             </div>
 
+            <!-- Analytics Tab -->
             <div id="analytics" class="content-section">
                 <div class="page-header">
                     <h1>📈 System Analytics</h1>
-                    <p>Comprehensive Business Insights</p>
+                    <p>Comprehensive Business Insights with Visual Charts</p>
                 </div>
                 <div class="metrics-grid" id="analytics-metrics"></div>
+                
                 <div class="card">
                     <h3>💰 Investment Distribution</h3>
-                    <div id="investment-details"></div>
+                    <div class="chart-container">
+                        <canvas id="investmentDistributionChart"></canvas>
+                    </div>
                 </div>
+
+                <div class="card">
+                    <h3>📊 Investment Growth Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="investmentGrowthChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>💹 Monthly Performance</h3>
+                    <div class="chart-container">
+                        <canvas id="monthlyPerformanceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📈 Customer ROI Comparison</h3>
+                    <div class="chart-container">
+                        <canvas id="roiChart"></canvas>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h3>👥 Customer Details</h3>
                     <div style="overflow-x: auto;">
@@ -488,6 +545,7 @@
                                     <th>Investments</th>
                                     <th>Daily Return</th>
                                     <th>Monthly Return</th>
+                                    <th>ROI</th>
                                 </tr>
                             </thead>
                             <tbody id="analytics-details-body"></tbody>
@@ -496,26 +554,74 @@
                 </div>
             </div>
 
-            <div id="profile" class="content-section">
+            <!-- Reports Tab -->
+            <div id="reports" class="content-section">
                 <div class="page-header">
-                    <h1>⚙️ Profile Settings</h1>
-                    <p>Manage your account settings</p>
+                    <h1>📄 Investment Reports</h1>
+                    <p>Generate and Export Investment Reports</p>
                 </div>
+
                 <div class="card">
-                    <h3>👤 Admin Information</h3>
-                    <div id="profile-info"></div>
+                    <h3>📋 Generate System Report</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <input type="date" id="admin-report-start" />
+                        </div>
+                        <div class="form-group">
+                            <label>End Date</label>
+                            <input type="date" id="admin-report-end" />
+                        </div>
+                    </div>
+                    <div class="export-buttons">
+                        <button class="btn btn-success" onclick="generateAndExportAdminReport('excel')">📊 Export to Excel</button>
+                        <button class="btn btn-success" onclick="generateAndExportAdminReport('pdf')">📑 Export to PDF</button>
+                    </div>
                 </div>
+
+                <div class="card">
+                    <h3>👥 Generate Customer Report</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Select Customer</label>
+                            <select id="report-customer" style="padding: 12px; border: 2px solid #b2ebf2; border-radius: 8px; font-size: 1em;">
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <input type="date" id="customer-report-start" />
+                        </div>
+                        <div class="form-group">
+                            <label>End Date</label>
+                            <input type="date" id="customer-report-end" />
+                        </div>
+                    </div>
+                    <div class="export-buttons">
+                        <button class="btn btn-success" onclick="generateAndExportCustomerReport('excel')">📊 Export to Excel</button>
+                        <button class="btn btn-success" onclick="generateAndExportCustomerReport('pdf')">📑 Export to PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="content-section">
+                <div class="page-header">
+                    <h1>⚙️ Settings</h1>
+                    <p>Manage your account and security settings</p>
+                </div>
+                <div id="settings-content"></div>
             </div>
         </main>
     </div>
 
-    <!-- Change Password Modal -->
-    <div id="changePasswordModal" class="modal">
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeChangePasswordModal()">&times;</span>
+            <span class="modal-close" onclick="closeSettingsModal()">&times;</span>
             <h2 style="color: #0f3460; margin-bottom: 20px;">🔐 Change Password</h2>
             
-            <div id="passwordStep1">
+            <div id="settingsStep1">
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label>Current Password</label>
                     <input type="password" id="currentPassword" placeholder="Enter current password" />
@@ -523,21 +629,21 @@
                 <button class="btn btn-primary" onclick="verifyCurrentPassword()" style="width: 100%;">Send OTP</button>
             </div>
             
-            <div id="passwordStep2" style="display: none;">
+            <div id="settingsStep2" style="display: none;">
                 <p style="color: #0f3460; margin-bottom: 15px;">📧 Enter the 6-digit OTP sent to your email:</p>
                 <div class="otp-input">
-                    <input type="text" id="otp1" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this, 'otp2')"/>
-                    <input type="text" id="otp2" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this, 'otp3')"/>
-                    <input type="text" id="otp3" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this, 'otp4')"/>
-                    <input type="text" id="otp4" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this, 'otp5')"/>
-                    <input type="text" id="otp5" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this, 'otp6')"/>
-                    <input type="text" id="otp6" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this)"/>
+                    <input type="text" id="otp1" maxlength="1" placeholder="0" onkeyup="moveToNextOTP(this, 'otp2')"/>
+                    <input type="text" id="otp2" maxlength="1" placeholder="0" onkeyup="moveToNextOTP(this, 'otp3')"/>
+                    <input type="text" id="otp3" maxlength="1" placeholder="0" onkeyup="moveToNextOTP(this, 'otp4')"/>
+                    <input type="text" id="otp4" maxlength="1" placeholder="0" onkeyup="moveToNextOTP(this, 'otp5')"/>
+                    <input type="text" id="otp5" maxlength="1" placeholder="0" onkeyup="moveToNextOTP(this, 'otp6')"/>
+                    <input type="text" id="otp6" maxlength="1" placeholder="0" onkeyup="moveToNextOTP(this)"/>
                 </div>
-                <button class="btn btn-primary" onclick="verifyOTP()" style="width: 100%; margin-top: 15px;">Verify OTP</button>
+                <button class="btn btn-primary" onclick="verifySettingsOTP()" style="width: 100%; margin-top: 15px;">Verify OTP</button>
                 <div id="otpMessage"></div>
             </div>
             
-            <div id="passwordStep3" style="display: none;">
+            <div id="settingsStep3" style="display: none;">
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label>New Password</label>
                     <input type="password" id="newPassword" placeholder="Min 6 characters" />
@@ -546,7 +652,7 @@
                     <label>Confirm New Password</label>
                     <input type="password" id="confirmNewPassword" placeholder="Confirm password" />
                 </div>
-                <button class="btn btn-primary" onclick="updatePassword()" style="width: 100%;">✓ Update Password</button>
+                <button class="btn btn-primary" onclick="updateSettingsPassword()" style="width: 100%;">✓ Update Password</button>
                 <div id="passwordMessage"></div>
             </div>
         </div>
@@ -554,7 +660,12 @@
 
     <script src="auth.js"></script>
     <script src="otp-service.js"></script>
+    <script src="chart-config.js"></script>
+    <script src="reports.js"></script>
+    <script src="settings.js"></script>
     <script>
+        let adminCharts = {};
+
         document.addEventListener('DOMContentLoaded', () => {
             requireAuth();
             if (!isAdmin()) {
@@ -564,11 +675,22 @@
             }
             const user = getCurrentUser();
             document.getElementById('admin-info').textContent = `👑 Admin: ${user.name}`;
-            loadDashboard();
-            loadProfileInfo();
+            setDefaultDates();
+            loadAdminDashboard();
+            populateCustomerSelect();
         });
 
-        function showTab(tabName) {
+        function setDefaultDates() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            document.getElementById('admin-report-start').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('admin-report-end').value = today.toISOString().split('T')[0];
+            document.getElementById('customer-report-start').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('customer-report-end').value = today.toISOString().split('T')[0];
+        }
+
+        function showAdminTab(tabName) {
             document.querySelectorAll('.content-section').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -577,146 +699,32 @@
             });
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
-            if (tabName === 'customers') loadCustomers();
-            if (tabName === 'analytics') loadAnalytics();
-            if (tabName === 'dashboard') loadDashboard();
-            if (tabName === 'profile') loadProfileInfo();
+            
+            if (tabName === 'customers') loadAdminCustomers();
+            if (tabName === 'analytics') {
+                setTimeout(() => loadAdminAnalytics(), 100);
+            }
+            if (tabName === 'settings') loadUserSettings();
         }
 
         function goToDashboard() {
             window.location.href = 'dashboard.html';
         }
 
-        function loadProfileInfo() {
-            const user = getCurrentUser();
+        function populateCustomerSelect() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
-            const userData = users.find(u => u.email === user.email);
-            
-            document.getElementById('profile-info').innerHTML = `
-                <p style="color: #0f3460; margin: 15px 0;"><strong>Name:</strong> ${userData.name}</p>
-                <p style="color: #0f3460; margin: 15px 0;"><strong>Email:</strong> ${userData.email}</p>
-                <p style="color: #0f3460; margin: 15px 0;"><strong>Role:</strong> Administrator</p>
-                <p style="color: #0f3460; margin: 15px 0;"><strong>Member Since:</strong> ${new Date(userData.createdAt).toLocaleDateString('en-IN')}</p>
-            `;
+            const select = document.getElementById('report-customer');
+            users.forEach(user => {
+                if (!user.isAdmin) {
+                    const option = document.createElement('option');
+                    option.value = user.email;
+                    option.textContent = user.name + ' (' + user.email + ')';
+                    select.appendChild(option);
+                }
+            });
         }
 
-        // Password Change Functions
-        function openChangePasswordModal() {
-            document.getElementById('changePasswordModal').classList.add('show');
-            document.getElementById('passwordStep1').style.display = 'block';
-            document.getElementById('passwordStep2').style.display = 'none';
-            document.getElementById('passwordStep3').style.display = 'none';
-            document.getElementById('currentPassword').value = '';
-            clearOTPInputs();
-        }
-
-        function closeChangePasswordModal() {
-            document.getElementById('changePasswordModal').classList.remove('show');
-        }
-
-        function verifyCurrentPassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const user = getCurrentUser();
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const userData = users.find(u => u.email === user.email);
-
-            if (!currentPassword) {
-                alert('❌ Please enter current password');
-                return;
-            }
-
-            if (currentPassword !== userData.password) {
-                alert('❌ Current password is incorrect');
-                return;
-            }
-
-            // Generate and send OTP
-            const otp = generateOTP();
-            storeOTP(user.email, otp);
-            sendOTPEmail(user.email, otp);
-            
-            document.getElementById('passwordStep1').style.display = 'none';
-            document.getElementById('passwordStep2').style.display = 'block';
-            alert('✓ OTP sent to your email');
-        }
-
-        function moveToNext(input, nextId) {
-            if (input.value.length >= 1 && nextId) {
-                document.getElementById(nextId).focus();
-            }
-        }
-
-        function verifyOTP() {
-            const otpDigits = [
-                document.getElementById('otp1').value,
-                document.getElementById('otp2').value,
-                document.getElementById('otp3').value,
-                document.getElementById('otp4').value,
-                document.getElementById('otp5').value,
-                document.getElementById('otp6').value
-            ];
-            
-            const otp = otpDigits.join('');
-            const user = getCurrentUser();
-
-            if (otp.length !== 6) {
-                document.getElementById('otpMessage').innerHTML = '<p class="error-msg">❌ Please enter all 6 digits</p>';
-                return;
-            }
-
-            if (!verifyOTPCode(user.email, otp)) {
-                document.getElementById('otpMessage').innerHTML = '<p class="error-msg">❌ OTP is incorrect or expired</p>';
-                return;
-            }
-
-            document.getElementById('otpMessage').innerHTML = '<p class="success-msg">✓ OTP verified successfully</p>';
-            setTimeout(() => {
-                document.getElementById('passwordStep2').style.display = 'none';
-                document.getElementById('passwordStep3').style.display = 'block';
-            }, 1000);
-        }
-
-        function updatePassword() {
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmNewPassword').value;
-            const user = getCurrentUser();
-
-            if (!newPassword || !confirmPassword) {
-                alert('❌ Please fill all fields');
-                return;
-            }
-
-            if (newPassword.length < 6) {
-                alert('❌ Password must be at least 6 characters');
-                return;
-            }
-
-            if (newPassword !== confirmPassword) {
-                alert('❌ Passwords do not match');
-                return;
-            }
-
-            // Update password in users database
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            const userIndex = users.findIndex(u => u.email === user.email);
-            if (userIndex !== -1) {
-                users[userIndex].password = newPassword;
-                localStorage.setItem('users', JSON.stringify(users));
-            }
-
-            document.getElementById('passwordMessage').innerHTML = '<p class="success-msg">✓ Password changed successfully!</p>';
-            setTimeout(() => {
-                closeChangePasswordModal();
-            }, 2000);
-        }
-
-        function clearOTPInputs() {
-            for (let i = 1; i <= 6; i++) {
-                document.getElementById(`otp${i}`).value = '';
-            }
-        }
-
-        function loadDashboard() {
+        function loadAdminDashboard() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
             let totalCustomers = 0, totalInvestment = 0, totalDaily = 0, totalMonthly = 0;
 
@@ -771,7 +779,7 @@
             `;
         }
 
-        function addCustomer() {
+        function addAdminCustomer() {
             const name = document.getElementById('customer-name').value.trim();
             const email = document.getElementById('customer-email').value.trim();
             const password = document.getElementById('customer-password').value;
@@ -798,21 +806,23 @@
                 document.getElementById('customer-password').value = '';
                 document.getElementById('customer-password-confirm').value = '';
                 alert('✓ Customer added successfully!');
-                loadCustomers();
+                loadAdminCustomers();
+                populateCustomerSelect();
             }
         }
 
-        function deleteCustomer(email) {
+        function deleteAdminCustomer(email) {
             if (!confirm('⚠️ Delete this customer? (Investment data will also be deleted)')) return;
             let users = JSON.parse(localStorage.getItem('users')) || [];
             users = users.filter(u => u.email !== email);
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.removeItem(`investments_${email}`);
-            loadCustomers();
+            loadAdminCustomers();
+            populateCustomerSelect();
             alert('✓ Customer deleted successfully!');
         }
 
-        function loadCustomers() {
+        function loadAdminCustomers() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
             const tbody = document.getElementById('customers-body');
             tbody.innerHTML = '';
@@ -830,17 +840,18 @@
                             <td>${user.email}</td>
                             <td>₹${totalInvestment.toLocaleString('en-IN')}</td>
                             <td>${new Date(user.createdAt).toLocaleDateString('en-IN')}</td>
-                            <td><button class="btn btn-danger" onclick="deleteCustomer('${user.email}')" style="padding: 8px 15px; font-size: 0.9em;">🗑️ Delete</button></td>
+                            <td><button class="btn btn-danger" onclick="deleteAdminCustomer('${user.email}')" style="padding: 8px 15px; font-size: 0.9em;">🗑️ Delete</button></td>
                         </tr>
                     `;
                 });
             }
         }
 
-        function loadAnalytics() {
+        function loadAdminAnalytics() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
             let totalCustomers = 0, totalInvestment = 0, totalDaily = 0, totalMonthly = 0;
             const customerDetails = [];
+            const distributionData = [];
 
             users.forEach(user => {
                 if (!user.isAdmin) {
@@ -862,7 +873,13 @@
                             name: user.name,
                             investment: customerInvestment,
                             daily: customerDaily,
-                            monthly: customerMonthly
+                            monthly: customerMonthly,
+                            roi: ((customerMonthly / customerInvestment) * 100).toFixed(2)
+                        });
+
+                        distributionData.push({
+                            name: user.name,
+                            amount: customerInvestment
                         });
                     }
                 }
@@ -887,17 +904,43 @@
                 </div>
             `;
 
-            document.getElementById('investment-details').innerHTML = `
-                <p style="color: #0f3460; font-weight: 600; margin: 15px 0;">Average Investment per Customer: <span style="color: #00d4ff;">₹${totalCustomers > 0 ? (totalInvestment / totalCustomers).toLocaleString('en-IN', {maximumFractionDigits: 0}) : '0'}</span></p>
-                <p style="color: #0f3460; font-weight: 600; margin: 15px 0;">Total System Return (Monthly): <span style="color: #00d4ff;">₹${totalMonthly.toLocaleString('en-IN')}</span></p>
-                <p style="color: #0f3460; font-weight: 600; margin: 15px 0;">Average ROI: <span style="color: #00d4ff;">${totalInvestment > 0 ? ((totalMonthly / totalInvestment) * 100).toFixed(2) : '0'}%</span></p>
-            `;
+            // Create Charts
+            if (adminCharts.distribution) adminCharts.distribution.destroy();
+            createInvestmentDistributionChart('#investmentDistributionChart', distributionData);
 
+            // Growth Chart Data
+            const growthData = [
+                { month: 'Week 1', investment: totalInvestment * 0.25, returns: totalMonthly * 0.2 },
+                { month: 'Week 2', investment: totalInvestment * 0.5, returns: totalMonthly * 0.4 },
+                { month: 'Week 3', investment: totalInvestment * 0.75, returns: totalMonthly * 0.6 },
+                { month: 'Week 4', investment: totalInvestment, returns: totalMonthly }
+            ];
+
+            if (adminCharts.growth) adminCharts.growth.destroy();
+            createInvestmentGrowthChart('#investmentGrowthChart', growthData);
+
+            // Performance Chart Data
+            const performanceData = [
+                { month: 'Week 1', dailyReturn: totalDaily * 0.25, monthlyReturn: totalMonthly * 0.2 },
+                { month: 'Week 2', dailyReturn: totalDaily * 0.5, monthlyReturn: totalMonthly * 0.4 },
+                { month: 'Week 3', dailyReturn: totalDaily * 0.75, monthlyReturn: totalMonthly * 0.6 },
+                { month: 'Week 4', dailyReturn: totalDaily, monthlyReturn: totalMonthly }
+            ];
+
+            if (adminCharts.performance) adminCharts.performance.destroy();
+            createMonthlyPerformanceChart('#monthlyPerformanceChart', performanceData);
+
+            // ROI Chart
+            const roiData = customerDetails.slice(0, 10);
+            if (adminCharts.roi) adminCharts.roi.destroy();
+            createROIChart('#roiChart', roiData);
+
+            // Customer Details Table
             const detailsBody = document.getElementById('analytics-details-body');
             detailsBody.innerHTML = '';
             
             if (customerDetails.length === 0) {
-                detailsBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px;">No investment data available</td></tr>';
+                detailsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No investment data available</td></tr>';
             } else {
                 customerDetails.forEach(detail => {
                     detailsBody.innerHTML += `
@@ -906,10 +949,54 @@
                             <td>₹${detail.investment.toLocaleString('en-IN')}</td>
                             <td>₹${detail.daily.toLocaleString('en-IN')}</td>
                             <td>₹${detail.monthly.toLocaleString('en-IN')}</td>
+                            <td><span style="color: #00d4ff; font-weight: 600;">${detail.roi}%</span></td>
                         </tr>
                     `;
                 });
             }
+        }
+
+        function generateAndExportAdminReport(format) {
+            const startDate = document.getElementById('admin-report-start').value;
+            const endDate = document.getElementById('admin-report-end').value;
+
+            if (!startDate || !endDate) {
+                alert('❌ Please select both start and end dates');
+                return;
+            }
+
+            const reportData = generateAdminReport(startDate, endDate);
+            
+            if (format === 'excel') {
+                exportToExcel(reportData, true);
+            } else if (format === 'pdf') {
+                exportToPDF(reportData, true);
+            }
+            
+            alert('✓ Report exported successfully!');
+        }
+
+        function generateAndExportCustomerReport(format) {
+            const email = document.getElementById('report-customer').value;
+            const startDate = document.getElementById('customer-report-start').value;
+            const endDate = document.getElementById('customer-report-end').value;
+
+            if (!email || !startDate || !endDate) {
+                alert('❌ Please fill all fields');
+                return;
+            }
+
+            const reportData = generateCustomerReport(email, startDate, endDate);
+            
+            if (!reportData) return;
+
+            if (format === 'excel') {
+                exportToExcel(reportData, false);
+            } else if (format === 'pdf') {
+                exportToPDF(reportData, false);
+            }
+            
+            alert('✓ Report exported successfully!');
         }
     </script>
 </body>
