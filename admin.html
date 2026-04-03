@@ -182,6 +182,16 @@
             transform: translateY(-2px);
         }
         
+        .btn-secondary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
         .customers-table {
             width: 100%;
             border-collapse: collapse;
@@ -244,10 +254,96 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .top-bar .user-info {
             color: #0f3460;
+            font-weight: 600;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .modal-close:hover {
+            color: #000;
+        }
+        
+        .otp-input {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .otp-input input {
+            width: 100%;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #b2ebf2;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .otp-input input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+        }
+        
+        .success-msg {
+            color: #00d4ff;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .error-msg {
+            color: #ff6b6b;
+            margin-top: 10px;
             font-weight: 600;
         }
         
@@ -280,6 +376,9 @@
             .metrics-grid {
                 grid-template-columns: 1fr;
             }
+            .top-bar {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -293,7 +392,11 @@
                 <li><a onclick="showTab('dashboard')" class="active">📊 Dashboard</a></li>
                 <li><a onclick="showTab('customers')">👥 Customers</a></li>
                 <li><a onclick="showTab('analytics')">📈 Analytics</a></li>
+                <li><a onclick="showTab('profile')">⚙️ Settings</a></li>
                 <li style="margin-top: 30px; border-top: 1px solid #00d4ff; padding-top: 30px;">
+                    <a onclick="goToDashboard()" style="color: #667eea;">◀ Back to Tracker</a>
+                </li>
+                <li>
                     <a onclick="logoutUser()" style="color: #ff6b6b;">🚪 Logout</a>
                 </li>
             </ul>
@@ -302,6 +405,7 @@
         <main class="main-content">
             <div class="top-bar">
                 <div class="user-info" id="admin-info"></div>
+                <button class="btn btn-secondary" onclick="openChangePasswordModal()">🔐 Change Password</button>
             </div>
 
             <div id="dashboard" class="content-section active">
@@ -391,10 +495,65 @@
                     </div>
                 </div>
             </div>
+
+            <div id="profile" class="content-section">
+                <div class="page-header">
+                    <h1>⚙️ Profile Settings</h1>
+                    <p>Manage your account settings</p>
+                </div>
+                <div class="card">
+                    <h3>👤 Admin Information</h3>
+                    <div id="profile-info"></div>
+                </div>
+            </div>
         </main>
     </div>
 
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeChangePasswordModal()">&times;</span>
+            <h2 style="color: #0f3460; margin-bottom: 20px;">🔐 Change Password</h2>
+            
+            <div id="passwordStep1">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Current Password</label>
+                    <input type="password" id="currentPassword" placeholder="Enter current password" />
+                </div>
+                <button class="btn btn-primary" onclick="verifyCurrentPassword()" style="width: 100%;">Send OTP</button>
+            </div>
+            
+            <div id="passwordStep2" style="display: none;">
+                <p style="color: #0f3460; margin-bottom: 15px;">📧 Enter the 6-digit OTP sent to your email:</p>
+                <div class="otp-input">
+                    <input type="text" id="otp1" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this, 'otp2')"/>
+                    <input type="text" id="otp2" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this, 'otp3')"/>
+                    <input type="text" id="otp3" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this, 'otp4')"/>
+                    <input type="text" id="otp4" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this, 'otp5')"/>
+                    <input type="text" id="otp5" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this, 'otp6')"/>
+                    <input type="text" id="otp6" maxlength="1" class="otp-box" placeholder="0" onkeyup="moveToNext(this)"/>
+                </div>
+                <button class="btn btn-primary" onclick="verifyOTP()" style="width: 100%; margin-top: 15px;">Verify OTP</button>
+                <div id="otpMessage"></div>
+            </div>
+            
+            <div id="passwordStep3" style="display: none;">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>New Password</label>
+                    <input type="password" id="newPassword" placeholder="Min 6 characters" />
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Confirm password" />
+                </div>
+                <button class="btn btn-primary" onclick="updatePassword()" style="width: 100%;">✓ Update Password</button>
+                <div id="passwordMessage"></div>
+            </div>
+        </div>
+    </div>
+
     <script src="auth.js"></script>
+    <script src="otp-service.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             requireAuth();
@@ -406,6 +565,7 @@
             const user = getCurrentUser();
             document.getElementById('admin-info').textContent = `👑 Admin: ${user.name}`;
             loadDashboard();
+            loadProfileInfo();
         });
 
         function showTab(tabName) {
@@ -420,6 +580,140 @@
             if (tabName === 'customers') loadCustomers();
             if (tabName === 'analytics') loadAnalytics();
             if (tabName === 'dashboard') loadDashboard();
+            if (tabName === 'profile') loadProfileInfo();
+        }
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        function loadProfileInfo() {
+            const user = getCurrentUser();
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userData = users.find(u => u.email === user.email);
+            
+            document.getElementById('profile-info').innerHTML = `
+                <p style="color: #0f3460; margin: 15px 0;"><strong>Name:</strong> ${userData.name}</p>
+                <p style="color: #0f3460; margin: 15px 0;"><strong>Email:</strong> ${userData.email}</p>
+                <p style="color: #0f3460; margin: 15px 0;"><strong>Role:</strong> Administrator</p>
+                <p style="color: #0f3460; margin: 15px 0;"><strong>Member Since:</strong> ${new Date(userData.createdAt).toLocaleDateString('en-IN')}</p>
+            `;
+        }
+
+        // Password Change Functions
+        function openChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.add('show');
+            document.getElementById('passwordStep1').style.display = 'block';
+            document.getElementById('passwordStep2').style.display = 'none';
+            document.getElementById('passwordStep3').style.display = 'none';
+            document.getElementById('currentPassword').value = '';
+            clearOTPInputs();
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.remove('show');
+        }
+
+        function verifyCurrentPassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const user = getCurrentUser();
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userData = users.find(u => u.email === user.email);
+
+            if (!currentPassword) {
+                alert('❌ Please enter current password');
+                return;
+            }
+
+            if (currentPassword !== userData.password) {
+                alert('❌ Current password is incorrect');
+                return;
+            }
+
+            // Generate and send OTP
+            const otp = generateOTP();
+            storeOTP(user.email, otp);
+            sendOTPEmail(user.email, otp);
+            
+            document.getElementById('passwordStep1').style.display = 'none';
+            document.getElementById('passwordStep2').style.display = 'block';
+            alert('✓ OTP sent to your email');
+        }
+
+        function moveToNext(input, nextId) {
+            if (input.value.length >= 1 && nextId) {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        function verifyOTP() {
+            const otpDigits = [
+                document.getElementById('otp1').value,
+                document.getElementById('otp2').value,
+                document.getElementById('otp3').value,
+                document.getElementById('otp4').value,
+                document.getElementById('otp5').value,
+                document.getElementById('otp6').value
+            ];
+            
+            const otp = otpDigits.join('');
+            const user = getCurrentUser();
+
+            if (otp.length !== 6) {
+                document.getElementById('otpMessage').innerHTML = '<p class="error-msg">❌ Please enter all 6 digits</p>';
+                return;
+            }
+
+            if (!verifyOTPCode(user.email, otp)) {
+                document.getElementById('otpMessage').innerHTML = '<p class="error-msg">❌ OTP is incorrect or expired</p>';
+                return;
+            }
+
+            document.getElementById('otpMessage').innerHTML = '<p class="success-msg">✓ OTP verified successfully</p>';
+            setTimeout(() => {
+                document.getElementById('passwordStep2').style.display = 'none';
+                document.getElementById('passwordStep3').style.display = 'block';
+            }, 1000);
+        }
+
+        function updatePassword() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            const user = getCurrentUser();
+
+            if (!newPassword || !confirmPassword) {
+                alert('❌ Please fill all fields');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                alert('❌ Password must be at least 6 characters');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('❌ Passwords do not match');
+                return;
+            }
+
+            // Update password in users database
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIndex = users.findIndex(u => u.email === user.email);
+            if (userIndex !== -1) {
+                users[userIndex].password = newPassword;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+
+            document.getElementById('passwordMessage').innerHTML = '<p class="success-msg">✓ Password changed successfully!</p>';
+            setTimeout(() => {
+                closeChangePasswordModal();
+            }, 2000);
+        }
+
+        function clearOTPInputs() {
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById(`otp${i}`).value = '';
+            }
         }
 
         function loadDashboard() {
