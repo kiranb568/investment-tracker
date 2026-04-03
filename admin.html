@@ -6,6 +6,8 @@
     <title>Admin Dashboard - Investment Tracker</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -404,7 +406,22 @@
                 grid-template-columns: 1fr;
             }
             .chart-container {
-                height: 300px;
+                    position: relative;
+                    width: 100%;
+                    height: 400px;
+                    margin: 20px 0;
+                    background: white;
+                    border-radius: 8px;
+                    padding: 15px;
+                    box-sizing: border-box;
+            }
+            #investmentDistributionChart,
+            #investmentGrowthChart,
+            #monthlyPerformanceChart,
+            #roiChart {
+                position: relative;
+                width: 100% !important;
+                height: 350px !important;
             }
         }
     </style>
@@ -662,10 +679,10 @@
     <script src="otp-service.js"></script>
     <script src="chart-config.js"></script>
     <script src="reports.js"></script>
-    <script src="settings.js"></script>
+    <script src="settings.js"></script><!-- Add this to the <head> section for proper chart library loading -->
     <script>
-        let adminCharts = {};
-
+        const chartInstances = {};
+    
         document.addEventListener('DOMContentLoaded', () => {
             requireAuth();
             if (!isAdmin()) {
@@ -679,7 +696,7 @@
             loadAdminDashboard();
             populateCustomerSelect();
         });
-
+    
         function setDefaultDates() {
             const today = new Date();
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -689,7 +706,7 @@
             document.getElementById('customer-report-start').value = firstDay.toISOString().split('T')[0];
             document.getElementById('customer-report-end').value = today.toISOString().split('T')[0];
         }
-
+    
         function showAdminTab(tabName) {
             document.querySelectorAll('.content-section').forEach(tab => {
                 tab.classList.remove('active');
@@ -706,11 +723,11 @@
             }
             if (tabName === 'settings') loadUserSettings();
         }
-
+    
         function goToDashboard() {
             window.location.href = 'dashboard.html';
         }
-
+    
         function populateCustomerSelect() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
             const select = document.getElementById('report-customer');
@@ -723,11 +740,11 @@
                 }
             });
         }
-
+    
         function loadAdminDashboard() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
             let totalCustomers = 0, totalInvestment = 0, totalDaily = 0, totalMonthly = 0;
-
+    
             users.forEach(user => {
                 if (!user.isAdmin) {
                     totalCustomers++;
@@ -739,7 +756,7 @@
                     });
                 }
             });
-
+    
             document.getElementById('dashboard-metrics').innerHTML = `
                 <div class="metric">
                     <h4>👥 Total Customers</h4>
@@ -758,7 +775,7 @@
                     <div class="value">₹${totalMonthly.toLocaleString('en-IN')}</div>
                 </div>
             `;
-
+    
             document.getElementById('quick-stats').innerHTML = `
                 <div class="metric">
                     <h4>Average Investment</h4>
@@ -778,28 +795,28 @@
                 </div>
             `;
         }
-
+    
         function addAdminCustomer() {
             const name = document.getElementById('customer-name').value.trim();
             const email = document.getElementById('customer-email').value.trim();
             const password = document.getElementById('customer-password').value;
             const confirmPassword = document.getElementById('customer-password-confirm').value;
-
+    
             if (!name || !email || !password || !confirmPassword) {
                 alert('❌ Please fill all fields');
                 return;
             }
-
+    
             if (password !== confirmPassword) {
                 alert('❌ Passwords do not match');
                 return;
             }
-
+    
             if (password.length < 6) {
                 alert('❌ Password must be at least 6 characters');
                 return;
             }
-
+    
             if (registerUser(name, email, password)) {
                 document.getElementById('customer-name').value = '';
                 document.getElementById('customer-email').value = '';
@@ -810,7 +827,7 @@
                 populateCustomerSelect();
             }
         }
-
+    
         function deleteAdminCustomer(email) {
             if (!confirm('⚠️ Delete this customer? (Investment data will also be deleted)')) return;
             let users = JSON.parse(localStorage.getItem('users')) || [];
@@ -821,13 +838,13 @@
             populateCustomerSelect();
             alert('✓ Customer deleted successfully!');
         }
-
+    
         function loadAdminCustomers() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
             const tbody = document.getElementById('customers-body');
             tbody.innerHTML = '';
             const regularUsers = users.filter(u => !u.isAdmin);
-
+    
             if (regularUsers.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No customers registered yet. Add one to get started!</td></tr>';
             } else {
@@ -846,13 +863,13 @@
                 });
             }
         }
-
+    
         function loadAdminAnalytics() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
             let totalCustomers = 0, totalInvestment = 0, totalDaily = 0, totalMonthly = 0;
             const customerDetails = [];
             const distributionData = [];
-
+    
             users.forEach(user => {
                 if (!user.isAdmin) {
                     totalCustomers++;
@@ -867,7 +884,7 @@
                         totalDaily += inv.dailyReturn;
                         totalMonthly += inv.monthlyReturn;
                     });
-
+    
                     if (customerInvestment > 0) {
                         customerDetails.push({
                             name: user.name,
@@ -876,7 +893,7 @@
                             monthly: customerMonthly,
                             roi: ((customerMonthly / customerInvestment) * 100).toFixed(2)
                         });
-
+    
                         distributionData.push({
                             name: user.name,
                             amount: customerInvestment
@@ -884,7 +901,7 @@
                     }
                 }
             });
-
+    
             document.getElementById('analytics-metrics').innerHTML = `
                 <div class="metric">
                     <h4>👥 Total Customers</h4>
@@ -903,38 +920,55 @@
                     <div class="value">₹${totalMonthly.toLocaleString('en-IN')}</div>
                 </div>
             `;
-
-            // Create Charts
-            if (adminCharts.distribution) adminCharts.distribution.destroy();
-            createInvestmentDistributionChart('#investmentDistributionChart', distributionData);
-
-            // Growth Chart Data
-            const growthData = [
-                { month: 'Week 1', investment: totalInvestment * 0.25, returns: totalMonthly * 0.2 },
-                { month: 'Week 2', investment: totalInvestment * 0.5, returns: totalMonthly * 0.4 },
-                { month: 'Week 3', investment: totalInvestment * 0.75, returns: totalMonthly * 0.6 },
-                { month: 'Week 4', investment: totalInvestment, returns: totalMonthly }
-            ];
-
-            if (adminCharts.growth) adminCharts.growth.destroy();
-            createInvestmentGrowthChart('#investmentGrowthChart', growthData);
-
-            // Performance Chart Data
-            const performanceData = [
-                { month: 'Week 1', dailyReturn: totalDaily * 0.25, monthlyReturn: totalMonthly * 0.2 },
-                { month: 'Week 2', dailyReturn: totalDaily * 0.5, monthlyReturn: totalMonthly * 0.4 },
-                { month: 'Week 3', dailyReturn: totalDaily * 0.75, monthlyReturn: totalMonthly * 0.6 },
-                { month: 'Week 4', dailyReturn: totalDaily, monthlyReturn: totalMonthly }
-            ];
-
-            if (adminCharts.performance) adminCharts.performance.destroy();
-            createMonthlyPerformanceChart('#monthlyPerformanceChart', performanceData);
-
-            // ROI Chart
-            const roiData = customerDetails.slice(0, 10);
-            if (adminCharts.roi) adminCharts.roi.destroy();
-            createROIChart('#roiChart', roiData);
-
+    
+            // Create Charts with proper containers
+            setTimeout(() => {
+                const distributionContainer = document.getElementById('investmentDistributionChart');
+                if (distributionContainer) {
+                    const canvas = document.createElement('canvas');
+                    distributionContainer.innerHTML = '';
+                    distributionContainer.appendChild(canvas);
+                    createInvestmentDistributionChart(canvas, distributionData);
+                }
+    
+                const growthContainer = document.getElementById('investmentGrowthChart');
+                if (growthContainer) {
+                    const canvas = document.createElement('canvas');
+                    growthContainer.innerHTML = '';
+                    growthContainer.appendChild(canvas);
+                    const growthData = [
+                        { month: 'Week 1', investment: totalInvestment * 0.25, returns: totalMonthly * 0.2 },
+                        { month: 'Week 2', investment: totalInvestment * 0.5, returns: totalMonthly * 0.4 },
+                        { month: 'Week 3', investment: totalInvestment * 0.75, returns: totalMonthly * 0.6 },
+                        { month: 'Week 4', investment: totalInvestment, returns: totalMonthly }
+                    ];
+                    createInvestmentGrowthChart(canvas, growthData);
+                }
+    
+                const performanceContainer = document.getElementById('monthlyPerformanceChart');
+                if (performanceContainer) {
+                    const canvas = document.createElement('canvas');
+                    performanceContainer.innerHTML = '';
+                    performanceContainer.appendChild(canvas);
+                    const performanceData = [
+                        { month: 'Week 1', dailyReturn: totalDaily * 0.25, monthlyReturn: totalMonthly * 0.2 },
+                        { month: 'Week 2', dailyReturn: totalDaily * 0.5, monthlyReturn: totalMonthly * 0.4 },
+                        { month: 'Week 3', dailyReturn: totalDaily * 0.75, monthlyReturn: totalMonthly * 0.6 },
+                        { month: 'Week 4', dailyReturn: totalDaily, monthlyReturn: totalMonthly }
+                    ];
+                    createMonthlyPerformanceChart(canvas, performanceData);
+                }
+    
+                const roiContainer = document.getElementById('roiChart');
+                if (roiContainer) {
+                    const canvas = document.createElement('canvas');
+                    roiContainer.innerHTML = '';
+                    roiContainer.appendChild(canvas);
+                    const roiData = customerDetails.slice(0, 10);
+                    createROIChart(canvas, roiData);
+                }
+            }, 0);
+    
             // Customer Details Table
             const detailsBody = document.getElementById('analytics-details-body');
             detailsBody.innerHTML = '';
@@ -955,49 +989,323 @@
                 });
             }
         }
-
+    
         function generateAndExportAdminReport(format) {
             const startDate = document.getElementById('admin-report-start').value;
             const endDate = document.getElementById('admin-report-end').value;
-
+    
             if (!startDate || !endDate) {
                 alert('❌ Please select both start and end dates');
                 return;
             }
-
+    
             const reportData = generateAdminReport(startDate, endDate);
             
             if (format === 'excel') {
                 exportToExcel(reportData, true);
+                alert('✓ Excel report exported successfully!');
             } else if (format === 'pdf') {
                 exportToPDF(reportData, true);
+                alert('✓ PDF report exported successfully!');
             }
-            
-            alert('✓ Report exported successfully!');
         }
-
+    
         function generateAndExportCustomerReport(format) {
             const email = document.getElementById('report-customer').value;
             const startDate = document.getElementById('customer-report-start').value;
             const endDate = document.getElementById('customer-report-end').value;
-
+    
             if (!email || !startDate || !endDate) {
                 alert('❌ Please fill all fields');
                 return;
             }
-
+    
             const reportData = generateCustomerReport(email, startDate, endDate);
             
             if (!reportData) return;
-
+    
             if (format === 'excel') {
                 exportToExcel(reportData, false);
+                alert('✓ Excel report exported successfully!');
             } else if (format === 'pdf') {
                 exportToPDF(reportData, false);
+                alert('✓ PDF report exported successfully!');
             }
-            
-            alert('✓ Report exported successfully!');
         }
+    </script>
+    
+    <!-- Updated Chart Creation Functions -->
+    <script>
+    function createInvestmentDistributionChart(canvas, investmentData) {
+        const ctx = canvas.getContext('2d');
+        
+        const labels = investmentData.map(item => item.name || 'Unnamed');
+        const data = investmentData.map(item => item.amount);
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+            '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'
+        ];
+    
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors.slice(0, data.length),
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { size: 12, weight: 600 },
+                            color: '#333',
+                            padding: 15,
+                            boxWidth: 12
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return '₹' + context.parsed.toLocaleString('en-IN');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function createInvestmentGrowthChart(canvas, chartData) {
+        const ctx = canvas.getContext('2d');
+    
+        const months = chartData.map(item => item.month);
+        const investments = chartData.map(item => item.investment);
+        const returns = chartData.map(item => item.returns);
+    
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Investment Amount',
+                        data: investments,
+                        borderColor: '#0f3460',
+                        backgroundColor: 'rgba(15, 52, 96, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#0f3460',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'Returns Generated',
+                        data: returns,
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#00d4ff',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: { size: 12, weight: 600 },
+                            color: '#333',
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ₹' + (context.parsed.y / 1000).toFixed(1) + 'K';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + (value / 1000).toFixed(0) + 'K';
+                            },
+                            color: '#666',
+                            font: { size: 10 }
+                        },
+                        grid: {
+                            color: '#f0f0f0'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#666',
+                            font: { size: 10 }
+                        },
+                        grid: { color: '#f0f0f0' }
+                    }
+                }
+            }
+        });
+    }
+    
+    function createMonthlyPerformanceChart(canvas, performanceData) {
+        const ctx = canvas.getContext('2d');
+    
+        const months = performanceData.map(item => item.month);
+        const dailyReturn = performanceData.map(item => item.dailyReturn);
+        const monthlyReturn = performanceData.map(item => item.monthlyReturn);
+    
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Daily Return',
+                        data: dailyReturn,
+                        backgroundColor: '#667eea',
+                        borderRadius: 5,
+                        borderSkipped: false
+                    },
+                    {
+                        label: 'Monthly Return',
+                        data: monthlyReturn,
+                        backgroundColor: '#00d4ff',
+                        borderRadius: 5,
+                        borderSkipped: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: { size: 12, weight: 600 },
+                            color: '#333',
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ₹' + (context.parsed.y / 1000).toFixed(1) + 'K';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + (value / 1000).toFixed(0) + 'K';
+                            },
+                            color: '#666',
+                            font: { size: 10 }
+                        },
+                        grid: { color: '#f0f0f0' }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#666',
+                            font: { size: 10 }
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+    
+    function createROIChart(canvas, roiData) {
+        const ctx = canvas.getContext('2d');
+    
+        const customers = roiData.map(item => item.name);
+        const roi = roiData.map(item => parseFloat(item.roi));
+    
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: customers,
+                datasets: [{
+                    label: 'ROI (%)',
+                    data: roi,
+                    backgroundColor: roi.map(r => r >= 15 ? '#27ae60' : r >= 10 ? '#f39c12' : '#e74c3c'),
+                    borderRadius: 5,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: { size: 12, weight: 600 },
+                            color: '#333'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.x.toFixed(2) + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(1) + '%';
+                            },
+                            color: '#666',
+                            font: { size: 10 }
+                        },
+                        grid: { color: '#f0f0f0' }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#666',
+                            font: { size: 10 }
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
     </script>
 </body>
 </html>
