@@ -141,24 +141,40 @@
                 <p class="toggle-link">Already have an account? <a onclick="toggleForms()">Login here</a></p>
             </div>
 
-            <div class="config-note">
-                Vercel setup: replace the placeholder values below with your deployed
-                `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and
-                `NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET` values before publishing.
+            <div id="config-note" class="config-note" style="display: none;">
+                Supabase configuration is missing or still using placeholder values.
+                Update this app's public config before publishing.
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        window.supabaseAppConfig = {
-            url: window.NEXT_PUBLIC_SUPABASE_URL || "https://wvdqaepetsifprpsdiwf.supabase.co",
-            anonKey: window.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZHFhZXBldHNpZnBycHNkaXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjY5NTMsImV4cCI6MjA5MDgwMjk1M30.V3vKi8dl6pRDwKwiK1mmD_YYuAVSAecOJ4eTTOXo4Qk",
-            storageBucket: window.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "user-files"
+        const runtimeConfig = window.__APP_CONFIG__ || {};
+        const fallbackConfig = {
+            url: "https://wvdqaepetsifprpsdiwf.supabase.co",
+            anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZHFhZXBldHNpZnBycHNkaXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjY5NTMsImV4cCI6MjA5MDgwMjk1M30.V3vKi8dl6pRDwKwiK1mmD_YYuAVSAecOJ4eTTOXo4Qk",
+            storageBucket: "user-files"
         };
 
-        window.hasSupabasePlaceholders = Object.values(window.supabaseAppConfig)
-            .some(value => typeof value === "string" && value.includes("YOUR_"));
+        window.supabaseAppConfig = {
+            url: runtimeConfig.supabaseUrl || window.NEXT_PUBLIC_SUPABASE_URL || fallbackConfig.url,
+            anonKey: runtimeConfig.supabaseAnonKey || window.NEXT_PUBLIC_SUPABASE_ANON_KEY || fallbackConfig.anonKey,
+            storageBucket: runtimeConfig.supabaseStorageBucket || window.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || fallbackConfig.storageBucket
+        };
+
+        window.hasSupabasePlaceholders = Object.values(window.supabaseAppConfig).some(value => {
+            if (typeof value !== "string") {
+                return true;
+            }
+
+            const normalizedValue = value.trim();
+            return !normalizedValue || normalizedValue.includes("YOUR_");
+        });
+
+        if (window.hasSupabasePlaceholders) {
+            document.getElementById("config-note").style.display = "block";
+        }
 
         if (!window.hasSupabasePlaceholders) {
             window.supabaseClient = window.supabase.createClient(

@@ -596,6 +596,18 @@
             document.getElementById('user-report-end').value = today.toISOString().split('T')[0];
         }
 
+        function resetChartCanvas(canvasId) {
+            const currentCanvas = document.getElementById(canvasId);
+            if (!currentCanvas || !currentCanvas.parentElement) {
+                return null;
+            }
+
+            const newCanvas = document.createElement('canvas');
+            newCanvas.id = canvasId;
+            currentCanvas.parentElement.replaceChild(newCanvas, currentCanvas);
+            return newCanvas;
+        }
+
         function showUserTab(tabName) {
             document.querySelectorAll('.content-section').forEach(tab => {
                 tab.classList.remove('active');
@@ -722,39 +734,31 @@
 
             // Create Charts
             setTimeout(() => {
-                const performanceContainer = document.getElementById('monthlyPerformanceChart');
-                if (performanceContainer && performanceContainer.parentElement) {
-                    const canvas = document.createElement('canvas');
-                    performanceContainer.parentElement.innerHTML = '';
-                    performanceContainer.parentElement.appendChild(canvas);
-
+                const performanceCanvas = resetChartCanvas('monthlyPerformanceChart');
+                if (performanceCanvas) {
                     const performanceData = [
                         { month: 'Week 1', dailyReturn: totalDaily * 0.25, monthlyReturn: totalMonthly * 0.2 },
                         { month: 'Week 2', dailyReturn: totalDaily * 0.5, monthlyReturn: totalMonthly * 0.4 },
                         { month: 'Week 3', dailyReturn: totalDaily * 0.75, monthlyReturn: totalMonthly * 0.6 },
                         { month: 'Week 4', dailyReturn: totalDaily, monthlyReturn: totalMonthly }
                     ];
-                    createMonthlyPerformanceChart(canvas, performanceData);
+                    createMonthlyPerformanceChart(performanceCanvas, performanceData);
                 }
 
-                const growthContainer = document.getElementById('investmentGrowthChart');
-                if (growthContainer && growthContainer.parentElement) {
-                    const canvas = document.createElement('canvas');
-                    growthContainer.parentElement.innerHTML = '';
-                    growthContainer.parentElement.appendChild(canvas);
-
+                const growthCanvas = resetChartCanvas('investmentGrowthChart');
+                if (growthCanvas) {
                     const growthData = [
                         { month: 'Week 1', investment: totalAmount * 0.25, returns: totalMonthly * 0.2 },
                         { month: 'Week 2', investment: totalAmount * 0.5, returns: totalMonthly * 0.4 },
                         { month: 'Week 3', investment: totalAmount * 0.75, returns: totalMonthly * 0.6 },
                         { month: 'Week 4', investment: totalAmount, returns: totalMonthly }
                     ];
-                    createInvestmentGrowthChart(canvas, growthData);
+                    createInvestmentGrowthChart(growthCanvas, growthData);
                 }
             }, 0);
         }
 
-        function generateAndExportUserReport(format) {
+        async function generateAndExportUserReport(format) {
             const user = getCurrentUser();
             const startDate = document.getElementById('user-report-start').value;
             const endDate = document.getElementById('user-report-end').value;
@@ -764,7 +768,7 @@
                 return;
             }
 
-            const reportData = generateCustomerReport(user.email, startDate, endDate);
+            const reportData = await generateCustomerReport(user.email, startDate, endDate);
             
             if (!reportData) return;
 

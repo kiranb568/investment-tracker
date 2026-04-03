@@ -3,8 +3,10 @@
 /**
  * Generate Investment Report for a Customer
  */
-function generateCustomerReport(email, startDate, endDate) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
+async function generateCustomerReport(email, startDate, endDate) {
+    const users = typeof listUsers === 'function'
+        ? await listUsers()
+        : (JSON.parse(localStorage.getItem('users')) || []);
     const user = users.find(u => u.email === email);
     
     if (!user) {
@@ -60,8 +62,10 @@ function generateCustomerReport(email, startDate, endDate) {
 /**
  * Generate Admin Report (All Customers)
  */
-function generateAdminReport(startDate, endDate) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
+async function generateAdminReport(startDate, endDate) {
+    const users = typeof listUsers === 'function'
+        ? await listUsers()
+        : (JSON.parse(localStorage.getItem('users')) || []);
     const reportData = {
         reportType: 'System-Wide Report',
         reportGenerated: new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString(),

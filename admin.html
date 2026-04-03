@@ -683,7 +683,7 @@
     <script>
         const chartInstances = {};
     
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             requireAuth();
             if (!isAdmin()) {
                 alert('❌ Admin access denied');
@@ -693,8 +693,8 @@
             const user = getCurrentUser();
             document.getElementById('admin-info').textContent = `👑 Admin: ${user.name}`;
             setDefaultDates();
-            loadAdminDashboard();
-            populateCustomerSelect();
+            await loadAdminDashboard();
+            await populateCustomerSelect();
         });
     
         function setDefaultDates() {
@@ -706,8 +706,20 @@
             document.getElementById('customer-report-start').value = firstDay.toISOString().split('T')[0];
             document.getElementById('customer-report-end').value = today.toISOString().split('T')[0];
         }
+
+        function resetChartCanvas(canvasId) {
+            const currentCanvas = document.getElementById(canvasId);
+            if (!currentCanvas || !currentCanvas.parentElement) {
+                return null;
+            }
+
+            const newCanvas = document.createElement('canvas');
+            newCanvas.id = canvasId;
+            currentCanvas.parentElement.replaceChild(newCanvas, currentCanvas);
+            return newCanvas;
+        }
     
-        function showAdminTab(tabName) {
+        async function showAdminTab(tabName) {
             document.querySelectorAll('.content-section').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -717,9 +729,11 @@
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
             
-            if (tabName === 'customers') loadAdminCustomers();
+            if (tabName === 'customers') await loadAdminCustomers();
             if (tabName === 'analytics') {
-                setTimeout(() => loadAdminAnalytics(), 100);
+                setTimeout(() => {
+                    loadAdminAnalytics();
+                }, 100);
             }
             if (tabName === 'settings') loadUserSettings();
         }
@@ -728,21 +742,25 @@
             window.location.href = 'dashboard.html';
         }
     
-        function populateCustomerSelect() {
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+        async function getRegularUsers() {
+            const users = await listUsers();
+            return users.filter(user => !user.isAdmin);
+        }
+
+        async function populateCustomerSelect() {
+            const users = await getRegularUsers();
             const select = document.getElementById('report-customer');
+            select.innerHTML = '<option value="">-- Select Customer --</option>';
             users.forEach(user => {
-                if (!user.isAdmin) {
-                    const option = document.createElement('option');
-                    option.value = user.email;
-                    option.textContent = user.name + ' (' + user.email + ')';
-                    select.appendChild(option);
-                }
+                const option = document.createElement('option');
+                option.value = user.email;
+                option.textContent = user.name + ' (' + user.email + ')';
+                select.appendChild(option);
             });
         }
     
-        function loadAdminDashboard() {
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+        async function loadAdminDashboard() {
+            const users = await getRegularUsers();
             let totalCustomers = 0, totalInvestment = 0, totalDaily = 0, totalMonthly = 0;
     
             users.forEach(user => {
@@ -796,7 +814,7 @@
             `;
         }
     
-        function addAdminCustomer() {
+        async function addAdminCustomer() {
             const name = document.getElementById('customer-name').value.trim();
             const email = document.getElementById('customer-email').value.trim();
             const password = document.getElementById('customer-password').value;
@@ -817,38 +835,42 @@
                 return;
             }
     
-            if (registerUser(name, email, password)) {
+            const wasRegistered = await registerUser(name, email, password);
+            if (wasRegistered) {
                 document.getElementById('customer-name').value = '';
                 document.getElementById('customer-email').value = '';
                 document.getElementById('customer-password').value = '';
                 document.getElementById('customer-password-confirm').value = '';
                 alert('✓ Customer added successfully!');
-                loadAdminCustomers();
-                populateCustomerSelect();
+                await loadAdminCustomers();
+                await populateCustomerSelect();
+                await loadAdminDashboard();
             }
         }
     
-        function deleteAdminCustomer(email) {
+        async function deleteAdminCustomer(email) {
             if (!confirm('⚠️ Delete this customer? (Investment data will also be deleted)')) return;
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            users = users.filter(u => u.email !== email);
-            localStorage.setItem('users', JSON.stringify(users));
+            const wasDeleted = await deleteUserByEmail(email);
+            if (!wasDeleted) {
+                alert('Unable to delete customer');
+                return;
+            }
             localStorage.removeItem(`investments_${email}`);
-            loadAdminCustomers();
-            populateCustomerSelect();
+            await loadAdminCustomers();
+            await populateCustomerSelect();
+            await loadAdminDashboard();
             alert('✓ Customer deleted successfully!');
         }
     
-        function loadAdminCustomers() {
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+        async function loadAdminCustomers() {
+            const users = await getRegularUsers();
             const tbody = document.getElementById('customers-body');
             tbody.innerHTML = '';
-            const regularUsers = users.filter(u => !u.isAdmin);
     
-            if (regularUsers.length === 0) {
+            if (users.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No customers registered yet. Add one to get started!</td></tr>';
             } else {
-                regularUsers.forEach(user => {
+                users.forEach(user => {
                     const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
                     const totalInvestment = Object.values(investments).reduce((sum, inv) => sum + inv.amount, 0);
                     tbody.innerHTML += `
@@ -864,41 +886,39 @@
             }
         }
     
-        function loadAdminAnalytics() {
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+        async function loadAdminAnalytics() {
+            const users = await getRegularUsers();
             let totalCustomers = 0, totalInvestment = 0, totalDaily = 0, totalMonthly = 0;
             const customerDetails = [];
             const distributionData = [];
     
             users.forEach(user => {
-                if (!user.isAdmin) {
-                    totalCustomers++;
-                    const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
-                    let customerInvestment = 0, customerDaily = 0, customerMonthly = 0;
-                    
-                    Object.values(investments).forEach(inv => {
-                        customerInvestment += inv.amount;
-                        customerDaily += inv.dailyReturn;
-                        customerMonthly += inv.monthlyReturn;
-                        totalInvestment += inv.amount;
-                        totalDaily += inv.dailyReturn;
-                        totalMonthly += inv.monthlyReturn;
+                totalCustomers++;
+                const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
+                let customerInvestment = 0, customerDaily = 0, customerMonthly = 0;
+                
+                Object.values(investments).forEach(inv => {
+                    customerInvestment += inv.amount;
+                    customerDaily += inv.dailyReturn;
+                    customerMonthly += inv.monthlyReturn;
+                    totalInvestment += inv.amount;
+                    totalDaily += inv.dailyReturn;
+                    totalMonthly += inv.monthlyReturn;
+                });
+
+                if (customerInvestment > 0) {
+                    customerDetails.push({
+                        name: user.name,
+                        investment: customerInvestment,
+                        daily: customerDaily,
+                        monthly: customerMonthly,
+                        roi: ((customerMonthly / customerInvestment) * 100).toFixed(2)
                     });
-    
-                    if (customerInvestment > 0) {
-                        customerDetails.push({
-                            name: user.name,
-                            investment: customerInvestment,
-                            daily: customerDaily,
-                            monthly: customerMonthly,
-                            roi: ((customerMonthly / customerInvestment) * 100).toFixed(2)
-                        });
-    
-                        distributionData.push({
-                            name: user.name,
-                            amount: customerInvestment
-                        });
-                    }
+
+                    distributionData.push({
+                        name: user.name,
+                        amount: customerInvestment
+                    });
                 }
             });
     
@@ -923,49 +943,37 @@
     
             // Create Charts with proper containers
             setTimeout(() => {
-                const distributionContainer = document.getElementById('investmentDistributionChart');
-                if (distributionContainer) {
-                    const canvas = document.createElement('canvas');
-                    distributionContainer.innerHTML = '';
-                    distributionContainer.appendChild(canvas);
-                    createInvestmentDistributionChart(canvas, distributionData);
+                const distributionCanvas = resetChartCanvas('investmentDistributionChart');
+                if (distributionCanvas) {
+                    createInvestmentDistributionChart(distributionCanvas, distributionData);
                 }
     
-                const growthContainer = document.getElementById('investmentGrowthChart');
-                if (growthContainer) {
-                    const canvas = document.createElement('canvas');
-                    growthContainer.innerHTML = '';
-                    growthContainer.appendChild(canvas);
+                const growthCanvas = resetChartCanvas('investmentGrowthChart');
+                if (growthCanvas) {
                     const growthData = [
                         { month: 'Week 1', investment: totalInvestment * 0.25, returns: totalMonthly * 0.2 },
                         { month: 'Week 2', investment: totalInvestment * 0.5, returns: totalMonthly * 0.4 },
                         { month: 'Week 3', investment: totalInvestment * 0.75, returns: totalMonthly * 0.6 },
                         { month: 'Week 4', investment: totalInvestment, returns: totalMonthly }
                     ];
-                    createInvestmentGrowthChart(canvas, growthData);
+                    createInvestmentGrowthChart(growthCanvas, growthData);
                 }
     
-                const performanceContainer = document.getElementById('monthlyPerformanceChart');
-                if (performanceContainer) {
-                    const canvas = document.createElement('canvas');
-                    performanceContainer.innerHTML = '';
-                    performanceContainer.appendChild(canvas);
+                const performanceCanvas = resetChartCanvas('monthlyPerformanceChart');
+                if (performanceCanvas) {
                     const performanceData = [
                         { month: 'Week 1', dailyReturn: totalDaily * 0.25, monthlyReturn: totalMonthly * 0.2 },
                         { month: 'Week 2', dailyReturn: totalDaily * 0.5, monthlyReturn: totalMonthly * 0.4 },
                         { month: 'Week 3', dailyReturn: totalDaily * 0.75, monthlyReturn: totalMonthly * 0.6 },
                         { month: 'Week 4', dailyReturn: totalDaily, monthlyReturn: totalMonthly }
                     ];
-                    createMonthlyPerformanceChart(canvas, performanceData);
+                    createMonthlyPerformanceChart(performanceCanvas, performanceData);
                 }
     
-                const roiContainer = document.getElementById('roiChart');
-                if (roiContainer) {
-                    const canvas = document.createElement('canvas');
-                    roiContainer.innerHTML = '';
-                    roiContainer.appendChild(canvas);
+                const roiCanvas = resetChartCanvas('roiChart');
+                if (roiCanvas) {
                     const roiData = customerDetails.slice(0, 10);
-                    createROIChart(canvas, roiData);
+                    createROIChart(roiCanvas, roiData);
                 }
             }, 0);
     
@@ -990,7 +998,7 @@
             }
         }
     
-        function generateAndExportAdminReport(format) {
+        async function generateAndExportAdminReport(format) {
             const startDate = document.getElementById('admin-report-start').value;
             const endDate = document.getElementById('admin-report-end').value;
     
@@ -999,7 +1007,7 @@
                 return;
             }
     
-            const reportData = generateAdminReport(startDate, endDate);
+            const reportData = await generateAdminReport(startDate, endDate);
             
             if (format === 'excel') {
                 exportToExcel(reportData, true);
@@ -1010,7 +1018,7 @@
             }
         }
     
-        function generateAndExportCustomerReport(format) {
+        async function generateAndExportCustomerReport(format) {
             const email = document.getElementById('report-customer').value;
             const startDate = document.getElementById('customer-report-start').value;
             const endDate = document.getElementById('customer-report-end').value;
@@ -1020,7 +1028,7 @@
                 return;
             }
     
-            const reportData = generateCustomerReport(email, startDate, endDate);
+            const reportData = await generateCustomerReport(email, startDate, endDate);
             
             if (!reportData) return;
     

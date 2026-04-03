@@ -114,6 +114,54 @@ async function registerUser(name, email, password) {
     }
 }
 
+async function listUsers() {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+        return [];
+    }
+
+    try {
+        const { data: users, error } = await supabase
+            .from(SUPABASE_USERS_TABLE)
+            .select("id, name, email, isAdmin, createdAt, avatarPath")
+            .order("createdAt", { ascending: true });
+
+        if (error) {
+            throw error;
+        }
+
+        return users || [];
+    } catch (error) {
+        console.error("Unable to load users:", error);
+        showMessage("Unable to load users.", "error");
+        return [];
+    }
+}
+
+async function deleteUserByEmail(email) {
+    const supabase = getSupabaseClient();
+    if (!supabase || !email) {
+        return false;
+    }
+
+    try {
+        const { error } = await supabase
+            .from(SUPABASE_USERS_TABLE)
+            .delete()
+            .eq("email", email);
+
+        if (error) {
+            throw error;
+        }
+
+        return true;
+    } catch (error) {
+        console.error("Unable to delete user:", error);
+        showMessage("Unable to delete user.", "error");
+        return false;
+    }
+}
+
 async function loginUser(email, password) {
     const supabase = getSupabaseClient();
     if (!supabase) {
