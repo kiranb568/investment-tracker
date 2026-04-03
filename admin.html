@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+    <main>
+        <section id="customer-management">
+            <h2>Customer Management</h2>
+            <form id="add-customer-form">
+                <input type="text" id="customer-name" placeholder="Customer Name" required />
+                <input type="email" id="customer-email" placeholder="Customer Email" required />
+                <button type="submit">Add Customer</button>
+            </form>
+            <ul id="customer-list">
+                <!-- Customer list will be dynamically populated here -->
+            </ul>
+            <h2>Delete Customer</h2>
+            <input type="text" id="delete-customer-id" placeholder="Customer ID" />
+            <button id="delete-customer-button">Delete Customer</button>
+        </section>
+        <section id="analytics-view">
+            <h2>Analytics View</h2>
+            <div id="analytics-data">
+                <!-- Analytics data will be displayed here -->
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 Your Company</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
