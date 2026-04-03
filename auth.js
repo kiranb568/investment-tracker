@@ -1,4 +1,4 @@
-// auth.js - Complete Authentication System
+// auth.js - Complete Authentication System with Password Change
 
 // Initialize database
 function initializeDatabase() {
@@ -28,7 +28,7 @@ function registerUser(name, email, password) {
             email,
             password,
             isAdmin,
-            emailVerified: true, // Auto-verify for demo
+            emailVerified: true,
             createdAt: new Date().toISOString()
         };
 
