@@ -3,66 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investment Tracker - Login</title>
+    <title>Investment Tracker - Login/Register</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .auth-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .form {
+            margin-top: 20px;
+        }
+        .form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        .form input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+        .form button:hover {
+            transform: scale(1.05);
+        }
+        .toggle-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .toggle-link a {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        .toggle-link a:hover {
+            color: #764ba2;
+        }
+        #error-message {
+            display: none;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        #error-message.success {
+            color: #27ae60;
+            background-color: #d5f4e6;
+            border-left: 4px solid #27ae60;
+        }
+        #error-message.error {
+            color: #e74c3c;
+            background-color: #fadbd8;
+            border-left: 4px solid #e74c3c;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="auth-container">
         <h1>💰 Investment Tracker</h1>
-        
+        <p style="text-align: center; color: #666;">Track your investments and calculate returns</p>
+
+        <div id="error-message"></div>
+
+        <!-- Login Form -->
         <div id="login-form" class="form">
             <h2>Login</h2>
-            <input type="text" id="login-user" placeholder="Username" />
-            <input type="password" id="login-pass" placeholder="Password" />
-            <button onclick="handleLogin()">Login</button>
-            <p>Don't have account? <a onclick="toggleForm()">Register</a></p>
+            <input type="text" id="login-user" placeholder="Username" required />
+            <input type="password" id="login-pass" placeholder="Password" required />
+            <button type="button" onclick="handleLogin()">Login</button>
+            <p class="toggle-link">Don't have an account? <a onclick="toggleForm()">Register</a></p>
         </div>
-        
+
+        <!-- Registration Form -->
         <div id="register-form" class="form" style="display:none;">
             <h2>Register</h2>
-            <input type="text" id="reg-user" placeholder="Username" />
-            <input type="email" id="reg-email" placeholder="Email" />
-            <input type="password" id="reg-pass" placeholder="Password" />
-            <button onclick="handleRegister()">Register</button>
-            <p>Already have account? <a onclick="toggleForm()">Login</a></p>
+            <input type="text" id="reg-user" placeholder="Username (min 3 characters)" required />
+            <input type="email" id="reg-email" placeholder="Email (optional)" />
+            <input type="password" id="reg-pass" placeholder="Password (min 4 characters)" required />
+            <input type="password" id="reg-pass-confirm" placeholder="Confirm Password" required />
+            <button type="button" onclick="handleRegister()">Register</button>
+            <p class="toggle-link">Already have an account? <a onclick="toggleForm()">Login</a></p>
         </div>
     </div>
-    
+
     <script src="auth.js"></script>
     <script>
+        // Toggle between login and register forms
         function toggleForm() {
-            document.getElementById('login-form').style.display = 
-                document.getElementById('login-form').style.display === 'none' ? 'block' : 'none';
-            document.getElementById('register-form').style.display = 
-                document.getElementById('register-form').style.display === 'none' ? 'block' : 'none';
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const errorDiv = document.getElementById('error-message');
+            
+            // Hide error message when toggling
+            errorDiv.style.display = 'none';
+            
+            // Toggle forms
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+            
+            // Clear form inputs
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
+            document.getElementById('reg-user').value = '';
+            document.getElementById('reg-email').value = '';
+            document.getElementById('reg-pass').value = '';
+            document.getElementById('reg-pass-confirm').value = '';
+            
+            console.log('Form toggled');
         }
-        
+
+        // Handle login
         function handleLogin() {
-            const username = document.getElementById('login-user').value;
+            const username = document.getElementById('login-user').value.trim();
             const password = document.getElementById('login-pass').value;
             
-            if (loginUser(username, password)) {
-                window.location.href = 'dashboard.html';
-            } else {
-                alert('Invalid credentials');
-            }
-        }
-        
-        function handleRegister() {
-            const username = document.getElementById('reg-user').value;
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-pass').value;
+            console.log('Login attempt:', { username, passwordLength: password.length });
             
-            if (registerUser(username, password)) {
-                alert('Registration successful! Please login.');
-                toggleForm();
-                document.getElementById('reg-user').value = '';
-                document.getElementById('reg-email').value = '';
-                document.getElementById('reg-pass').value = '';
-            } else {
-                alert('Registration failed');
+            if (!username || !password) {
+                displayMessage('Please enter both username and password', 'error');
+                return;
+            }
+            
+            if (loginUser(username, password)) {
+                displayMessage('Login successful! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
             }
         }
+
+        // Handle registration
+        function handleRegister() {
+            const username = document.getElementById('reg-user').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-pass').value;
+            const confirmPassword = document.getElementById('reg-pass-confirm').value;
+            
+            console.log('Registration attempt:', { username, email });
+            
+            // Validation
+            if (!username || !password || !confirmPassword) {
+                displayMessage('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                displayMessage('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (username.length < 3) {
+                displayMessage('Username must be at least 3 characters', 'error');
+                return;
+            }
+            
+            if (password.length < 4) {
+                displayMessage('Password must be at least 4 characters', 'error');
+                return;
+            }
+            
+            if (registerUser(username, password, email)) {
+                setTimeout(() => {
+                    document.getElementById('reg-user').value = '';
+                    document.getElementById('reg-email').value = '';
+                    document.getElementById('reg-pass').value = '';
+                    document.getElementById('reg-pass-confirm').value = '';
+                    toggleForm();
+                }, 1500);
+            }
+        }
+
+        // Display message helper
+        function displayMessage(message, type) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            errorDiv.className = type === 'error' ? 'error' : 'success';
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== Investment Tracker Started ===');
+            initializeDatabase();
+            
+            // Allow Enter key to submit forms
+            document.getElementById('login-pass').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleLogin();
+            });
+            
+            document.getElementById('reg-pass-confirm').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') handleRegister();
+            });
+        });
     </script>
 </body>
 </html>
