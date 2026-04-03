@@ -3,38 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Panel - Investment Tracker</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Admin Dashboard</h1>
-    </header>
-    <main>
-        <section id="customer-management">
-            <h2>Customer Management</h2>
-            <form id="add-customer-form">
-                <input type="text" id="customer-name" placeholder="Customer Name" required />
-                <input type="email" id="customer-email" placeholder="Customer Email" required />
-                <button type="submit">Add Customer</button>
-            </form>
-            <ul id="customer-list">
-                <!-- Customer list will be dynamically populated here -->
+        <h1>🔧 Admin Panel</h1>
+        <nav>
+            <ul>
+                <li><a href="#customers">Customers</a></li>
+                <li><a href="#analytics">Analytics</a></li>
+                <li><button onclick="logoutUser()">Logout</button></li>
             </ul>
-            <h2>Delete Customer</h2>
-            <input type="text" id="delete-customer-id" placeholder="Customer ID" />
-            <button id="delete-customer-button">Delete Customer</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Customers Tab -->
+        <section id="customers">
+            <h2>👥 Customer Management</h2>
+
+            <form id="add-customer-form">
+                <h3>Add New Customer</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input type="text" id="customer-name" placeholder="Full Name" required />
+                    <input type="email" id="customer-email" placeholder="Email" required />
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input type="password" id="customer-password" placeholder="Password (min 6 chars)" required />
+                    <input type="password" id="customer-password-confirm" placeholder="Confirm Password" required />
+                </div>
+                <button type="button" onclick="addCustomer()">Add Customer</button>
+            </form>
+
+            <h3>All Customers</h3>
+            <div class="transactions-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Total Investment (₹)</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customers-body">
+                    </tbody>
+                </table>
+            </div>
         </section>
-        <section id="analytics-view">
-            <h2>Analytics View</h2>
-            <div id="analytics-data">
-                <!-- Analytics data will be displayed here -->
+
+        <!-- Analytics Tab -->
+        <section id="analytics">
+            <h2>📊 System Analytics</h2>
+            <div class="metrics" id="admin-analytics">
             </div>
         </section>
     </main>
-    <footer>
-        <p>&copy; 2026 Your Company</p>
-    </footer>
-    <script src="script.js"></script>
+
+    <script src="auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            requireAuth();
+            if (!isAdmin()) {
+                alert('Admin access denied');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            loadCustomers();
+        });
+
+        function addCustomer() {
+            const name = document.getElementById('customer-name').value.trim();
+            const email = document.getElementById('customer-email').value.trim();
+            const password = document.getElementById('customer-password').value;
+            const confirmPassword = document.getElementById('customer-password-confirm').value;
+
+            if (!name || !email || !password || !confirmPassword) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+
+            if (registerUser(name, email, password)) {
+                document.getElementById('customer-name').value = '';
+                document.getElementById('customer-email').value = '';
+                document.getElementById('customer-password').value = '';
+                document.getElementById('customer-password-confirm').value = '';
+                loadCustomers();
+            }
+        }
+
+        function deleteCustomer(email) {
+            if (!confirm('Delete this customer? (This cannot be undone)')) return;
+
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            users = users.filter(u => u.email !== email);
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.removeItem(`investments_${email}`);
+            loadCustomers();
+        }
+
+        function loadCustomers() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const tbody = document.getElementById('customers-body');
+
+            tbody.innerHTML = '';
+
+            const regularUsers = users.filter(u => !u.isAdmin);
+
+            if (regularUsers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No customers yet</td></tr>';
+            } else {
+                regularUsers.forEach(user => {
+                    const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
+                    const totalInvestment = Object.values(investments).reduce((sum, inv) => sum + inv.amount, 0);
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>₹${totalInvestment.toLocaleString('en-IN')}</td>
+                            <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                            <td><button class="remove-btn" onclick="deleteCustomer('${user.email}')">Delete</button></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            updateAdminAnalytics();
+        }
+
+        function updateAdminAnalytics() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            let totalCustomers = 0, totalInvestment = 0, totalDaily = 0, totalMonthly = 0;
+
+            users.forEach(user => {
+                if (!user.isAdmin) {
+                    totalCustomers++;
+                    const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
+                    Object.values(investments).forEach(inv => {
+                        totalInvestment += inv.amount;
+                        totalDaily += inv.dailyReturn;
+                        totalMonthly += inv.monthlyReturn;
+                    });
+                }
+            });
+
+            const analyticsDiv = document.getElementById('admin-analytics');
+            analyticsDiv.innerHTML = `
+                <div class="metric-card">
+                    <h3>Total Customers</h3>
+                    <p class="value">${totalCustomers}</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Total Investment (₹)</h3>
+                    <p class="value">₹${totalInvestment.toLocaleString('en-IN')}</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Total Daily Return (₹)</h3>
+                    <p class="value">₹${totalDaily.toLocaleString('en-IN')}</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Total Monthly Return (₹)</h3>
+                    <p class="value">₹${totalMonthly.toLocaleString('en-IN')}</p>
+                </div>
+            `;
+        }
+    </script>
 </body>
 </html>
