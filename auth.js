@@ -1,40 +1,65 @@
-// auth.js - Complete Authentication System with Password Change
+// auth.js - Firestore-backed Authentication System
+
+function getFirestoreDb() {
+    if (!window.firestoreDb) {
+        showMessage('Firestore is not initialized. Check Firebase setup.', 'error');
+        return null;
+    }
+    if (window.hasFirebasePlaceholders) {
+        showMessage('Set your Firebase config values before using auth.', 'error');
+        return null;
+    }
+    return window.firestoreDb;
+}
 
 // Initialize database
-function initializeDatabase() {
-    if (!localStorage.getItem('users')) {
-        localStorage.setItem('users', JSON.stringify([]));
-        console.log('✓ Users database initialized');
+async function initializeDatabase() {
+    const db = getFirestoreDb();
+    if (!db) {
+        return;
+    }
+
+    try {
+        await db.collection('users').limit(1).get();
+        console.log('✓ Firestore users collection reachable');
+    } catch (error) {
+        console.error('✗ Firestore initialization error:', error);
+        showMessage('Unable to connect to Firestore', 'error');
     }
 }
 
 // Register new user
-function registerUser(name, email, password) {
-    try {
-        const users = JSON.parse(localStorage.getItem('users')) || [];
+async function registerUser(name, email, password) {
+    const db = getFirestoreDb();
+    if (!db) {
+        return false;
+    }
 
-        // Check if email exists
-        if (users.find(u => u.email === email)) {
+    try {
+        const usersCollection = db.collection('users');
+        const existingUserSnapshot = await usersCollection.where('email', '==', email).limit(1).get();
+
+        if (!existingUserSnapshot.empty) {
             showMessage('Email already registered', 'error');
             return false;
         }
 
-        // First user becomes admin
-        const isAdmin = users.length === 0;
+        const firstUserCheck = await usersCollection.limit(1).get();
+        const isAdmin = firstUserCheck.empty;
+        const createdAt = new Date().toISOString();
+        const newUserDocRef = usersCollection.doc();
 
         const newUser = {
-            id: Date.now(),
+            id: newUserDocRef.id,
             name,
             email,
             password,
             isAdmin,
             emailVerified: true,
-            createdAt: new Date().toISOString()
+            createdAt
         };
 
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem(`investments_${email}`, JSON.stringify({}));
+        await newUserDocRef.set(newUser);
 
         console.log('✓ User registered:', { name, email, isAdmin });
         return true;
@@ -46,15 +71,26 @@ function registerUser(name, email, password) {
 }
 
 // Login user
-function loginUser(email, password) {
-    try {
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const user = users.find(u => u.email === email && u.password === password);
+async function loginUser(email, password) {
+    const db = getFirestoreDb();
+    if (!db) {
+        return false;
+    }
 
-        if (!user) {
+    try {
+        const snapshot = await db
+            .collection('users')
+            .where('email', '==', email)
+            .where('password', '==', password)
+            .limit(1)
+            .get();
+
+        if (snapshot.empty) {
             showMessage('Invalid email or password', 'error');
             return false;
         }
+
+        const user = snapshot.docs[0].data();
 
         sessionStorage.setItem('currentUser', JSON.stringify({
             id: user.id,
@@ -75,7 +111,6 @@ function loginUser(email, password) {
 // Logout user
 function logoutUser() {
     sessionStorage.removeItem('currentUser');
-    localStorage.removeItem('tempInvestments');
     console.log('✓ User logged out');
     window.location.href = 'index.html';
 }

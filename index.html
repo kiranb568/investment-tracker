@@ -136,6 +136,27 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const hasFirebasePlaceholders = Object.values(firebaseConfig).some(value => value.includes('YOUR_'));
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        window.firestoreDb = firebase.firestore();
+        window.hasFirebasePlaceholders = hasFirebasePlaceholders;
+    </script>
     <script src="auth.js"></script>
     <script>
         function toggleForms() {
@@ -154,7 +175,7 @@
             document.getElementById('reg-pass-confirm').value = '';
         }
 
-        function handleLogin() {
+        async function handleLogin() {
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-pass').value;
 
@@ -168,13 +189,13 @@
                 return;
             }
 
-            if (loginUser(email, password)) {
+            if (await loginUser(email, password)) {
                 showMessage('Login successful! Redirecting...', 'success');
                 setTimeout(() => window.location.href = 'dashboard.html', 1500);
             }
         }
 
-        function handleRegister() {
+        async function handleRegister() {
             const name = document.getElementById('reg-name').value.trim();
             const email = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-pass').value;
@@ -200,7 +221,7 @@
                 return;
             }
 
-            if (registerUser(name, email, password)) {
+            if (await registerUser(name, email, password)) {
                 showMessage('Registration successful! Please login.', 'success');
                 setTimeout(() => {
                     clearForms();
