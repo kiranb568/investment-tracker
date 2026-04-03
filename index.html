@@ -1,10 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0; url='auth.html'" />
-    <title>Redirecting...</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Tracker - Login</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <p>If you are not redirected, <a href="auth.html">click here</a>.</p>
+    <div class="auth-container">
+        <h1>💰 Investment Tracker</h1>
+        
+        <div id="login-form" class="form">
+            <h2>Login</h2>
+            <input type="text" id="login-user" placeholder="Username" />
+            <input type="password" id="login-pass" placeholder="Password" />
+            <button onclick="handleLogin()">Login</button>
+            <p>Don't have account? <a onclick="toggleForm()">Register</a></p>
+        </div>
+        
+        <div id="register-form" class="form" style="display:none;">
+            <h2>Register</h2>
+            <input type="text" id="reg-user" placeholder="Username" />
+            <input type="email" id="reg-email" placeholder="Email" />
+            <input type="password" id="reg-pass" placeholder="Password" />
+            <button onclick="handleRegister()">Register</button>
+            <p>Already have account? <a onclick="toggleForm()">Login</a></p>
+        </div>
+    </div>
+    
+    <script src="auth.js"></script>
+    <script>
+        function toggleForm() {
+            document.getElementById('login-form').style.display = 
+                document.getElementById('login-form').style.display === 'none' ? 'block' : 'none';
+            document.getElementById('register-form').style.display = 
+                document.getElementById('register-form').style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function handleLogin() {
+            const username = document.getElementById('login-user').value;
+            const password = document.getElementById('login-pass').value;
+            
+            if (loginUser(username, password)) {
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Invalid credentials');
+            }
+        }
+        
+        function handleRegister() {
+            const username = document.getElementById('reg-user').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-pass').value;
+            
+            if (registerUser(username, password)) {
+                alert('Registration successful! Please login.');
+                toggleForm();
+                document.getElementById('reg-user').value = '';
+                document.getElementById('reg-email').value = '';
+                document.getElementById('reg-pass').value = '';
+            } else {
+                alert('Registration failed');
+            }
+        }
+    </script>
 </body>
 </html>
