@@ -3,40 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard</title>
+    <title>Investment Tracker - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>User Dashboard</h1>
+        <h1>💰 Investment Tracker - Dashboard</h1>
         <nav>
             <ul>
+                <li><span id="user-name" style="color: #00d4ff; font-weight: 600;"></span></li>
                 <li><a href="#investments">Investments</a></li>
                 <li><a href="#analytics">Analytics</a></li>
-                <li><button onclick="adminAccess()">Admin Access</button></li>
-                <li><button onclick="logout()">Logout</button></li>
+                <li id="admin-btn" style="display: none;"><button onclick="goToAdmin()">Admin Panel</button></li>
+                <li><button onclick="logoutUser()">Logout</button></li>
             </ul>
         </nav>
     </header>
+
     <main>
+        <!-- Investments Tab -->
         <section id="investments">
-            <h2>Investments</h2>
-            <p>Details about your investments will be displayed here.</p>
+            <h2>📊 Add New Investment</h2>
+            
+            <form id="investment-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label>Investment Amount (₹)</label>
+                        <input type="number" id="investment-amount" placeholder="Enter amount" min="20000" step="20000" required />
+                    </div>
+                    <div>
+                        <label>Date</label>
+                        <input type="date" id="investment-date" required />
+                    </div>
+                </div>
+                <button type="button" onclick="addInvestment()">Add Investment</button>
+            </form>
+
+            <h2>📈 Your Investments</h2>
+            <div class="transactions-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Amount (₹)</th>
+                            <th>Multiplier</th>
+                            <th>Daily Return (₹)</th>
+                            <th>Monthly Return (₹)</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="investments-body">
+                    </tbody>
+                </table>
+            </div>
         </section>
+
+        <!-- Analytics Tab -->
         <section id="analytics">
-            <h2>Analytics</h2>
-            <p>Analytics and insights will be shown here.</p>
+            <h2>📊 Your Analytics</h2>
+            <div class="metrics" id="analytics-metrics">
+            </div>
         </section>
     </main>
+
+    <script src="auth.js"></script>
     <script>
-        function adminAccess() {
-            // Functionality for admin access
-            alert('Admin access functionality is not yet implemented.');
+        const BASE_INVESTMENT = 20000;
+        const BASE_DAILY_RETURN = 325;
+        const DAYS_IN_MONTH = 16;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            requireAuth();
+            const user = getCurrentUser();
+            document.getElementById('user-name').textContent = `Welcome, ${user.name}!`;
+            
+            if (user.isAdmin) {
+                document.getElementById('admin-btn').style.display = 'block';
+            }
+
+            // Set today's date
+            document.getElementById('investment-date').valueAsDate = new Date();
+
+            loadInvestments();
+        });
+
+        function addInvestment() {
+            const user = getCurrentUser();
+            const amount = parseInt(document.getElementById('investment-amount').value);
+            const date = document.getElementById('investment-date').value;
+
+            if (!amount || !date) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            if (amount < 20000 || amount % 20000 !== 0) {
+                alert('Investment must be a multiple of ₹20,000');
+                return;
+            }
+
+            const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
+            const multiplier = amount / BASE_INVESTMENT;
+            const dailyReturn = BASE_DAILY_RETURN * multiplier;
+            const monthlyReturn = dailyReturn * DAYS_IN_MONTH;
+
+            investments[Date.now()] = {
+                amount,
+                multiplier,
+                dailyReturn,
+                monthlyReturn,
+                date
+            };
+
+            localStorage.setItem(`investments_${user.email}`, JSON.stringify(investments));
+            document.getElementById('investment-amount').value = '';
+            document.getElementById('investment-date').valueAsDate = new Date();
+            loadInvestments();
         }
 
-        function logout() {
-            // Functionality for logging out
-            alert('You have logged out.');
+        function removeInvestment(id) {
+            if (!confirm('Remove this investment?')) return;
+
+            const user = getCurrentUser();
+            const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
+            delete investments[id];
+            localStorage.setItem(`investments_${user.email}`, JSON.stringify(investments));
+            loadInvestments();
+        }
+
+        function loadInvestments() {
+            const user = getCurrentUser();
+            const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
+            const tbody = document.getElementById('investments-body');
+
+            tbody.innerHTML = '';
+
+            if (Object.keys(investments).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No investments yet. Add one to get started!</td></tr>';
+            } else {
+                Object.entries(investments).forEach(([id, inv]) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>₹${inv.amount.toLocaleString('en-IN')}</td>
+                            <td>${inv.multiplier}x</td>
+                            <td>₹${inv.dailyReturn.toLocaleString('en-IN')}</td>
+                            <td>₹${inv.monthlyReturn.toLocaleString('en-IN')}</td>
+                            <td>${inv.date}</td>
+                            <td><button class="remove-btn" onclick="removeInvestment('${id}')">Remove</button></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            updateAnalytics();
+        }
+
+        function updateAnalytics() {
+            const user = getCurrentUser();
+            const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
+            
+            let totalAmount = 0, totalDaily = 0, totalMonthly = 0;
+            Object.values(investments).forEach(inv => {
+                totalAmount += inv.amount;
+                totalDaily += inv.dailyReturn;
+                totalMonthly += inv.monthlyReturn;
+            });
+
+            const metricsDiv = document.getElementById('analytics-metrics');
+            metricsDiv.innerHTML = `
+                <div class="metric-card">
+                    <h3>Total Investment</h3>
+                    <p class="value">₹${totalAmount.toLocaleString('en-IN')}</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Daily Return</h3>
+                    <p class="value">₹${totalDaily.toLocaleString('en-IN')}</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Monthly Return (16 days)</h3>
+                    <p class="value">₹${totalMonthly.toLocaleString('en-IN')}</p>
+                </div>
+                <div class="metric-card">
+                    <h3>Return Percentage</h3>
+                    <p class="value">${totalAmount > 0 ? ((totalMonthly / totalAmount) * 100).toFixed(2) : 0}%</p>
+                </div>
+            `;
+        }
+
+        function goToAdmin() {
+            window.location.href = 'admin.html';
         }
     </script>
 </body>
