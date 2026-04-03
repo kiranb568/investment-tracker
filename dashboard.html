@@ -6,7 +6,7 @@
     <title>Investment Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
     <style>
         .user-container {
             display: flex;
@@ -260,8 +260,20 @@
         
         .chart-container {
             position: relative;
+            width: 100%;
             height: 400px;
             margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        #monthlyPerformanceChart,
+        #investmentGrowthChart {
+            position: relative;
+            width: 100% !important;
+            height: 350px !important;
         }
         
         .modal {
@@ -554,14 +566,13 @@
 
     <script src="auth.js"></script>
     <script src="otp-service.js"></script>
-    <script src="chart-config.js"></script>
     <script src="reports.js"></script>
     <script src="settings.js"></script>
+
     <script>
         const BASE_INVESTMENT = 20000;
         const BASE_DAILY_RETURN = 325;
         const DAYS_IN_MONTH = 16;
-        let userCharts = {};
 
         document.addEventListener('DOMContentLoaded', () => {
             requireAuth();
@@ -710,25 +721,37 @@
             `;
 
             // Create Charts
-            const performanceData = [
-                { month: 'Week 1', dailyReturn: totalDaily * 0.25, monthlyReturn: totalMonthly * 0.2 },
-                { month: 'Week 2', dailyReturn: totalDaily * 0.5, monthlyReturn: totalMonthly * 0.4 },
-                { month: 'Week 3', dailyReturn: totalDaily * 0.75, monthlyReturn: totalMonthly * 0.6 },
-                { month: 'Week 4', dailyReturn: totalDaily, monthlyReturn: totalMonthly }
-            ];
+            setTimeout(() => {
+                const performanceContainer = document.getElementById('monthlyPerformanceChart');
+                if (performanceContainer && performanceContainer.parentElement) {
+                    const canvas = document.createElement('canvas');
+                    performanceContainer.parentElement.innerHTML = '';
+                    performanceContainer.parentElement.appendChild(canvas);
 
-            if (userCharts.performance) userCharts.performance.destroy();
-            createMonthlyPerformanceChart('#monthlyPerformanceChart', performanceData);
+                    const performanceData = [
+                        { month: 'Week 1', dailyReturn: totalDaily * 0.25, monthlyReturn: totalMonthly * 0.2 },
+                        { month: 'Week 2', dailyReturn: totalDaily * 0.5, monthlyReturn: totalMonthly * 0.4 },
+                        { month: 'Week 3', dailyReturn: totalDaily * 0.75, monthlyReturn: totalMonthly * 0.6 },
+                        { month: 'Week 4', dailyReturn: totalDaily, monthlyReturn: totalMonthly }
+                    ];
+                    createMonthlyPerformanceChart(canvas, performanceData);
+                }
 
-            const growthData = [
-                { month: 'Week 1', investment: totalAmount * 0.25, returns: totalMonthly * 0.2 },
-                { month: 'Week 2', investment: totalAmount * 0.5, returns: totalMonthly * 0.4 },
-                { month: 'Week 3', investment: totalAmount * 0.75, returns: totalMonthly * 0.6 },
-                { month: 'Week 4', investment: totalAmount, returns: totalMonthly }
-            ];
+                const growthContainer = document.getElementById('investmentGrowthChart');
+                if (growthContainer && growthContainer.parentElement) {
+                    const canvas = document.createElement('canvas');
+                    growthContainer.parentElement.innerHTML = '';
+                    growthContainer.parentElement.appendChild(canvas);
 
-            if (userCharts.growth) userCharts.growth.destroy();
-            createInvestmentGrowthChart('#investmentGrowthChart', growthData);
+                    const growthData = [
+                        { month: 'Week 1', investment: totalAmount * 0.25, returns: totalMonthly * 0.2 },
+                        { month: 'Week 2', investment: totalAmount * 0.5, returns: totalMonthly * 0.4 },
+                        { month: 'Week 3', investment: totalAmount * 0.75, returns: totalMonthly * 0.6 },
+                        { month: 'Week 4', investment: totalAmount, returns: totalMonthly }
+                    ];
+                    createInvestmentGrowthChart(canvas, growthData);
+                }
+            }, 0);
         }
 
         function generateAndExportUserReport(format) {
@@ -747,15 +770,176 @@
 
             if (format === 'excel') {
                 exportToExcel(reportData, false);
+                alert('✓ Excel report exported successfully!');
             } else if (format === 'pdf') {
                 exportToPDF(reportData, false);
+                alert('✓ PDF report exported successfully!');
             }
-            
-            alert('✓ Report exported successfully!');
         }
 
         function goToAdmin() {
             window.location.href = 'admin.html';
+        }
+    </script>
+
+    <!-- Chart Creation Functions -->
+    <script>
+        function createMonthlyPerformanceChart(canvas, performanceData) {
+            const ctx = canvas.getContext('2d');
+
+            const months = performanceData.map(item => item.month);
+            const dailyReturn = performanceData.map(item => item.dailyReturn);
+            const monthlyReturn = performanceData.map(item => item.monthlyReturn);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Daily Return',
+                            data: dailyReturn,
+                            backgroundColor: '#667eea',
+                            borderRadius: 5,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'Monthly Return',
+                            data: monthlyReturn,
+                            backgroundColor: '#00d4ff',
+                            borderRadius: 5,
+                            borderSkipped: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: { size: 12, weight: 600 },
+                                color: '#333',
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ₹' + (context.parsed.y / 1000).toFixed(1) + 'K';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + (value / 1000).toFixed(0) + 'K';
+                                },
+                                color: '#666',
+                                font: { size: 10 }
+                            },
+                            grid: { color: '#f0f0f0' }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#666',
+                                font: { size: 10 }
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createInvestmentGrowthChart(canvas, chartData) {
+            const ctx = canvas.getContext('2d');
+
+            const months = chartData.map(item => item.month);
+            const investments = chartData.map(item => item.investment);
+            const returns = chartData.map(item => item.returns);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Investment Amount',
+                            data: investments,
+                            borderColor: '#0f3460',
+                            backgroundColor: 'rgba(15, 52, 96, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#0f3460',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5
+                        },
+                        {
+                            label: 'Returns Generated',
+                            data: returns,
+                            borderColor: '#00d4ff',
+                            backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#00d4ff',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: { size: 12, weight: 600 },
+                                color: '#333',
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ₹' + (context.parsed.y / 1000).toFixed(1) + 'K';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + (value / 1000).toFixed(0) + 'K';
+                                },
+                                color: '#666',
+                                font: { size: 10 }
+                            },
+                            grid: { color: '#f0f0f0' }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#666',
+                                font: { size: 10 }
+                            },
+                            grid: { color: '#f0f0f0' }
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>
