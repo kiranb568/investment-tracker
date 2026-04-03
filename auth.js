@@ -1,8 +1,55 @@
 // auth.js - Supabase-backed Authentication + Storage helpers
 
 const SUPABASE_USERS_TABLE = "users";
+const DEFAULT_SUPABASE_CONFIG = {
+    url: "https://wvdqaepetsifprpsdiwf.supabase.co",
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZHFhZXBldHNpZnBycHNkaXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjY5NTMsImV4cCI6MjA5MDgwMjk1M30.V3vKi8dl6pRDwKwiK1mmD_YYuAVSAecOJ4eTTOXo4Qk",
+    storageBucket: "user-files"
+};
+
+function initializeSupabaseApp() {
+    if (window.supabaseClient) {
+        return true;
+    }
+
+    if (!window.supabase || typeof window.supabase.createClient !== "function") {
+        return false;
+    }
+
+    const runtimeConfig = window.__APP_CONFIG__ || {};
+
+    if (!window.supabaseAppConfig) {
+        window.supabaseAppConfig = {
+            url: runtimeConfig.supabaseUrl || window.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_CONFIG.url,
+            anonKey: runtimeConfig.supabaseAnonKey || window.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_CONFIG.anonKey,
+            storageBucket: runtimeConfig.supabaseStorageBucket || window.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || DEFAULT_SUPABASE_CONFIG.storageBucket
+        };
+    }
+
+    window.hasSupabasePlaceholders = Object.values(window.supabaseAppConfig).some(value => {
+        if (typeof value !== "string") {
+            return true;
+        }
+
+        const normalizedValue = value.trim();
+        return !normalizedValue || normalizedValue.includes("YOUR_");
+    });
+
+    if (window.hasSupabasePlaceholders) {
+        return false;
+    }
+
+    window.supabaseClient = window.supabase.createClient(
+        window.supabaseAppConfig.url,
+        window.supabaseAppConfig.anonKey
+    );
+
+    return true;
+}
 
 function getSupabaseClient() {
+    initializeSupabaseApp();
+
     if (!window.supabaseClient) {
         showMessage("Supabase is not initialized. Check your Vercel/Supabase config.", "error");
         return null;
@@ -138,6 +185,35 @@ async function listUsers() {
     }
 }
 
+async function getUserByEmail(email, includePassword = false) {
+    const supabase = getSupabaseClient();
+    if (!supabase || !email) {
+        return null;
+    }
+
+    try {
+        const selectFields = includePassword
+            ? "id, name, email, isAdmin, createdAt, avatarPath, password"
+            : "id, name, email, isAdmin, createdAt, avatarPath";
+
+        const { data: user, error } = await supabase
+            .from(SUPABASE_USERS_TABLE)
+            .select(selectFields)
+            .eq("email", email)
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        return user || null;
+    } catch (error) {
+        console.error("Unable to load user:", error);
+        showMessage("Unable to load user details.", "error");
+        return null;
+    }
+}
+
 async function deleteUserByEmail(email) {
     const supabase = getSupabaseClient();
     if (!supabase || !email) {
@@ -158,6 +234,30 @@ async function deleteUserByEmail(email) {
     } catch (error) {
         console.error("Unable to delete user:", error);
         showMessage("Unable to delete user.", "error");
+        return false;
+    }
+}
+
+async function updateUserPassword(email, password) {
+    const supabase = getSupabaseClient();
+    if (!supabase || !email || !password) {
+        return false;
+    }
+
+    try {
+        const { error } = await supabase
+            .from(SUPABASE_USERS_TABLE)
+            .update({ password })
+            .eq("email", email);
+
+        if (error) {
+            throw error;
+        }
+
+        return true;
+    } catch (error) {
+        console.error("Unable to update password:", error);
+        showMessage("Unable to update password.", "error");
         return false;
     }
 }
