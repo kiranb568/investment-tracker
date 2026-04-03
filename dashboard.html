@@ -3,68 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investment Tracker - Dashboard</title>
+    <title>Investment Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .user-container {
+            display: flex;
+            min-height: 100vh;
+            background: #f5f7fa;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, #0f3460 0%, #16213e 100%);
+            color: white;
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar-brand {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #00d4ff;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-brand h2 {
+            color: white;
+            font-size: 1.5em;
+            border: none;
+            margin: 0;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin: 0;
+        }
+        
+        .sidebar-menu a {
+            display: block;
+            padding: 15px 20px;
+            color: #b2ebf2;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            border-left-color: #00d4ff;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #00d4ff;
+        }
+        
+        .page-header h1 {
+            color: #0f3460;
+            font-size: 2em;
+            margin: 0;
+        }
+        
+        .page-header p {
+            color: #666;
+            margin: 5px 0 0 0;
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #00d4ff;
+        }
+        
+        .card h3 {
+            color: #0f3460;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            color: #0f3460;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #b2ebf2;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(15, 52, 96, 0.3);
+        }
+        
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #ee5a52;
+            transform: translateY(-2px);
+        }
+        
+        .investments-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .investments-table thead {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            color: white;
+        }
+        
+        .investments-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .investments-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .investments-table tbody tr:hover {
+            background: #f0f7ff;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .metric {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
+            border-top: 4px solid #00d4ff;
+        }
+        
+        .metric h4 {
+            color: #00d4ff;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .metric .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ffff;
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .top-bar .user-info {
+            color: #0f3460;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .user-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>💰 Investment Tracker - Dashboard</h1>
-        <nav>
-            <ul>
-                <li><span id="user-name" style="color: #00d4ff; font-weight: 600;"></span></li>
-                <li><a href="#investments">Investments</a></li>
-                <li><a href="#analytics">Analytics</a></li>
-                <li id="admin-btn" style="display: none;"><button onclick="goToAdmin()">Admin Panel</button></li>
-                <li><button onclick="logoutUser()">Logout</button></li>
+    <div class="user-container">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>💰 Tracker</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a onclick="showTab('investments')" class="active">📊 Investments</a></li>
+                <li><a onclick="showTab('analytics')">📈 Analytics</a></li>
+                <li id="admin-link" style="display: none;"><a onclick="goToAdmin()">🔧 Admin Panel</a></li>
+                <li style="margin-top: 30px; border-top: 1px solid #00d4ff; padding-top: 30px;">
+                    <a onclick="logoutUser()" style="color: #ff6b6b;">🚪 Logout</a>
+                </li>
             </ul>
-        </nav>
-    </header>
+        </aside>
 
-    <main>
-        <!-- Investments Tab -->
-        <section id="investments">
-            <h2>📊 Add New Investment</h2>
-            
-            <form id="investment-form">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div>
-                        <label>Investment Amount (₹)</label>
-                        <input type="number" id="investment-amount" placeholder="Enter amount" min="20000" step="20000" required />
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="user-info" id="user-info"></div>
+            </div>
+
+            <div id="investments" class="content-section active">
+                <div class="page-header">
+                    <h1>📊 My Investments</h1>
+                    <p>Add and manage your investment portfolio</p>
+                </div>
+                <div class="card">
+                    <h3>➕ Add New Investment</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Investment Amount (₹)</label>
+                            <input type="number" id="investment-amount" placeholder="Min ₹20,000" min="20000" step="20000" />
+                        </div>
+                        <div class="form-group">
+                            <label>Investment Date</label>
+                            <input type="date" id="investment-date" />
+                        </div>
                     </div>
-                    <div>
-                        <label>Date</label>
-                        <input type="date" id="investment-date" required />
+                    <button class="btn btn-primary" onclick="addInvestment()">➕ Add Investment</button>
+                </div>
+                <div class="card">
+                    <h3>📈 Your Investments</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="investments-table">
+                            <thead>
+                                <tr>
+                                    <th>Amount (₹)</th>
+                                    <th>Multiplier</th>
+                                    <th>Daily Return (₹)</th>
+                                    <th>Monthly Return (₹)</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="investments-body"></tbody>
+                        </table>
                     </div>
                 </div>
-                <button type="button" onclick="addInvestment()">Add Investment</button>
-            </form>
-
-            <h2>📈 Your Investments</h2>
-            <div class="transactions-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Amount (₹)</th>
-                            <th>Multiplier</th>
-                            <th>Daily Return (₹)</th>
-                            <th>Monthly Return (₹)</th>
-                            <th>Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="investments-body">
-                    </tbody>
-                </table>
             </div>
-        </section>
 
-        <!-- Analytics Tab -->
-        <section id="analytics">
-            <h2>📊 Your Analytics</h2>
-            <div class="metrics" id="analytics-metrics">
+            <div id="analytics" class="content-section">
+                <div class="page-header">
+                    <h1>📈 Your Analytics</h1>
+                    <p>Investment Performance & Returns</p>
+                </div>
+                <div class="metrics-grid" id="analytics-metrics"></div>
+                <div class="card">
+                    <h3>📊 Performance Summary</h3>
+                    <div id="performance-summary"></div>
+                </div>
             </div>
-        </section>
-    </main>
+        </main>
+    </div>
 
     <script src="auth.js"></script>
     <script>
@@ -72,21 +356,29 @@
         const BASE_DAILY_RETURN = 325;
         const DAYS_IN_MONTH = 16;
 
-        // Initialize dashboard
         document.addEventListener('DOMContentLoaded', () => {
             requireAuth();
             const user = getCurrentUser();
-            document.getElementById('user-name').textContent = `Welcome, ${user.name}!`;
-            
+            document.getElementById('user-info').textContent = `👤 ${user.name}`;
             if (user.isAdmin) {
-                document.getElementById('admin-btn').style.display = 'block';
+                document.getElementById('admin-link').style.display = 'block';
             }
-
-            // Set today's date
-            document.getElementById('investment-date').valueAsDate = new Date();
-
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('investment-date').value = today;
             loadInvestments();
         });
+
+        function showTab(tabName) {
+            document.querySelectorAll('.content-section').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            if (tabName === 'analytics') loadAnalytics();
+        }
 
         function addInvestment() {
             const user = getCurrentUser();
@@ -94,12 +386,12 @@
             const date = document.getElementById('investment-date').value;
 
             if (!amount || !date) {
-                alert('Please fill all fields');
+                alert('❌ Please fill all fields');
                 return;
             }
 
             if (amount < 20000 || amount % 20000 !== 0) {
-                alert('Investment must be a multiple of ₹20,000');
+                alert('❌ Investment must be a multiple of ₹20,000');
                 return;
             }
 
@@ -118,18 +410,19 @@
 
             localStorage.setItem(`investments_${user.email}`, JSON.stringify(investments));
             document.getElementById('investment-amount').value = '';
-            document.getElementById('investment-date').valueAsDate = new Date();
+            document.getElementById('investment-date').value = new Date().toISOString().split('T')[0];
             loadInvestments();
+            alert('✓ Investment added successfully!');
         }
 
         function removeInvestment(id) {
-            if (!confirm('Remove this investment?')) return;
-
+            if (!confirm('⚠️ Remove this investment?')) return;
             const user = getCurrentUser();
             const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
             delete investments[id];
             localStorage.setItem(`investments_${user.email}`, JSON.stringify(investments));
             loadInvestments();
+            alert('✓ Investment removed!');
         }
 
         function loadInvestments() {
@@ -140,26 +433,26 @@
             tbody.innerHTML = '';
 
             if (Object.keys(investments).length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No investments yet. Add one to get started!</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px; color: #999;">No investments yet. Add one to get started!</td></tr>';
             } else {
                 Object.entries(investments).forEach(([id, inv]) => {
                     tbody.innerHTML += `
                         <tr>
-                            <td>₹${inv.amount.toLocaleString('en-IN')}</td>
-                            <td>${inv.multiplier}x</td>
+                            <td><strong>₹${inv.amount.toLocaleString('en-IN')}</strong></td>
+                            <td><span style="background: #00d4ff; color: #0f3460; padding: 4px 10px; border-radius: 4px; font-weight: 600;">${inv.multiplier}x</span></td>
                             <td>₹${inv.dailyReturn.toLocaleString('en-IN')}</td>
                             <td>₹${inv.monthlyReturn.toLocaleString('en-IN')}</td>
                             <td>${inv.date}</td>
-                            <td><button class="remove-btn" onclick="removeInvestment('${id}')">Remove</button></td>
+                            <td><button class="btn btn-danger" onclick="removeInvestment('${id}')" style="padding: 8px 15px; font-size: 0.9em;">🗑️ Remove</button></td>
                         </tr>
                     `;
                 });
             }
 
-            updateAnalytics();
+            loadAnalytics();
         }
 
-        function updateAnalytics() {
+        function loadAnalytics() {
             const user = getCurrentUser();
             const investments = JSON.parse(localStorage.getItem(`investments_${user.email}`)) || {};
             
@@ -170,24 +463,29 @@
                 totalMonthly += inv.monthlyReturn;
             });
 
-            const metricsDiv = document.getElementById('analytics-metrics');
-            metricsDiv.innerHTML = `
-                <div class="metric-card">
-                    <h3>Total Investment</h3>
-                    <p class="value">₹${totalAmount.toLocaleString('en-IN')}</p>
+            document.getElementById('analytics-metrics').innerHTML = `
+                <div class="metric">
+                    <h4>💳 Total Investment</h4>
+                    <div class="value">₹${totalAmount.toLocaleString('en-IN')}</div>
                 </div>
-                <div class="metric-card">
-                    <h3>Daily Return</h3>
-                    <p class="value">₹${totalDaily.toLocaleString('en-IN')}</p>
+                <div class="metric">
+                    <h4>📅 Daily Return</h4>
+                    <div class="value">₹${totalDaily.toLocaleString('en-IN')}</div>
                 </div>
-                <div class="metric-card">
-                    <h3>Monthly Return (16 days)</h3>
-                    <p class="value">₹${totalMonthly.toLocaleString('en-IN')}</p>
+                <div class="metric">
+                    <h4>📊 Monthly Return</h4>
+                    <div class="value">₹${totalMonthly.toLocaleString('en-IN')}</div>
                 </div>
-                <div class="metric-card">
-                    <h3>Return Percentage</h3>
-                    <p class="value">${totalAmount > 0 ? ((totalMonthly / totalAmount) * 100).toFixed(2) : 0}%</p>
+                <div class="metric">
+                    <h4>📈 ROI</h4>
+                    <div class="value">${totalAmount > 0 ? ((totalMonthly / totalAmount) * 100).toFixed(2) : '0'}%</div>
                 </div>
+            `;
+
+            document.getElementById('performance-summary').innerHTML = `
+                <p style="color: #0f3460; font-weight: 600; margin: 15px 0;">💰 Total Investments: <span style="color: #00d4ff; font-size: 1.2em;">₹${totalAmount.toLocaleString('en-IN')}</span></p>
+                <p style="color: #0f3460; font-weight: 600; margin: 15px 0;">📅 Projected Annual Return: <span style="color: #00d4ff; font-size: 1.2em;">₹${(totalMonthly * 12).toLocaleString('en-IN')}</span></p>
+                <p style="color: #0f3460; font-weight: 600; margin: 15px 0;">📈 Average Monthly Gain: <span style="color: #00d4ff; font-size: 1.2em;">${totalAmount > 0 ? ((totalMonthly / totalAmount) * 100).toFixed(2) : '0'}%</span></p>
             `;
         }
 
