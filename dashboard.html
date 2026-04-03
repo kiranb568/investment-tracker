@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>User Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="#investments">Investments</a></li>
+                <li><a href="#analytics">Analytics</a></li>
+                <li><button onclick="adminAccess()">Admin Access</button></li>
+                <li><button onclick="logout()">Logout</button></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="investments">
+            <h2>Investments</h2>
+            <p>Details about your investments will be displayed here.</p>
+        </section>
+        <section id="analytics">
+            <h2>Analytics</h2>
+            <p>Analytics and insights will be shown here.</p>
+        </section>
+    </main>
+    <script>
+        function adminAccess() {
+            // Functionality for admin access
+            alert('Admin access functionality is not yet implemented.');
+        }
+
+        function logout() {
+            // Functionality for logging out
+            alert('You have logged out.');
+        }
+    </script>
+</body>
+</html>
