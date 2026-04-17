@@ -1,0 +1,223 @@
+:root[data-theme="dark"] {
+    --app-bg: #050b16;
+    --app-surface: rgba(10, 18, 36, 0.82);
+    --app-surface-2: rgba(14, 27, 50, 0.9);
+    --app-border: rgba(107, 203, 255, 0.16);
+    --app-text: #f3f7ff;
+    --app-muted: rgba(225, 235, 255, 0.74);
+    --app-accent: #65ecff;
+    --app-accent-2: #9a63ff;
+    --app-shadow: 0 0 44px rgba(101, 236, 255, 0.1);
+    --app-input: rgba(255, 255, 255, 0.04);
+}
+
+:root[data-theme="light"] {
+    --app-bg: #edf4ff;
+    --app-surface: rgba(255, 255, 255, 0.9);
+    --app-surface-2: rgba(244, 249, 255, 0.96);
+    --app-border: rgba(67, 132, 218, 0.16);
+    --app-text: #10213d;
+    --app-muted: rgba(16, 33, 61, 0.7);
+    --app-accent: #2ea9ff;
+    --app-accent-2: #6856ff;
+    --app-shadow: 0 20px 44px rgba(30, 79, 147, 0.08);
+    --app-input: rgba(13, 28, 55, 0.03);
+}
+
+html, body {
+    background: var(--app-bg);
+    color: var(--app-text);
+}
+
+body {
+    background-image:
+        radial-gradient(circle at top left, rgba(101, 236, 255, 0.12), transparent 24%),
+        radial-gradient(circle at top right, rgba(154, 99, 255, 0.12), transparent 20%);
+}
+
+.admin-container,
+.user-container {
+    background: transparent !important;
+}
+
+.sidebar,
+.page-header,
+.card,
+.metric,
+.modal-content,
+.chart-container {
+    background: var(--app-surface) !important;
+    border: 1px solid var(--app-border) !important;
+    box-shadow: var(--app-shadow) !important;
+    color: var(--app-text) !important;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, rgba(11, 23, 43, 0.98) 0%, rgba(7, 16, 31, 0.98) 100%) !important;
+}
+
+:root[data-theme="light"] .sidebar {
+    background: linear-gradient(180deg, rgba(34, 88, 171, 0.94) 0%, rgba(69, 115, 218, 0.94) 100%) !important;
+}
+
+.sidebar-brand,
+.sidebar-menu li {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.sidebar-menu a,
+.top-bar .user-info,
+.page-header p,
+.card p,
+.card label,
+.form-group label,
+.toggle-link,
+.contact-links,
+.sent-label {
+    color: var(--app-muted) !important;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    color: var(--app-text) !important;
+    background: rgba(101, 236, 255, 0.1) !important;
+    border-left-color: var(--app-accent) !important;
+}
+
+.page-header h1,
+.card h3,
+.sidebar-brand h2,
+.metric h4,
+.user-info,
+.form-group label,
+th,
+td,
+p,
+span,
+strong,
+h2 {
+    color: var(--app-text);
+}
+
+.metric {
+    background: linear-gradient(145deg, rgba(10, 18, 36, 0.88), rgba(18, 34, 62, 0.92)) !important;
+}
+
+:root[data-theme="light"] .metric {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(237, 244, 255, 0.96)) !important;
+}
+
+.metric h4 {
+    color: var(--app-accent) !important;
+}
+
+.metric .value {
+    color: var(--app-text) !important;
+}
+
+.form-group input,
+.form-group select,
+input,
+select,
+textarea {
+    background: var(--app-input) !important;
+    color: var(--app-text) !important;
+    border-color: var(--app-border) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--app-muted) !important;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-danger,
+.btn {
+    border: none !important;
+    box-shadow: 0 16px 34px rgba(101, 236, 255, 0.12);
+}
+
+.btn-primary,
+.btn-success {
+    background: linear-gradient(135deg, var(--app-accent), #7d9cff 52%, var(--app-accent-2)) !important;
+    color: #06111f !important;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: var(--app-text) !important;
+    border: 1px solid var(--app-border) !important;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff7d96, #ffb061) !important;
+    color: #1d0a10 !important;
+}
+
+.customers-table thead,
+.investments-table thead {
+    background: linear-gradient(135deg, rgba(13, 30, 58, 0.98), rgba(20, 46, 86, 0.98)) !important;
+}
+
+:root[data-theme="light"] .customers-table thead,
+:root[data-theme="light"] .investments-table thead {
+    background: linear-gradient(135deg, rgba(54, 98, 177, 0.96), rgba(85, 122, 204, 0.96)) !important;
+}
+
+.customers-table td,
+.customers-table th,
+.investments-table td,
+.investments-table th {
+    border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.customers-table tbody tr:hover,
+.investments-table tbody tr:hover {
+    background: rgba(101, 236, 255, 0.06) !important;
+}
+
+.content-section .card,
+#settings-content .card {
+    overflow: hidden;
+}
+
+.settings-grid {
+    display: grid;
+    gap: 14px;
+}
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.settings-value {
+    margin: 6px 0 0 0;
+    color: var(--app-muted);
+}
+
+.settings-toggle {
+    width: 48px;
+    height: 28px;
+    accent-color: var(--app-accent);
+}
+
+.settings-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.settings-form {
+    display: grid;
+    gap: 14px;
+}
