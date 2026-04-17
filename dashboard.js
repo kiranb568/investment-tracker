@@ -7,7 +7,7 @@ const DAYS_IN_MONTH = 16;
 document.addEventListener('DOMContentLoaded', function() {
     const currentUser = sessionStorage.getItem('loggedInUser');
     if (!currentUser) {
-        window.location.href = 'index.html';
+        window.location.href = 'signin.html';
         return;
     }
     document.getElementById('user-info').textContent = `Welcome, ${currentUser}`;
@@ -79,5 +79,5 @@ function calculateAnalytics(investments) {
 
 function logout() {
     sessionStorage.removeItem('loggedInUser');
-    window.location.href = 'index.html';
+    window.location.href = 'signin.html';
 }

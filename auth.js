@@ -307,7 +307,7 @@ async function loginUser(email, password) {
 function logoutUser() {
     sessionStorage.removeItem("currentUser");
     console.log("User logged out.");
-    window.location.href = "index.html";
+    window.location.href = "signin.html";
 }
 
 function getCurrentUser() {
@@ -322,7 +322,7 @@ function isAdmin() {
 
 function requireAuth() {
     if (!getCurrentUser()) {
-        window.location.href = "index.html";
+        window.location.href = "signin.html";
     }
 }
 

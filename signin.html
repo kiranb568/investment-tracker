@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiRi Invest - Sign In</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top, rgba(0, 212, 255, 0.25), transparent 35%),
+                linear-gradient(145deg, #07111f 0%, #0f1d33 45%, #091322 100%);
+        }
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 32px 20px;
+        }
+        .auth-shell {
+            width: min(100%, 960px);
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 24px;
+            align-items: stretch;
+        }
+        .brand-panel,
+        .auth-container {
+            border: 1px solid rgba(148, 222, 255, 0.18);
+            border-radius: 28px;
+            background: rgba(7, 15, 31, 0.72);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+        }
+        .brand-panel {
+            padding: 36px;
+            color: #dff8ff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(55, 235, 255, 0.1);
+            color: #8df6ff;
+            letter-spacing: 0.14em;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+        }
+        .brand-panel h1 {
+            margin: 18px 0 12px;
+            color: #ffffff;
+            font-size: clamp(2.3rem, 4vw, 3.6rem);
+            line-height: 1;
+        }
+        .brand-panel p {
+            color: rgba(223, 248, 255, 0.78);
+            line-height: 1.7;
+            margin: 0;
+        }
+        .signal-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 30px;
+        }
+        .signal-card {
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .signal-card strong {
+            display: block;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+        .signal-card span {
+            color: rgba(223, 248, 255, 0.68);
+            font-size: 0.92rem;
+        }
+        .auth-container {
+            max-width: 450px;
+            width: 100%;
+            padding: 40px 34px;
+            justify-self: end;
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .auth-header h2 {
+            color: #f5fdff;
+            font-size: 2rem;
+            margin: 0 0 10px;
+        }
+        .auth-header p {
+            color: rgba(223, 248, 255, 0.72);
+            font-size: 0.95em;
+            margin: 0;
+        }
+        .home-link {
+            display: inline-flex;
+            margin-top: 20px;
+            color: #8df6ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .form {
+            display: none;
+        }
+        .form.active {
+            display: block;
+        }
+        .form input {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(141, 246, 255, 0.2);
+            border-radius: 14px;
+            font-size: 1em;
+            color: #f5fdff;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .form input::placeholder {
+            color: rgba(223, 248, 255, 0.45);
+        }
+        .form input:focus {
+            outline: none;
+            border-color: rgba(95, 240, 255, 0.8);
+            box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.12);
+        }
+        .form button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4a9dff 0%, #34f2ff 50%, #8d5bff 100%);
+            color: #05111f;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            box-shadow: 0 16px 40px rgba(52, 242, 255, 0.18);
+        }
+        .form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 44px rgba(52, 242, 255, 0.26);
+        }
+        .toggle-link {
+            text-align: center;
+            color: rgba(223, 248, 255, 0.66);
+        }
+        .toggle-link a {
+            color: #8df6ff;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .toggle-link a:hover {
+            color: #c6f9ff;
+        }
+        #message {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: none;
+        }
+        #message.success {
+            color: #87ffbd;
+            background-color: rgba(39, 174, 96, 0.12);
+            border: 1px solid rgba(39, 174, 96, 0.25);
+        }
+        #message.error {
+            color: #ff9fa0;
+            background-color: rgba(231, 76, 60, 0.12);
+            border: 1px solid rgba(231, 76, 60, 0.25);
+        }
+        .config-note {
+            margin-top: 20px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(223, 248, 255, 0.72);
+            font-size: 0.88em;
+            line-height: 1.5;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        @media (max-width: 900px) {
+            .auth-shell {
+                grid-template-columns: 1fr;
+            }
+            .auth-container {
+                justify-self: stretch;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-shell">
+            <section class="brand-panel">
+                <div>
+                    <span class="eyebrow">SiRi Invest Access Layer</span>
+                    <h1>Enter Your Market Command Center</h1>
+                    <p>Securely access portfolio analytics, IPO intelligence, advisory workflows, and your investor support cockpit.</p>
+                </div>
+                <div>
+                    <div class="signal-grid">
+                        <div class="signal-card">
+                            <strong>Live Portfolio Sync</strong>
+                            <span>Review customer investments, return trends, and capital activity.</span>
+                        </div>
+                        <div class="signal-card">
+                            <strong>IPO Radar</strong>
+                            <span>Stay close to upcoming opportunities with guided decision support.</span>
+                        </div>
+                    </div>
+                    <a class="home-link" href="index.html">Back to SiRi Invest home</a>
+                </div>
+            </section>
+
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h2>Sign In</h2>
+                    <p>Access the SiRi Invest dashboard</p>
+                </div>
+
+                <div id="message"></div>
+
+                <div id="login-form" class="form active">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                    <input type="password" id="login-pass" placeholder="Password" required>
+                    <button onclick="handleLogin()">Login</button>
+                    <p class="toggle-link">Don't have an account? <a onclick="toggleForms()">Register here</a></p>
+                </div>
+
+                <div id="register-form" class="form">
+                    <input type="text" id="reg-name" placeholder="Full Name" required>
+                    <input type="email" id="reg-email" placeholder="Email" required>
+                    <input type="password" id="reg-pass" placeholder="Password (min 6 chars)" required>
+                    <input type="password" id="reg-pass-confirm" placeholder="Confirm Password" required>
+                    <button onclick="handleRegister()">Register</button>
+                    <p class="toggle-link">Already have an account? <a onclick="toggleForms()">Login here</a></p>
+                </div>
+
+                <div id="config-note" class="config-note" style="display: none;">
+                    Supabase configuration is missing or still using placeholder values.
+                    Update this app's public config before publishing.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script>
+        initializeSupabaseApp();
+
+        if (window.hasSupabasePlaceholders) {
+            document.getElementById("config-note").style.display = "block";
+        }
+
+        function toggleForms() {
+            document.getElementById("login-form").classList.toggle("active");
+            document.getElementById("register-form").classList.toggle("active");
+            document.getElementById("message").style.display = "none";
+            clearForms();
+        }
+
+        function clearForms() {
+            document.getElementById("login-email").value = "";
+            document.getElementById("login-pass").value = "";
+            document.getElementById("reg-name").value = "";
+            document.getElementById("reg-email").value = "";
+            document.getElementById("reg-pass").value = "";
+            document.getElementById("reg-pass-confirm").value = "";
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-pass").value;
+
+            if (!email || !password) {
+                showMessage("Please enter email and password.", "error");
+                return;
+            }
+
+            if (!email.includes("@")) {
+                showMessage("Please enter a valid email.", "error");
+                return;
+            }
+
+            if (await loginUser(email, password)) {
+                showMessage("Login successful. Redirecting...", "success");
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1200);
+            }
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById("reg-name").value.trim();
+            const email = document.getElementById("reg-email").value.trim();
+            const password = document.getElementById("reg-pass").value;
+            const confirmPassword = document.getElementById("reg-pass-confirm").value;
+
+            if (!name || !email || !password || !confirmPassword) {
+                showMessage("Please fill all fields.", "error");
+                return;
+            }
+
+            if (!email.includes("@")) {
+                showMessage("Please enter a valid email.", "error");
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage("Password must be at least 6 characters.", "error");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage("Passwords do not match.", "error");
+                return;
+            }
+
+            if (await registerUser(name, email, password)) {
+                showMessage("Registration successful. Please log in.", "success");
+                setTimeout(() => {
+                    clearForms();
+                    toggleForms();
+                }, 1200);
+            }
+        }
+    </script>
+</body>
+</html>

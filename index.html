@@ -3,276 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investment Tracker - Login/Register</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>SiRi Invest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        .auth-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .auth-container {
-            max-width: 450px;
-            width: 100%;
-            padding: 40px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-        .auth-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .auth-header h1 {
-            color: #0f3460;
-            font-size: 2.2em;
-            margin-bottom: 10px;
-        }
-        .auth-header p {
-            color: #666;
-            font-size: 0.95em;
-        }
-        .form {
-            display: none;
-        }
-        .form.active {
-            display: block;
-        }
-        .form input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #b2ebf2;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-        .form input:focus {
-            outline: none;
-            border-color: #00d4ff;
-            box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
-        }
-        .form button {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-bottom: 15px;
-        }
-        .form button:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        .toggle-link {
-            text-align: center;
-            color: #666;
-        }
-        .toggle-link a {
-            color: #00d4ff;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .toggle-link a:hover {
-            color: #0097a7;
-            text-decoration: underline;
-        }
-        #message {
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            font-weight: 600;
-            display: none;
-        }
-        #message.success {
-            color: #27ae60;
-            background-color: #d5f4e6;
-            border-left: 4px solid #27ae60;
-        }
-        #message.error {
-            color: #e74c3c;
-            background-color: #fadbd8;
-            border-left: 4px solid #e74c3c;
-        }
-        .config-note {
-            margin-top: 20px;
-            padding: 12px 14px;
-            border-radius: 10px;
-            background: #f3f9ff;
-            color: #36506c;
-            font-size: 0.88em;
-            line-height: 1.5;
-        }
+        :root { --bg:#050b16; --panel:rgba(11,20,38,.72); --line:rgba(118,201,255,.16); --text:#f4f8ff; --muted:rgba(226,235,255,.72); --cyan:#63ecff; --violet:#9a63ff; --green:#71ffb5; --red:#ff7d96; }
+        * { box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body { margin:0; color:var(--text); font-family:"Space Grotesk",sans-serif; background:radial-gradient(circle at top left, rgba(99,236,255,.18), transparent 28%),radial-gradient(circle at top right, rgba(154,99,255,.18), transparent 24%),linear-gradient(180deg,#030813 0%,#081223 55%,#030813 100%); }
+        body::before { content:""; position:fixed; inset:0; pointer-events:none; background-image:linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size:64px 64px; mask-image:radial-gradient(circle at center, black 42%, transparent 100%); }
+        a { color:inherit; text-decoration:none; }
+        .shell { width:min(1160px, calc(100% - 48px)); margin:0 auto; }
+        .topbar { position:sticky; top:0; z-index:20; background:rgba(5,11,22,.72); backdrop-filter:blur(18px); border-bottom:1px solid rgba(255,255,255,.06); }
+        .topbar .shell, .hero, .head, .footer-wrap { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+        .topbar .shell { padding:18px 0; }
+        .brand { display:flex; align-items:center; gap:12px; font-family:"Exo 2",sans-serif; }
+        .mark { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg, rgba(99,236,255,.32), rgba(154,99,255,.18)); border:1px solid rgba(99,236,255,.28); box-shadow:0 0 36px rgba(99,236,255,.18); font-weight:800; }
+        .nav { display:flex; align-items:center; gap:20px; color:var(--muted); }
+        .nav a:hover { color:var(--text); }
+        .signin, .primary, .secondary { display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 22px; border-radius:18px; font-weight:700; transition:.25s ease; }
+        .signin, .primary { background:linear-gradient(135deg, var(--cyan), #7d9cff 52%, var(--violet)); color:#04111f; box-shadow:0 16px 36px rgba(99,236,255,.18); }
+        .secondary { border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); }
+        .signin:hover, .primary:hover, .secondary:hover, .panel:hover, .service:hover, .ipo:hover { transform:translateY(-4px); }
+        .hero { padding:72px 0 38px; align-items:stretch; }
+        .copy, .visual, .panel, .service, .ipo, footer { border:1px solid var(--line); background:var(--panel); backdrop-filter:blur(16px); box-shadow:0 0 42px rgba(99,236,255,.08); }
+        .copy { flex:1.05; background:none; border:none; box-shadow:none; }
+        .tag { display:inline-flex; padding:9px 15px; border-radius:999px; background:rgba(99,236,255,.1); border:1px solid rgba(99,236,255,.18); color:#9af7ff; font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; }
+        h1, h2, h3 { font-family:"Exo 2",sans-serif; margin:0; }
+        h1 { margin-top:18px; font-size:clamp(3rem, 6vw, 5.2rem); line-height:.94; letter-spacing:-.04em; }
+        .copy p, .head p, .panel p, .service p, .ipo p, .contact p { color:var(--muted); line-height:1.8; }
+        .actions { display:flex; gap:14px; flex-wrap:wrap; margin:28px 0; }
+        .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+        .stat, .sent-stat { padding:18px; border-radius:20px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); }
+        .stat strong, .sent-stat strong { display:block; margin-bottom:8px; font-size:1.3rem; }
+        .visual { flex:.95; border-radius:32px; padding:28px; position:relative; overflow:hidden; }
+        .visual::before, .visual::after { content:""; position:absolute; border-radius:50%; filter:blur(18px); }
+        .visual::before { width:180px; height:180px; background:rgba(99,236,255,.18); top:-36px; right:-16px; }
+        .visual::after { width:150px; height:150px; background:rgba(154,99,255,.18); bottom:-28px; left:-20px; }
+        .sent-box { position:relative; z-index:1; padding:22px; border-radius:24px; background:rgba(10,18,34,.82); border:1px solid rgba(255,255,255,.08); }
+        .sent-top, .sent-core { display:flex; justify-content:space-between; gap:16px; align-items:center; }
+        .sent-label { color:var(--muted); font-size:.74rem; letter-spacing:.14em; text-transform:uppercase; }
+        .sent-badge { min-width:150px; text-align:center; padding:10px 14px; border-radius:999px; font-weight:700; border:1px solid rgba(255,255,255,.12); }
+        .sent-badge.bullish { color:#b9ffd8; background:rgba(113,255,181,.1); }
+        .sent-badge.bearish { color:#ffb8c5; background:rgba(255,125,150,.1); }
+        .icon { width:148px; height:148px; border-radius:28px; display:grid; place-items:center; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); }
+        .icon svg { width:88px; height:88px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; filter:drop-shadow(0 0 8px currentColor); }
+        .sent-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px; }
+        .sent-stat small { display:block; margin-bottom:8px; color:var(--muted); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; }
+        .ticker { margin-top:22px; overflow:hidden; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); }
+        .ticker-track { display:flex; gap:34px; width:max-content; padding:14px 18px; animation:ticker 18s linear infinite; color:rgba(226,235,255,.82); font-size:.76rem; letter-spacing:.16em; text-transform:uppercase; }
+        @keyframes ticker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+        section { padding:28px 0; }
+        .head { align-items:end; margin-bottom:22px; }
+        .head h2 { font-size:clamp(2rem, 3.8vw, 3rem); }
+        .about, .services, .ipos, .contact-grid { display:grid; gap:18px; }
+        .about { grid-template-columns:.95fr 1.05fr; }
+        .about-right, .services, .ipos { grid-template-columns:repeat(3,1fr); }
+        .panel, .service, .ipo { padding:24px; border-radius:24px; transition:.25s ease; }
+        .panel span, .service span, .ipo span { display:inline-flex; padding:7px 12px; border-radius:999px; background:rgba(99,236,255,.08); color:#9af7ff; font-size:.74rem; letter-spacing:.12em; text-transform:uppercase; }
+        .panel h3, .service h3, .ipo h3 { margin:14px 0 10px; font-size:1.35rem; }
+        .service-icon { width:50px; height:50px; border-radius:18px; display:grid; place-items:center; background:linear-gradient(135deg, rgba(99,236,255,.16), rgba(154,99,255,.08)); border:1px solid rgba(99,236,255,.18); margin-bottom:16px; }
+        .service-icon svg { width:22px; height:22px; fill:none; stroke:#abfaff; stroke-width:2; }
+        .ipo small { color:#cde8ff; display:block; margin-top:16px; }
+        footer { margin-top:28px; padding:30px 0 24px; border-radius:30px 30px 0 0; background:linear-gradient(180deg, rgba(11,20,38,.92), rgba(5,11,22,.96)); }
+        .line { height:1px; margin-bottom:26px; background:linear-gradient(90deg, transparent, rgba(99,236,255,.62), transparent); }
+        .footer-wrap { align-items:flex-start; }
+        .contact-links { display:grid; gap:12px; color:var(--muted); }
+        .contact-links a:hover { color:var(--text); }
+        .foot-actions { display:flex; gap:14px; flex-wrap:wrap; margin-top:18px; }
+        .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+        @media (max-width: 1080px) { .hero, .about, .about-right, .services, .ipos, .footer-wrap { display:grid; grid-template-columns:1fr; } .head, .topbar .shell { flex-direction:column; align-items:flex-start; } }
+        @media (max-width: 760px) { .shell { width:min(100% - 28px, 1160px); } .nav { display:none; } .stats, .sent-stats { grid-template-columns:1fr; } .sent-core { flex-direction:column; align-items:flex-start; } }
     </style>
 </head>
 <body>
-    <div class="auth-wrapper">
-        <div class="auth-container">
-            <div class="auth-header">
-                <h1>Investment Tracker</h1>
-                <p>Track and manage your investments</p>
+    <header class="topbar">
+        <div class="shell">
+            <a class="brand" href="#top"><span class="mark">SI</span><div><strong>SiRi Invest</strong><div style="color:var(--muted);font-size:.82rem;">futuristic investment intelligence</div></div></a>
+            <nav class="nav">
+                <a href="#about">About</a>
+                <a href="#ipos">IPOs</a>
+                <a href="#services">Services</a>
+                <a href="#contact">Contact</a>
+                <a class="signin" href="signin.html">Sign In</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="top">
+        <section>
+            <div class="shell hero">
+                <div class="copy reveal">
+                    <span class="tag">Neural Market Interface</span>
+                    <h1>Future-facing intelligence for investors and advisors.</h1>
+                    <p>SiRi Invest combines sentiment visibility, IPO awareness, portfolio analytics, and hands-on support into one immersive front door. Start with the market pulse, learn what makes the platform different, and step directly into the live sign-in experience.</p>
+                    <div class="actions">
+                        <a class="primary" href="signin.html">Go To Sign In</a>
+                        <a class="secondary" href="#services">Explore Services</a>
+                    </div>
+                    <div class="stats">
+                        <div class="stat"><strong>Advisory-first</strong><span>Built to brief investors with clarity and confidence.</span></div>
+                        <div class="stat"><strong>IPO-ready</strong><span>Track upcoming mainboard opportunities with a cleaner workflow.</span></div>
+                        <div class="stat"><strong>Support-connected</strong><span>Direct paths for help, escalation, and contact routing.</span></div>
+                    </div>
+                </div>
+
+                <div class="visual reveal">
+                    <div class="sent-box">
+                        <div class="sent-top">
+                            <div>
+                                <div class="sent-label">Bull / Bear Indicator</div>
+                                <h2 style="margin-top:8px;">Market Pulse Engine</h2>
+                            </div>
+                            <div id="sent-badge" class="sent-badge bullish">Bullish Bias</div>
+                        </div>
+                        <div class="sent-core" style="margin-top:20px;">
+                            <div>
+                                <h2 id="sent-title" style="font-size:2rem; margin-bottom:12px;">Momentum expanding through quality demand.</h2>
+                                <p id="sent-text">SiRi Invest highlights constructive sentiment with a holographic bull bias when demand broadens and participation deepens.</p>
+                            </div>
+                            <div id="sent-icon" class="icon" style="color:var(--green);">
+                                <svg viewBox="0 0 64 64"><path d="M10 42c6-12 12-18 22-18 7 0 13 3 22 11"></path><path d="M14 44h8l6-8 8 4 8-12 6 4"></path><path d="M46 22h8v8"></path></svg>
+                            </div>
+                        </div>
+                        <div class="sent-stats">
+                            <div class="sent-stat"><small>Bias Strength</small><strong id="sent-strength">72%</strong></div>
+                            <div class="sent-stat"><small>Risk Tone</small><strong id="sent-risk">Measured</strong></div>
+                            <div class="sent-stat"><small>IPO Window</small><strong id="sent-window">Open</strong></div>
+                        </div>
+                    </div>
+                    <div class="ticker"><div class="ticker-track"><span>Mainboard IPO Radar</span><span>Support Matrix Online</span><span>Sentiment Engine Cycling</span><span>Analytics Grid Active</span><span>Mainboard IPO Radar</span><span>Support Matrix Online</span><span>Sentiment Engine Cycling</span><span>Analytics Grid Active</span></div></div>
+                </div>
             </div>
+        </section>
 
-            <div id="message"></div>
-
-            <div id="login-form" class="form active">
-                <h2 style="text-align: center; color: #0f3460; margin-bottom: 25px;">Login</h2>
-                <input type="email" id="login-email" placeholder="Email" required>
-                <input type="password" id="login-pass" placeholder="Password" required>
-                <button onclick="handleLogin()">Login</button>
-                <p class="toggle-link">Don't have an account? <a onclick="toggleForms()">Register here</a></p>
+        <section id="about">
+            <div class="shell">
+                <div class="head reveal"><div><span class="tag">About SiRi Invest</span><h2>Mission, vision, and a sharper investor workflow.</h2></div><p>We designed SiRi Invest to make fast-moving market information easier to read, easier to explain, and easier to act on.</p></div>
+                <div class="about">
+                    <div class="panel reveal"><span>Mission</span><h3>Upgrade investor confidence.</h3><p>Turn complex market moves into concise, client-ready context with a calm, modern product experience.</p></div>
+                    <div class="about-right">
+                        <div class="panel reveal"><span>Vision</span><h3>Build a modern investor operating system.</h3><p>Connect IPO readiness, portfolio visibility, advisory insight, and support into one clear digital flow.</p></div>
+                        <div class="panel reveal"><span>Value</span><h3>Signal over noise.</h3><p>Futuristic visuals, modular dashboards, and guided actions help teams respond faster without losing clarity.</p></div>
+                        <div class="panel reveal"><span>Experience</span><h3>Designed for decision speed.</h3><p>Use motion, glow, hierarchy, and crisp typography to surface what matters immediately.</p></div>
+                    </div>
+                </div>
             </div>
+        </section>
 
-            <div id="register-form" class="form">
-                <h2 style="text-align: center; color: #0f3460; margin-bottom: 25px;">Register</h2>
-                <input type="text" id="reg-name" placeholder="Full Name" required>
-                <input type="email" id="reg-email" placeholder="Email" required>
-                <input type="password" id="reg-pass" placeholder="Password (min 6 chars)" required>
-                <input type="password" id="reg-pass-confirm" placeholder="Confirm Password" required>
-                <button onclick="handleRegister()">Register</button>
-                <p class="toggle-link">Already have an account? <a onclick="toggleForms()">Login here</a></p>
+        <section id="ipos">
+            <div class="shell">
+                <div class="head reveal"><div><span class="tag">Upcoming Mainboard IPOs</span><h2>Interactive IPO watchlist cards.</h2></div><p>Use these launch points to move from awareness to deeper support quickly.</p></div>
+                <div class="ipos">
+                    <a class="ipo reveal" href="support.html#ipo-desk"><span>Mainboard Watch</span><h3>InCred Holdings</h3><p>Use the IPO desk to review demand framing, narrative positioning, and investor-prep notes.</p><small>Open IPO detail support path</small></a>
+                    <a class="ipo reveal" href="support.html#ipo-desk"><span>Mainboard Watch</span><h3>Hero FinCorp</h3><p>Jump into a cleaner view of sector context, potential investor questions, and advisory talking points.</p><small>Open IPO detail support path</small></a>
+                    <a class="ipo reveal" href="support.html#ipo-desk"><span>Mainboard Watch</span><h3>Juniper Green Energy</h3><p>Explore energy-transition positioning, sentiment framing, and support-led investor guidance.</p><small>Open IPO detail support path</small></a>
+                </div>
             </div>
+        </section>
 
-            <div id="config-note" class="config-note" style="display: none;">
-                Supabase configuration is missing or still using placeholder values.
-                Update this app's public config before publishing.
+        <section id="services">
+            <div class="shell">
+                <div class="head reveal"><div><span class="tag">Services & Support</span><h2>Modular blocks for advisory, analytics, and help.</h2></div><p>Every block is built to feel like a control surface: clear, futuristic, and easy to navigate.</p></div>
+                <div class="services">
+                    <div class="service reveal"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 19h16"></path><path d="M7 15l3-3 3 2 4-5"></path><path d="M17 10h2v2"></path></svg></div><span>Advisory</span><h3>Investment Advisory</h3><p>Translate market shifts into structured investor communication and guidance.</p></div>
+                    <div class="service reveal"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 20V9"></path><path d="M10 20V4"></path><path d="M16 20v-8"></path><path d="M22 20v-5"></path></svg></div><span>Analytics</span><h3>Portfolio Analytics</h3><p>Expose return trends, performance drivers, and concentration snapshots with clarity.</p></div>
+                    <a class="service reveal" href="support.html"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M6 18h8"></path><path d="M6 14h12"></path><path d="M6 10h12"></path><path d="M6 6h12"></path></svg></div><span>Support</span><h3>Help & Contact Desk</h3><p>Open the support page for contact channels, assistance, and the support form link.</p></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contact">
+        <div class="shell">
+            <div class="line"></div>
+            <div class="footer-wrap reveal">
+                <div class="contact">
+                    <span class="tag">Contact Us</span>
+                    <h2 style="margin:18px 0 12px;">Stay connected to the SiRi Invest support grid.</h2>
+                    <p>Email, call, or open the support form route for onboarding, investor questions, and platform help.</p>
+                </div>
+                <div>
+                    <div class="contact-links">
+                        <a href="mailto:support@siriinvest.com">support@siriinvest.com</a>
+                        <a href="tel:+919876543210">+91 98765 43210</a>
+                        <a href="support.html#help-form">Open support form</a>
+                    </div>
+                    <div class="foot-actions">
+                        <a class="primary" href="signin.html">Sign In</a>
+                        <a class="secondary" href="support.html">Visit Help Page</a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const runtimeConfig = window.__APP_CONFIG__ || {};
-        const fallbackConfig = {
-            url: "https://wvdqaepetsifprpsdiwf.supabase.co",
-            anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2ZHFhZXBldHNpZnBycHNkaXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjY5NTMsImV4cCI6MjA5MDgwMjk1M30.V3vKi8dl6pRDwKwiK1mmD_YYuAVSAecOJ4eTTOXo4Qk",
-            storageBucket: "user-files"
-        };
-
-        window.supabaseAppConfig = {
-            url: runtimeConfig.supabaseUrl || window.NEXT_PUBLIC_SUPABASE_URL || fallbackConfig.url,
-            anonKey: runtimeConfig.supabaseAnonKey || window.NEXT_PUBLIC_SUPABASE_ANON_KEY || fallbackConfig.anonKey,
-            storageBucket: runtimeConfig.supabaseStorageBucket || window.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || fallbackConfig.storageBucket
-        };
-
-        window.hasSupabasePlaceholders = Object.values(window.supabaseAppConfig).some(value => {
-            if (typeof value !== "string") {
-                return true;
-            }
-
-            const normalizedValue = value.trim();
-            return !normalizedValue || normalizedValue.includes("YOUR_");
-        });
-
-        if (window.hasSupabasePlaceholders) {
-            document.getElementById("config-note").style.display = "block";
+        const sentiments = [
+            { mode:"bullish", badge:"Bullish Bias", title:"Momentum expanding through quality demand.", text:"SiRi Invest highlights constructive sentiment with a holographic bull bias when demand broadens and participation deepens.", strength:"72%", risk:"Measured", windowState:"Open", color:"#71ffb5", icon:'<svg viewBox="0 0 64 64"><path d="M10 42c6-12 12-18 22-18 7 0 13 3 22 11"></path><path d="M14 44h8l6-8 8 4 8-12 6 4"></path><path d="M46 22h8v8"></path></svg>' },
+            { mode:"bearish", badge:"Bearish Guard", title:"Defensive positioning taking priority.", text:"When risk appetite cools, the interface pivots toward discipline, preservation, and tighter opportunity filtering.", strength:"58%", risk:"Elevated", windowState:"Selective", color:"#ff7d96", icon:'<svg viewBox="0 0 64 64"><path d="M12 24c8 3 14 9 18 18"></path><path d="M12 40c7-10 16-16 30-18"></path><path d="M46 22l8-2-2 8"></path><path d="M26 42h18"></path></svg>' }
+        ];
+        let currentSentiment = 0;
+        function renderSentiment() {
+            const s = sentiments[currentSentiment];
+            document.getElementById("sent-badge").className = `sent-badge ${s.mode}`;
+            document.getElementById("sent-badge").textContent = s.badge;
+            document.getElementById("sent-title").textContent = s.title;
+            document.getElementById("sent-text").textContent = s.text;
+            document.getElementById("sent-strength").textContent = s.strength;
+            document.getElementById("sent-risk").textContent = s.risk;
+            document.getElementById("sent-window").textContent = s.windowState;
+            const icon = document.getElementById("sent-icon");
+            icon.style.color = s.color;
+            icon.innerHTML = s.icon;
         }
-
-        if (!window.hasSupabasePlaceholders) {
-            window.supabaseClient = window.supabase.createClient(
-                window.supabaseAppConfig.url,
-                window.supabaseAppConfig.anonKey
-            );
-        }
-    </script>
-    <script src="auth.js"></script>
-    <script>
-        function toggleForms() {
-            document.getElementById("login-form").classList.toggle("active");
-            document.getElementById("register-form").classList.toggle("active");
-            document.getElementById("message").style.display = "none";
-            clearForms();
-        }
-
-        function clearForms() {
-            document.getElementById("login-email").value = "";
-            document.getElementById("login-pass").value = "";
-            document.getElementById("reg-name").value = "";
-            document.getElementById("reg-email").value = "";
-            document.getElementById("reg-pass").value = "";
-            document.getElementById("reg-pass-confirm").value = "";
-        }
-
-        async function handleLogin() {
-            const email = document.getElementById("login-email").value.trim();
-            const password = document.getElementById("login-pass").value;
-
-            if (!email || !password) {
-                showMessage("Please enter email and password.", "error");
-                return;
-            }
-
-            if (!email.includes("@")) {
-                showMessage("Please enter a valid email.", "error");
-                return;
-            }
-
-            if (await loginUser(email, password)) {
-                showMessage("Login successful. Redirecting...", "success");
-                setTimeout(() => {
-                    window.location.href = "dashboard.html";
-                }, 1500);
-            }
-        }
-
-        async function handleRegister() {
-            const name = document.getElementById("reg-name").value.trim();
-            const email = document.getElementById("reg-email").value.trim();
-            const password = document.getElementById("reg-pass").value;
-            const confirmPassword = document.getElementById("reg-pass-confirm").value;
-
-            if (!name || !email || !password || !confirmPassword) {
-                showMessage("Please fill all fields.", "error");
-                return;
-            }
-
-            if (!email.includes("@")) {
-                showMessage("Please enter a valid email.", "error");
-                return;
-            }
-
-            if (password.length < 6) {
-                showMessage("Password must be at least 6 characters.", "error");
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showMessage("Passwords do not match.", "error");
-                return;
-            }
-
-            if (await registerUser(name, email, password)) {
-                showMessage("Registration successful. Please log in.", "success");
-                setTimeout(() => {
-                    clearForms();
-                    toggleForms();
-                }, 1500);
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("login-pass").addEventListener("keypress", event => {
-                if (event.key === "Enter") {
-                    handleLogin();
-                }
-            });
-
-            document.getElementById("reg-pass-confirm").addEventListener("keypress", event => {
-                if (event.key === "Enter") {
-                    handleRegister();
-                }
-            });
-
-            initializeDatabase();
-        });
+        setInterval(() => { currentSentiment = (currentSentiment + 1) % sentiments.length; renderSentiment(); }, 4200);
+        renderSentiment();
+        const observer = new IntersectionObserver((entries) => { entries.forEach((entry) => { if (entry.isIntersecting) entry.target.classList.add("visible"); }); }, { threshold: .16 });
+        document.querySelectorAll(".reveal").forEach((node) => observer.observe(node));
     </script>
 </body>
 </html>
