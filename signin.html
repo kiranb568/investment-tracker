@@ -7,12 +7,28 @@
     <script src="ui-preferences.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
+        :root {
+            --page-grad-1: radial-gradient(circle at top, rgba(0, 212, 255, 0.25), transparent 35%);
+            --page-grad-2: linear-gradient(145deg, #07111f 0%, #0f1d33 45%, #091322 100%);
+            --panel-bg: rgba(7, 15, 31, 0.72);
+            --panel-border: rgba(148, 222, 255, 0.18);
+            --text-main: #f5fdff;
+            --text-muted: rgba(223, 248, 255, 0.72);
+            --field-bg: rgba(255, 255, 255, 0.05);
+        }
+        :root[data-theme="light"] {
+            --page-grad-1: radial-gradient(circle at top, rgba(37, 169, 255, 0.18), transparent 35%);
+            --page-grad-2: linear-gradient(145deg, #f8fbff 0%, #edf4ff 45%, #e6eefb 100%);
+            --panel-bg: rgba(255, 255, 255, 0.82);
+            --panel-border: rgba(64, 132, 219, 0.14);
+            --text-main: #112240;
+            --text-muted: rgba(17, 34, 64, 0.68);
+            --field-bg: rgba(13, 30, 58, 0.04);
+        }
         body {
             margin: 0;
             min-height: 100vh;
-            background:
-                radial-gradient(circle at top, rgba(0, 212, 255, 0.25), transparent 35%),
-                linear-gradient(145deg, #07111f 0%, #0f1d33 45%, #091322 100%);
+            background: var(--page-grad-1), var(--page-grad-2);
         }
         .auth-wrapper {
             display: flex;
@@ -30,15 +46,15 @@
         }
         .brand-panel,
         .auth-container {
-            border: 1px solid rgba(148, 222, 255, 0.18);
+            border: 1px solid var(--panel-border);
             border-radius: 28px;
-            background: rgba(7, 15, 31, 0.72);
+            background: var(--panel-bg);
             backdrop-filter: blur(18px);
             box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
         }
         .brand-panel {
             padding: 36px;
-            color: #dff8ff;
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -57,12 +73,12 @@
         }
         .brand-panel h1 {
             margin: 18px 0 12px;
-            color: #ffffff;
+            color: var(--text-main);
             font-size: clamp(2.3rem, 4vw, 3.6rem);
             line-height: 1;
         }
         .brand-panel p {
-            color: rgba(223, 248, 255, 0.78);
+            color: var(--text-muted);
             line-height: 1.7;
             margin: 0;
         }
@@ -98,12 +114,12 @@
             margin-bottom: 30px;
         }
         .auth-header h2 {
-            color: #f5fdff;
+            color: var(--text-main);
             font-size: 2rem;
             margin: 0 0 10px;
         }
         .auth-header p {
-            color: rgba(223, 248, 255, 0.72);
+            color: var(--text-muted);
             font-size: 0.95em;
             margin: 0;
         }
@@ -124,16 +140,16 @@
             width: 100%;
             padding: 14px 16px;
             margin-bottom: 15px;
-            border: 1px solid rgba(141, 246, 255, 0.2);
+            border: 1px solid var(--panel-border);
             border-radius: 14px;
             font-size: 1em;
-            color: #f5fdff;
-            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            background: var(--field-bg);
             transition: all 0.3s ease;
             box-sizing: border-box;
         }
         .form input::placeholder {
-            color: rgba(223, 248, 255, 0.45);
+            color: var(--text-muted);
         }
         .form input:focus {
             outline: none;
@@ -160,7 +176,7 @@
         }
         .toggle-link {
             text-align: center;
-            color: rgba(223, 248, 255, 0.66);
+            color: var(--text-muted);
         }
         .toggle-link a {
             color: #8df6ff;

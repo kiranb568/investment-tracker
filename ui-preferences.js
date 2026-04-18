@@ -50,6 +50,10 @@ function applyContactBindings(root = document) {
         }
         node.textContent = contactDetails.phone;
     });
+
+    root.querySelectorAll("[data-support-form]").forEach((form) => {
+        form.action = `mailto:${contactDetails.email}`;
+    });
 }
 
 function getPreferredTheme() {
