@@ -3,7 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiRi Invest - Sign In</title>
+    <title>SvarnaFiNexa Sign In | Secure Access</title>
+    <meta name="description" content="Securely sign in to SvarnaFiNexa for portfolio analytics, customer tracking, advisory workflows, and investor support tools.">
+    <meta name="author" content="SvarnaFiNexa">
+    <meta name="application-name" content="SvarnaFiNexa">
+    <meta name="apple-mobile-web-app-title" content="SvarnaFiNexa">
+    <meta name="theme-color" content="#091322">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://svarnafinexa.in/signin">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SvarnaFiNexa Sign In | Secure Access">
+    <meta property="og:description" content="Access the SvarnaFiNexa dashboard for analytics, investor workflows, and support operations.">
+    <meta property="og:url" content="https://svarnafinexa.in/signin">
+    <meta property="og:site_name" content="SvarnaFiNexa">
+    <meta property="og:image" content="https://svarnafinexa.in/favicon.svg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SvarnaFiNexa Sign In | Secure Access">
+    <meta name="twitter:description" content="Secure access to the SvarnaFiNexa investment workflow dashboard.">
+    <meta name="twitter:image" content="https://svarnafinexa.in/favicon.svg">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="site.webmanifest">
     <script src="ui-preferences.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -214,6 +233,19 @@
             line-height: 1.5;
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
+        .auth-meta {
+            margin-top: 18px;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.7;
+        }
+        .auth-meta a {
+            color: #8df6ff;
+            text-decoration: none;
+        }
+        .auth-meta a:hover {
+            color: #c6f9ff;
+        }
         @media (max-width: 900px) {
             .auth-shell {
                 grid-template-columns: 1fr;
@@ -230,7 +262,7 @@
         <div class="auth-shell">
             <section class="brand-panel">
                 <div>
-                    <span class="eyebrow">SiRi Invest Access Layer</span>
+                    <span class="eyebrow">SvarnaFiNexa Access Layer</span>
                     <h1>Enter Your Market Command Center</h1>
                     <p>Securely access portfolio analytics, IPO intelligence, advisory workflows, and your investor support cockpit.</p>
                 </div>
@@ -245,14 +277,14 @@
                             <span>Stay close to upcoming opportunities with guided decision support.</span>
                         </div>
                     </div>
-                    <a class="home-link" href="index.html">Back to SiRi Invest home</a>
+                    <a class="home-link" href="index.html">Back to SvarnaFiNexa home</a>
                 </div>
             </section>
 
             <div class="auth-container">
                 <div class="auth-header">
                     <h2>Sign In</h2>
-                    <p>Access the SiRi Invest dashboard</p>
+                    <p>Access the SvarnaFiNexa dashboard</p>
                 </div>
 
                 <div id="message"></div>
@@ -276,6 +308,10 @@
                 <div id="config-note" class="config-note" style="display: none;">
                     Supabase configuration is missing or still using placeholder values.
                     Update this app's public config before publishing.
+                </div>
+                <div class="auth-meta">
+                    Need account or access support? Contact <a data-contact-email href="mailto:support@svarnafinexa.in">support@svarnafinexa.in</a>.
+                    By continuing, you agree to the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.
                 </div>
             </div>
         </div>

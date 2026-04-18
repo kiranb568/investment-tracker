@@ -1,7 +1,7 @@
-const APP_CONTACT_STORAGE_KEY = "siriInvestContact";
-const APP_THEME_STORAGE_KEY = "siriInvestTheme";
+const APP_CONTACT_STORAGE_KEY = "svarnafinexaContact";
+const APP_THEME_STORAGE_KEY = "svarnafinexaTheme";
 const DEFAULT_APP_CONTACT = {
-    email: "support@siriinvest.com",
+    email: "support@svarnafinexa.in",
     phone: "+91 98765 43210"
 };
 

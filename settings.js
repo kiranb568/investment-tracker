@@ -39,7 +39,7 @@ async function loadUserSettings() {
 
     const contactDetails = typeof getAppContactDetails === "function"
         ? getAppContactDetails()
-        : { email: "support@siriinvest.com", phone: "+91 98765 43210" };
+        : { email: "support@svarnafinexa.in", phone: "+91 98765 43210" };
 
     const isDarkTheme = typeof getPreferredTheme === "function"
         ? getPreferredTheme() === "dark"
