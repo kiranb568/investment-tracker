@@ -29,29 +29,30 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg:#050b16; --panel:rgba(11,20,38,.72); --line:rgba(118,201,255,.16); --text:#f4f8ff; --muted:rgba(226,235,255,.72); --cyan:#63ecff; --violet:#9a63ff; --green:#71ffb5; --red:#ff7d96; --bg-grad-1:radial-gradient(circle at top left, rgba(99,236,255,.18), transparent 28%); --bg-grad-2:radial-gradient(circle at top right, rgba(154,99,255,.18), transparent 24%); --bg-grad-3:linear-gradient(180deg,#030813 0%,#081223 55%,#030813 100%); }
-        :root[data-theme="light"] { --bg:#edf4ff; --panel:rgba(255,255,255,.78); --line:rgba(64,132,219,.14); --text:#0f2240; --muted:rgba(15,34,64,.7); --cyan:#25a9ff; --violet:#6858ff; --green:#1ea15f; --red:#e35d77; --bg-grad-1:radial-gradient(circle at top left, rgba(37,169,255,.16), transparent 28%); --bg-grad-2:radial-gradient(circle at top right, rgba(104,88,255,.14), transparent 24%); --bg-grad-3:linear-gradient(180deg,#f7fbff 0%,#edf4ff 55%,#e7eefb 100%); }
+        :root { --bg:#050b16; --panel:rgba(11,20,38,.72); --line:rgba(118,201,255,.16); --text:#f4f8ff; --muted:rgba(226,235,255,.72); --cyan:#63ecff; --violet:#9a63ff; --green:#71ffb5; --red:#ff7[...]
+        :root[data-theme="light"] { --bg:#edf4ff; --panel:rgba(255,255,255,.78); --line:rgba(64,132,219,.14); --text:#0f2240; --muted:rgba(15,34,64,.7); --cyan:#25a9ff; --violet:#6858ff; --green:#[...]
         * { box-sizing:border-box; }
         html { scroll-behavior:smooth; }
         body { margin:0; color:var(--text); font-family:"Space Grotesk",sans-serif; background:var(--bg-grad-1),var(--bg-grad-2),var(--bg-grad-3); }
-        body::before { content:""; position:fixed; inset:0; pointer-events:none; background-image:linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px); background-size:64px 64px; mask-image:radial-gradient(circle at center, black 42%, transparent 100%); }
+        body::before { content:""; position:fixed; inset:0; pointer-events:none; background-image:linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,25[...]
         a { color:inherit; text-decoration:none; }
         .shell { width:min(1160px, calc(100% - 48px)); margin:0 auto; }
         .topbar { position:sticky; top:0; z-index:20; background:rgba(5,11,22,.72); backdrop-filter:blur(18px); border-bottom:1px solid rgba(255,255,255,.06); }
         .topbar .shell, .hero, .head, .footer-wrap { display:flex; align-items:center; justify-content:space-between; gap:20px; }
         .topbar .shell { padding:18px 0; }
         .brand { display:flex; align-items:center; gap:12px; font-family:"Exo 2",sans-serif; }
-        .mark { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg, rgba(99,236,255,.32), rgba(154,99,255,.18)); border:1px solid rgba(99,236,255,.28); box-shadow:0 0 36px rgba(99,236,255,.18); font-weight:800; }
+        .mark { width:46px; height:46px; border-radius:16px; display:grid; place-items:center; background:linear-gradient(135deg, rgba(99,236,255,.32), rgba(154,99,255,.18)); border:1px solid rgba(99,236,255,.24); }
+        .mark svg { width:28px; height:28px; }
         .nav { display:flex; align-items:center; gap:20px; color:var(--muted); }
         .nav a:hover { color:var(--text); }
-        .signin, .primary, .secondary { display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 22px; border-radius:18px; font-weight:700; transition:.25s ease; }
+        .signin, .primary, .secondary { display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 22px; border-radius:18px; font-weight:700; transition:.25s ease;[...]
         .signin, .primary { background:linear-gradient(135deg, var(--cyan), #7d9cff 52%, var(--violet)); color:#04111f; box-shadow:0 16px 36px rgba(99,236,255,.18); }
         .secondary { border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); }
         .signin:hover, .primary:hover, .secondary:hover, .panel:hover, .service:hover, .ipo:hover { transform:translateY(-4px); }
         .hero { padding:72px 0 38px; align-items:stretch; }
         .copy, .visual, .panel, .service, .ipo, footer { border:1px solid var(--line); background:var(--panel); backdrop-filter:blur(16px); box-shadow:0 0 42px rgba(99,236,255,.08); }
         .copy { flex:1.05; background:none; border:none; box-shadow:none; }
-        .tag { display:inline-flex; padding:9px 15px; border-radius:999px; background:rgba(99,236,255,.1); border:1px solid rgba(99,236,255,.18); color:#9af7ff; font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; }
+        .tag { display:inline-flex; padding:9px 15px; border-radius:999px; background:rgba(99,236,255,.1); border:1px solid rgba(99,236,255,.18); color:#9af7ff; font-size:.78rem; letter-spacing:.1[...]
         h1, h2, h3 { font-family:"Exo 2",sans-serif; margin:0; }
         h1 { margin-top:18px; font-size:clamp(3rem, 6vw, 5.2rem); line-height:.94; letter-spacing:-.04em; }
         .copy p, .head p, .panel p, .service p, .ipo p, .contact p { color:var(--muted); line-height:1.8; }
@@ -74,7 +75,7 @@
         .sent-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px; }
         .sent-stat small { display:block; margin-bottom:8px; color:var(--muted); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; }
         .ticker { margin-top:22px; overflow:hidden; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); }
-        .ticker-track { display:flex; gap:34px; width:max-content; padding:14px 18px; animation:ticker 18s linear infinite; color:rgba(226,235,255,.82); font-size:.76rem; letter-spacing:.16em; text-transform:uppercase; }
+        .ticker-track { display:flex; gap:34px; width:max-content; padding:14px 18px; animation:ticker 18s linear infinite; color:rgba(226,235,255,.82); font-size:.76rem; letter-spacing:.16em; tex[...]
         @keyframes ticker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
         section { padding:28px 0; }
         .head { align-items:end; margin-bottom:22px; }
@@ -83,9 +84,9 @@
         .about { grid-template-columns:.95fr 1.05fr; }
         .about-right, .services, .ipos { grid-template-columns:repeat(3,1fr); }
         .panel, .service, .ipo { padding:24px; border-radius:24px; transition:.25s ease; }
-        .panel span, .service span, .ipo span { display:inline-flex; padding:7px 12px; border-radius:999px; background:rgba(99,236,255,.08); color:#9af7ff; font-size:.74rem; letter-spacing:.12em; text-transform:uppercase; }
+        .panel span, .service span, .ipo span { display:inline-flex; padding:7px 12px; border-radius:999px; background:rgba(99,236,255,.08); color:#9af7ff; font-size:.74rem; letter-spacing:.12em; [...]
         .panel h3, .service h3, .ipo h3 { margin:14px 0 10px; font-size:1.35rem; }
-        .service-icon { width:50px; height:50px; border-radius:18px; display:grid; place-items:center; background:linear-gradient(135deg, rgba(99,236,255,.16), rgba(154,99,255,.08)); border:1px solid rgba(99,236,255,.18); margin-bottom:16px; }
+        .service-icon { width:50px; height:50px; border-radius:18px; display:grid; place-items:center; background:linear-gradient(135deg, rgba(99,236,255,.16), rgba(154,99,255,.08)); border:1px so[...]
         .service-icon svg { width:22px; height:22px; fill:none; stroke:#abfaff; stroke-width:2; }
         .ipo small { color:#cde8ff; display:block; margin-top:16px; }
         footer { margin-top:28px; padding:30px 0 24px; border-radius:30px 30px 0 0; background:linear-gradient(180deg, rgba(11,20,38,.92), rgba(5,11,22,.96)); }
@@ -99,14 +100,34 @@
         .footer-note { margin-top:18px; max-width:540px; color:var(--muted); font-size:.92rem; line-height:1.7; }
         .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
         .reveal.visible { opacity:1; transform:translateY(0); }
-        @media (max-width: 1080px) { .hero, .about, .about-right, .services, .ipos, .footer-wrap { display:grid; grid-template-columns:1fr; } .head, .topbar .shell { flex-direction:column; align-items:flex-start; } }
-        @media (max-width: 760px) { .shell { width:min(100% - 28px, 1160px); } .nav { display:none; } .stats, .sent-stats { grid-template-columns:1fr; } .sent-core { flex-direction:column; align-items:flex-start; } }
+        @media (max-width: 1080px) { .hero, .about, .about-right, .services, .ipos, .footer-wrap { display:grid; grid-template-columns:1fr; } .head, .topbar .shell { flex-direction:column; align-[...]
+        @media (max-width: 760px) { .shell { width:min(100% - 28px, 1160px); } .nav { display:none; } .stats, .sent-stats { grid-template-columns:1fr; } .sent-core { flex-direction:column; align-[...]
     </style>
 </head>
 <body>
     <header class="topbar">
         <div class="shell">
-            <a class="brand" href="#top"><span class="mark">SF</span><div><strong>SvarnaFiNexa</strong><div style="color:var(--muted);font-size:.82rem;">futuristic investment intelligence</div></div></a>
+            <a class="brand" href="#top">
+                <div class="mark">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+                        <defs>
+                            <linearGradient id="sfnBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#61e8ff"/>
+                                <stop offset="50%" stop-color="#7d9cff"/>
+                                <stop offset="100%" stop-color="#9a63ff"/>
+                            </linearGradient>
+                            <filter id="sfnGlow"><feGaussianBlur stdDeviation="1.5" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                        </defs>
+                        <g filter="url(#sfnGlow)">
+                            <path d="M 45 35 Q 38 35 38 42 Q 38 49 45 49 Q 52 49 52 55 Q 52 62 45 62 Q 38 62 35 58" fill="none" stroke="url(#sfnBg)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="65" y1="35" x2="65" y2="62" stroke="url(#sfnBg)" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="65" y1="45" x2="78" y2="45" stroke="url(#sfnBg)" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="65" y1="35" x2="76" y2="35" stroke="url(#sfnBg)" stroke-width="5" stroke-linecap="round"/>
+                        </g>
+                    </svg>
+                </div>
+                <div><strong>SvarnaFiNexa</strong><div style="color:var(--muted);font-size:.82rem;">investment intelligence</div></div>
+            </a>
             <nav class="nav">
                 <a href="#about">About</a>
                 <a href="#ipos">IPOs</a>
@@ -123,7 +144,7 @@
                 <div class="copy reveal">
                     <span class="tag">Neural Market Interface</span>
                     <h1>Future-facing intelligence for investors and advisors.</h1>
-                    <p>SvarnaFiNexa combines sentiment visibility, IPO awareness, portfolio analytics, and hands-on support into one immersive front door. Start with the market pulse, learn what makes the platform different, and step directly into the live sign-in experience.</p>
+                    <p>SvarnaFiNexa combines sentiment visibility, IPO awareness, portfolio analytics, and hands-on support into one immersive front door. Start with the market pulse, learn what [...]
                     <div class="actions">
                         <a class="primary" href="signin.html">Go To Sign In</a>
                         <a class="secondary" href="#services">Explore Services</a>
@@ -159,20 +180,20 @@
                             <div class="sent-stat"><small>IPO Window</small><strong id="sent-window">Open</strong></div>
                         </div>
                     </div>
-                    <div class="ticker"><div class="ticker-track"><span>Mainboard IPO Radar</span><span>Support Matrix Online</span><span>Sentiment Engine Cycling</span><span>Analytics Grid Active</span><span>Mainboard IPO Radar</span><span>Support Matrix Online</span><span>Sentiment Engine Cycling</span><span>Analytics Grid Active</span></div></div>
+                    <div class="ticker"><div class="ticker-track"><span>Mainboard IPO Radar</span><span>Support Matrix Online</span><span>Sentiment Engine Cycling</span><span>Analytics Grid Activ[...]
                 </div>
             </div>
         </section>
 
         <section id="about">
             <div class="shell">
-                <div class="head reveal"><div><span class="tag">About SvarnaFiNexa</span><h2>Mission, vision, and a sharper investor workflow.</h2></div><p>We designed SvarnaFiNexa to make fast-moving market information easier to read, easier to explain, and easier to act on.</p></div>
+                <div class="head reveal"><div><span class="tag">About SvarnaFiNexa</span><h2>Mission, vision, and a sharper investor workflow.</h2></div><p>We designed SvarnaFiNexa to make fast-m[...]
                 <div class="about">
-                    <div class="panel reveal"><span>Mission</span><h3>Upgrade investor confidence.</h3><p>Turn complex market moves into concise, client-ready context with a calm, modern product experience.</p></div>
+                    <div class="panel reveal"><span>Mission</span><h3>Upgrade investor confidence.</h3><p>Turn complex market moves into concise, client-ready context with a calm, modern product [...]
                     <div class="about-right">
-                        <div class="panel reveal"><span>Vision</span><h3>Build a modern investor operating system.</h3><p>Connect IPO readiness, portfolio visibility, advisory insight, and support into one clear digital flow.</p></div>
-                        <div class="panel reveal"><span>Value</span><h3>Signal over noise.</h3><p>Futuristic visuals, modular dashboards, and guided actions help teams respond faster without losing clarity.</p></div>
-                        <div class="panel reveal"><span>Experience</span><h3>Designed for decision speed.</h3><p>Use motion, glow, hierarchy, and crisp typography to surface what matters immediately.</p></div>
+                        <div class="panel reveal"><span>Vision</span><h3>Build a modern investor operating system.</h3><p>Connect IPO readiness, portfolio visibility, advisory insight, and suppor[...]
+                        <div class="panel reveal"><span>Value</span><h3>Signal over noise.</h3><p>Futuristic visuals, modular dashboards, and guided actions help teams respond faster without losi[...]
+                        <div class="panel reveal"><span>Experience</span><h3>Designed for decision speed.</h3><p>Use motion, glow, hierarchy, and crisp typography to surface what matters immediat[...]
                     </div>
                 </div>
             </div>
@@ -180,22 +201,22 @@
 
         <section id="ipos">
             <div class="shell">
-                <div class="head reveal"><div><span class="tag">Upcoming Mainboard IPOs</span><h2>Interactive IPO watchlist cards.</h2></div><p>Use these launch points to move from awareness to deeper support quickly.</p></div>
+                <div class="head reveal"><div><span class="tag">Upcoming Mainboard IPOs</span><h2>Interactive IPO watchlist cards.</h2></div><p>Use these launch points to move from awareness to d[...]
                 <div class="ipos">
-                    <a class="ipo reveal" href="support.html#ipo-desk"><span>Mainboard Watch</span><h3>InCred Holdings</h3><p>Use the IPO desk to review demand framing, narrative positioning, and investor-prep notes.</p><small>Open IPO detail support path</small></a>
-                    <a class="ipo reveal" href="support.html#ipo-desk"><span>Mainboard Watch</span><h3>Hero FinCorp</h3><p>Jump into a cleaner view of sector context, potential investor questions, and advisory talking points.</p><small>Open IPO detail support path</small></a>
-                    <a class="ipo reveal" href="support.html#ipo-desk"><span>Mainboard Watch</span><h3>Juniper Green Energy</h3><p>Explore energy-transition positioning, sentiment framing, and support-led investor guidance.</p><small>Open IPO detail support path</small></a>
+                    <a class="ipo reveal" href="support.html#ipo-desk"><span>Mainboard Watch</span><h3>InCred Holdings</h3><p>Use the IPO desk to review demand framing, narrative positioning, and[...]
+                    <a class="ipo reveal" href="support.html#ipo-desk"><span>Mainboard Watch</span><h3>Hero FinCorp</h3><p>Jump into a cleaner view of sector context, potential investor questions[...]
+                    <a class="ipo reveal" href="support.html#ipo-desk"><span>Mainboard Watch</span><h3>Juniper Green Energy</h3><p>Explore energy-transition positioning, sentiment framing, and su[...]
                 </div>
             </div>
         </section>
 
         <section id="services">
             <div class="shell">
-                <div class="head reveal"><div><span class="tag">Services & Support</span><h2>Modular blocks for advisory, analytics, and help.</h2></div><p>Every block is built to feel like a control surface: clear, futuristic, and easy to navigate.</p></div>
+                <div class="head reveal"><div><span class="tag">Services & Support</span><h2>Modular blocks for advisory, analytics, and help.</h2></div><p>Every block is built to feel like a con[...]
                 <div class="services">
-                    <div class="service reveal"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 19h16"></path><path d="M7 15l3-3 3 2 4-5"></path><path d="M17 10h2v2"></path></svg></div><span>Advisory</span><h3>Investment Advisory</h3><p>Translate market shifts into structured investor communication and guidance.</p></div>
-                    <div class="service reveal"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 20V9"></path><path d="M10 20V4"></path><path d="M16 20v-8"></path><path d="M22 20v-5"></path></svg></div><span>Analytics</span><h3>Portfolio Analytics</h3><p>Expose return trends, performance drivers, and concentration snapshots with clarity.</p></div>
-                    <a class="service reveal" href="support.html"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M6 18h8"></path><path d="M6 14h12"></path><path d="M6 10h12"></path><path d="M6 6h12"></path></svg></div><span>Support</span><h3>Help & Contact Desk</h3><p>Open the support page for contact channels, assistance, and the support form link.</p></a>
+                    <div class="service reveal"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 19h16"></path><path d="M7 15l3-3 3 2 4-5"></path><path d="M17 10h2v2"></path></svg><[...]
+                    <div class="service reveal"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 20V9"></path><path d="M10 20V4"></path><path d="M16 20v-8"></path><path d="M22 20v-5[...]
+                    <a class="service reveal" href="support.html"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M6 18h8"></path><path d="M6 14h12"></path><path d="M6 10h12"></path><[...]
                 </div>
             </div>
         </section>
@@ -209,7 +230,7 @@
                     <span class="tag">Contact Us</span>
                     <h2 style="margin:18px 0 12px;">Stay connected to the official SvarnaFiNexa support desk.</h2>
                     <p>SvarnaFiNexa provides digital investment workflow support for onboarding, platform access, portfolio visibility, and IPO coordination.</p>
-                    <div class="footer-note">Public information on this site is for product and support communication. Investment decisions should be reviewed with appropriate professional judgment and internal approval workflows.</div>
+                    <div class="footer-note">Public information on this site is for product and support communication. Investment decisions should be reviewed with appropriate professional judgme[...]
                 </div>
                 <div>
                     <div class="contact-links">
@@ -233,8 +254,8 @@
 
     <script>
         const sentiments = [
-            { mode:"bullish", badge:"Bullish Bias", title:"Momentum expanding through quality demand.", text:"SvarnaFiNexa highlights constructive sentiment with a holographic bull bias when demand broadens and participation deepens.", strength:"72%", risk:"Measured", windowState:"Open", color:"#71ffb5", icon:'<svg viewBox="0 0 64 64"><path d="M10 42c6-12 12-18 22-18 7 0 13 3 22 11"></path><path d="M14 44h8l6-8 8 4 8-12 6 4"></path><path d="M46 22h8v8"></path></svg>' },
-            { mode:"bearish", badge:"Bearish Guard", title:"Defensive positioning taking priority.", text:"When risk appetite cools, the interface pivots toward discipline, preservation, and tighter opportunity filtering.", strength:"58%", risk:"Elevated", windowState:"Selective", color:"#ff7d96", icon:'<svg viewBox="0 0 64 64"><path d="M12 24c8 3 14 9 18 18"></path><path d="M12 40c7-10 16-16 30-18"></path><path d="M46 22l8-2-2 8"></path><path d="M26 42h18"></path></svg>' }
+            { mode:"bullish", badge:"Bullish Bias", title:"Momentum expanding through quality demand.", text:"SvarnaFiNexa highlights constructive sentiment with a holographic bull bias when dema[...]
+            { mode:"bearish", badge:"Bearish Guard", title:"Defensive positioning taking priority.", text:"When risk appetite cools, the interface pivots toward discipline, preservation, and tigh[...]
         ];
         let currentSentiment = 0;
         function renderSentiment() {
