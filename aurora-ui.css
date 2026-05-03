@@ -65,6 +65,40 @@ body {
     border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+.sidebar-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-brand-logo {
+    width: 92px;
+    height: 92px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 28px rgba(255, 190, 80, 0.2));
+}
+
+.sidebar-brand-copy {
+    text-align: center;
+}
+
+.sidebar-brand-copy h2 {
+    margin: 0;
+}
+
+.sidebar-brand-copy h2 + h2 {
+    display: none;
+}
+
+.sidebar-brand-copy p {
+    margin: 6px 0 0;
+    color: var(--app-muted) !important;
+    font-size: 0.82rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
 .sidebar-menu a,
 .top-bar .user-info,
 .page-header p,

@@ -16,12 +16,13 @@
     <meta property="og:description" content="Access the SvarnaFiNexa dashboard for analytics, investor workflows, and support operations.">
     <meta property="og:url" content="https://svarnafinexa.in/signin">
     <meta property="og:site_name" content="SvarnaFiNexa">
-    <meta property="og:image" content="https://svarnafinexa.in/favicon.svg">
+    <meta property="og:image" content="https://svarnafinexa.in/svarnafinexa-logo.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="SvarnaFiNexa Sign In | Secure Access">
     <meta name="twitter:description" content="Secure access to the SvarnaFiNexa investment workflow dashboard.">
-    <meta name="twitter:image" content="https://svarnafinexa.in/favicon.svg">
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta name="twitter:image" content="https://svarnafinexa.in/svarnafinexa-logo.png">
+    <link rel="icon" href="svarnafinexa-logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="svarnafinexa-logo.png">
     <link rel="manifest" href="site.webmanifest">
     <script src="ui-preferences.js"></script>
     <link rel="stylesheet" href="styles.css">
@@ -77,6 +78,29 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+        }
+        .brand-lockup {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+        .brand-lockup img {
+            width: 92px;
+            height: 92px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 28px rgba(255, 190, 80, 0.24));
+        }
+        .brand-lockup strong {
+            display: block;
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+        .brand-lockup span {
+            color: var(--text-muted);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            font-size: 0.78rem;
         }
         .eyebrow {
             display: inline-flex;
@@ -262,6 +286,13 @@
         <div class="auth-shell">
             <section class="brand-panel">
                 <div>
+                    <div class="brand-lockup">
+                        <img src="svarnafinexa-logo.png" alt="SvarnaFiNexa logo">
+                        <div>
+                            <span>Official Platform</span>
+                            <strong>SvarnaFiNexa</strong>
+                        </div>
+                    </div>
                     <span class="eyebrow">SvarnaFiNexa Access Layer</span>
                     <h1>Enter Your Market Command Center</h1>
                     <p>Securely access portfolio analytics, IPO intelligence, advisory workflows, and your investor support cockpit.</p>

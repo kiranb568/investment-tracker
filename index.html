@@ -17,12 +17,13 @@
     <meta property="og:description" content="Explore market sentiment, upcoming IPOs, portfolio analytics, and guided investor support with SvarnaFiNexa.">
     <meta property="og:url" content="https://svarnafinexa.in/">
     <meta property="og:site_name" content="SvarnaFiNexa">
-    <meta property="og:image" content="https://svarnafinexa.in/favicon.svg">
+    <meta property="og:image" content="https://svarnafinexa.in/svarnafinexa-logo.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="SvarnaFiNexa | Futuristic Investment Intelligence Platform">
     <meta name="twitter:description" content="A futuristic investment platform for sentiment visibility, IPO awareness, portfolio analytics, and investor support.">
-    <meta name="twitter:image" content="https://svarnafinexa.in/favicon.svg">
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta name="twitter:image" content="https://svarnafinexa.in/svarnafinexa-logo.png">
+    <link rel="icon" href="svarnafinexa-logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="svarnafinexa-logo.png">
     <link rel="manifest" href="site.webmanifest">
     <script src="ui-preferences.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,8 +41,13 @@
         .topbar { position:sticky; top:0; z-index:20; background:rgba(5,11,22,.72); backdrop-filter:blur(18px); border-bottom:1px solid rgba(255,255,255,.06); }
         .topbar .shell, .hero, .head, .footer-wrap { display:flex; align-items:center; justify-content:space-between; gap:20px; }
         .topbar .shell { padding:18px 0; }
-        .brand { display:flex; align-items:center; gap:12px; font-family:"Exo 2",sans-serif; }
-        .mark { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg, rgba(99,236,255,.32), rgba(154,99,255,.18)); border:1px solid rgba(99,236,255,.28); box-shadow:0 0 36px rgba(99,236,255,.18); font-weight:800; }
+        .brand { display:flex; align-items:center; gap:14px; font-family:"Exo 2",sans-serif; }
+        .brand-logo { width:58px; height:58px; object-fit:contain; filter:drop-shadow(0 0 24px rgba(255,190,80,.24)); }
+        .brand-copy strong { display:block; font-size:1.05rem; }
+        .brand-copy small { color:var(--muted); font-size:.82rem; }
+        .hero-brand { display:flex; align-items:center; gap:16px; margin-bottom:14px; }
+        .hero-brand img { width:94px; height:94px; object-fit:contain; filter:drop-shadow(0 0 30px rgba(255,190,80,.22)); }
+        .hero-brand span { display:block; color:var(--muted); font-size:.84rem; letter-spacing:.18em; text-transform:uppercase; }
         .nav { display:flex; align-items:center; gap:20px; color:var(--muted); }
         .nav a:hover { color:var(--text); }
         .signin, .primary, .secondary { display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 22px; border-radius:18px; font-weight:700; transition:.25s ease; }
@@ -106,7 +112,7 @@
 <body>
     <header class="topbar">
         <div class="shell">
-            <a class="brand" href="#top"><span class="mark">SF</span><div><strong>SvarnaFiNexa</strong><div style="color:var(--muted);font-size:.82rem;">futuristic investment intelligence</div></div></a>
+            <a class="brand" href="#top"><img class="brand-logo" src="svarnafinexa-logo.png" alt="SvarnaFiNexa logo"><div class="brand-copy"><strong>SvarnaFiNexa</strong><small>futuristic investment intelligence</small></div></a>
             <nav class="nav">
                 <a href="#about">About</a>
                 <a href="#ipos">IPOs</a>
@@ -121,6 +127,10 @@
         <section>
             <div class="shell hero">
                 <div class="copy reveal">
+                    <div class="hero-brand">
+                        <img src="svarnafinexa-logo.png" alt="SvarnaFiNexa brand mark">
+                        <span>Official platform identity</span>
+                    </div>
                     <span class="tag">Neural Market Interface</span>
                     <h1>Future-facing intelligence for investors and advisors.</h1>
                     <p>SvarnaFiNexa combines sentiment visibility, IPO awareness, portfolio analytics, and hands-on support into one immersive front door. Start with the market pulse, learn what makes the platform different, and step directly into the live sign-in experience.</p>
