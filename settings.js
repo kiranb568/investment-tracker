@@ -39,7 +39,9 @@ async function loadUserSettings() {
 
     const contactDetails = typeof getAppContactDetails === "function"
         ? getAppContactDetails()
-        : { email: "support@svarnafinexa.in", phone: "+91 98765 43210" };
+        : { email: "support@srishtiwealth.in", phone: "" };
+
+    const contactPhoneDisplay = contactDetails.phone || "Not configured yet";
 
     const isDarkTheme = typeof getPreferredTheme === "function"
         ? getPreferredTheme() === "dark"
@@ -106,7 +108,7 @@ async function loadUserSettings() {
                 <div class="settings-row">
                     <div>
                         <strong>Support Phone</strong>
-                        <p class="settings-value">${contactDetails.phone}</p>
+                        <p class="settings-value">${contactPhoneDisplay}</p>
                     </div>
                 </div>
             </div>

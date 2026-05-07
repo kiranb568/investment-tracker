@@ -1,6 +1,6 @@
 {
-  "name": "SvarnaFiNexa",
-  "short_name": "SvarnaFiNexa",
+  "name": "Srishti Wealth",
+  "short_name": "Srishti",
   "description": "Futuristic investment intelligence, investor support, and portfolio analytics.",
   "id": "/",
   "start_url": "/",
@@ -37,7 +37,7 @@
       "name": "Support",
       "short_name": "Support",
       "url": "/support",
-      "description": "Open the SvarnaFiNexa support desk."
+      "description": "Open the Srishti Wealth support desk."
     }
   ]
 }

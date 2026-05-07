@@ -29,7 +29,7 @@ function createOverlay({ id, title, body, actionLabel, onAction, dismissLabel = 
     const prompt = document.createElement("div");
     prompt.id = id;
     prompt.innerHTML = `
-        ${withLogo ? '<img class="pwa-overlay-logo" src="svarnafinexa-logo.png" alt="SvarnaFiNexa logo">' : ""}
+        ${withLogo ? '<img class="pwa-overlay-logo" src="srishti-wealth-logo.png" alt="Srishti Wealth logo">' : ""}
         <div class="pwa-install-copy">
             <strong>${title}</strong>
             <span>${body}</span>
@@ -143,8 +143,8 @@ function showSplashScreen() {
     const splash = document.createElement("div");
     splash.id = "pwa-splash";
     splash.innerHTML = `
-        <img src="svarnafinexa-logo.png" alt="SvarnaFiNexa logo">
-        <strong>SvarnaFiNexa</strong>
+        <img src="srishti-wealth-logo.png" alt="Srishti Wealth logo">
+        <strong>Srishti Wealth</strong>
         <span>Loading your investment command center...</span>
     `;
 
@@ -207,7 +207,7 @@ function ensureInstallFab(label, onClick) {
     button.type = "button";
     button.id = "pwa-install-fab";
     button.className = "pwa-install-fab";
-    button.innerHTML = `<img src="svarnafinexa-logo.png" alt=""><span>${label}</span>`;
+    button.innerHTML = `<img src="srishti-wealth-logo.png" alt=""><span>${label}</span>`;
     button.addEventListener("click", onClick);
     document.body.appendChild(button);
 }
@@ -234,7 +234,7 @@ function monitorServiceWorkerUpdates() {
             createOverlay({
                 id: "pwa-update-prompt",
                 title: "Update ready",
-                body: "A newer SvarnaFiNexa version is available. Refresh now to load the latest experience.",
+                body: "A newer Srishti Wealth version is available. Refresh now to load the latest experience.",
                 actionLabel: "Refresh",
                 actionClassName: "pwa-update-button",
                 onAction: () => {
@@ -276,7 +276,7 @@ function setupInstallPrompt() {
 
         createOverlay({
             id: "pwa-install-prompt",
-            title: "Install SvarnaFiNexa",
+            title: "Install Srishti Wealth",
             body: "Install the app on Windows or Android for a desktop-style experience. On iPhone and iPad, add it from Safari to your Home Screen.",
             actionLabel: "Install",
             onAction: async () => {
@@ -301,7 +301,7 @@ function setupInstallPrompt() {
         if (deferredInstallPrompt && !document.getElementById("pwa-install-prompt")) {
             createOverlay({
                 id: "pwa-install-prompt",
-                title: "Install SvarnaFiNexa",
+                title: "Install Srishti Wealth",
                 body: "Add the app on Windows or Android for quick access, dedicated windows, and an app-like workflow.",
                 actionLabel: "Install",
                 onAction: async () => {
@@ -330,7 +330,7 @@ function setupInstallPrompt() {
             createOverlay({
                 id: "pwa-install-prompt",
                 title: "Install on iPhone or iPad",
-                body: "Tap Share in Safari, then choose Add to Home Screen to install SvarnaFiNexa.",
+                body: "Tap Share in Safari, then choose Add to Home Screen to install Srishti Wealth.",
                 actionLabel: "Got it",
                 onAction: () => document.getElementById("pwa-install-prompt")?.remove()
             });
@@ -341,7 +341,7 @@ function setupInstallPrompt() {
                 createOverlay({
                     id: "pwa-install-prompt",
                     title: "Install on iPhone or iPad",
-                    body: "Tap Share in Safari, then choose Add to Home Screen to install SvarnaFiNexa.",
+                    body: "Tap Share in Safari, then choose Add to Home Screen to install Srishti Wealth.",
                     actionLabel: "Got it",
                     onAction: () => document.getElementById("pwa-install-prompt")?.remove()
                 });

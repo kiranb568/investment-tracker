@@ -1,4 +1,4 @@
-const CACHE_NAME = "svarnafinexa-pwa-v1";
+const CACHE_NAME = "srishti-wealth-pwa-v2";
 const APP_SHELL = [
     "/",
     "/index.html",
@@ -17,7 +17,7 @@ const APP_SHELL = [
     "/reports.js",
     "/pwa.js",
     "/site.webmanifest",
-    "/svarnafinexa-logo.png",
+    "/srishti-wealth-logo.png",
     "/icons/apple-touch-icon.png",
     "/icons/icon-192.png",
     "/icons/icon-512.png"

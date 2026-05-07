@@ -1,13 +1,13 @@
-const APP_CONTACT_STORAGE_KEY = "svarnafinexaContact";
-const APP_THEME_STORAGE_KEY = "svarnafinexaTheme";
+const APP_CONTACT_STORAGE_KEY = "srishtiWealthContact";
+const APP_THEME_STORAGE_KEY = "srishtiWealthTheme";
 const DEFAULT_SUPABASE_PUBLIC_CONFIG = {
     url: "https://wvdqaepetsifprpsdiwf.supabase.co",
     storageBucket: "user-files"
 };
 const APP_CONTACT_REMOTE_PATH = "public/app-contact.json";
 const DEFAULT_APP_CONTACT = {
-    email: "support@svarnafinexa.in",
-    phone: "+91 98765 43210"
+    email: "support@srishtiwealth.in",
+    phone: ""
 };
 
 let appContactCache = null;
@@ -127,6 +127,7 @@ async function saveAppContactDetails(contactDetails) {
 
 function applyContactBindings(root = document) {
     const contactDetails = getAppContactDetails();
+    const phoneText = contactDetails.phone || "Admin-managed support number";
 
     root.querySelectorAll("[data-contact-email]").forEach((node) => {
         if (node.tagName === "A") {
@@ -138,9 +139,9 @@ function applyContactBindings(root = document) {
     root.querySelectorAll("[data-contact-phone]").forEach((node) => {
         if (node.tagName === "A") {
             const phoneHref = contactDetails.phone.replace(/\s+/g, "");
-            node.href = `tel:${phoneHref}`;
+            node.href = phoneHref ? `tel:${phoneHref}` : "#";
         }
-        node.textContent = contactDetails.phone;
+        node.textContent = phoneText;
     });
 
     root.querySelectorAll("[data-support-form]").forEach((form) => {

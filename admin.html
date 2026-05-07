@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SvarnaFiNexa Admin Dashboard</title>
-    <meta name="application-name" content="SvarnaFiNexa">
-    <meta name="apple-mobile-web-app-title" content="SvarnaFiNexa">
+    <title>Srishti Wealth Admin Dashboard</title>
+    <meta name="application-name" content="Srishti Wealth">
+    <meta name="apple-mobile-web-app-title" content="Srishti Wealth">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#081223">
-    <link rel="icon" href="svarnafinexa-logo.png" type="image/png">
+    <link rel="icon" href="srishti-wealth-logo.png" type="image/png">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
     <script src="ui-preferences.js"></script>
@@ -102,6 +102,80 @@
         .page-header p {
             color: #666;
             margin: 5px 0 0 0;
+        }
+
+        .market-ribbon {
+            display: grid;
+            gap: 14px;
+            background: linear-gradient(135deg, rgba(8, 18, 35, 0.95), rgba(17, 44, 78, 0.95));
+            border: 1px solid rgba(0, 212, 255, 0.18);
+            border-radius: 18px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+            color: #eaf7ff;
+            margin-bottom: 26px;
+            overflow: hidden;
+            padding: 18px 20px;
+        }
+
+        .market-ribbon-head {
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: space-between;
+        }
+
+        .market-ribbon-head strong {
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .market-ribbon-head span {
+            color: rgba(234, 247, 255, 0.75);
+            font-size: 0.92rem;
+        }
+
+        .market-ribbon-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .market-ribbon-links a {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(113, 255, 181, 0.18);
+            border-radius: 999px;
+            color: #dffcff;
+            font-size: 0.82rem;
+            padding: 7px 12px;
+            text-decoration: none;
+        }
+
+        .market-ribbon-links a:hover {
+            background: rgba(0, 212, 255, 0.14);
+        }
+
+        .market-ribbon-track {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            overflow: hidden;
+            padding: 10px 0;
+            position: relative;
+        }
+
+        .market-ribbon-marquee {
+            animation: marketRibbonScroll 28s linear infinite;
+            color: #f7fbff;
+            display: inline-block;
+            padding-left: 100%;
+            white-space: nowrap;
+        }
+
+        @keyframes marketRibbonScroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
         }
         
         .content-section {
@@ -451,9 +525,9 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-brand">
-                <img class="sidebar-brand-logo" src="svarnafinexa-logo.png" alt="SvarnaFiNexa logo">
+                <img class="sidebar-brand-logo" src="srishti-wealth-logo.png" alt="Srishti Wealth logo">
                 <div class="sidebar-brand-copy">
-                    <h2>SvarnaFiNexa</h2>
+                    <h2>Srishti Wealth</h2>
                 <h2>🔧 Admin</h2>
                     <p>Admin Control</p>
                 </div>
@@ -478,6 +552,22 @@
             <div class="top-bar">
                 <div class="user-info" id="admin-info"></div>
             </div>
+            <section class="market-ribbon">
+                <div class="market-ribbon-head">
+                    <div>
+                        <strong>Srishti Wealth Market Command Feed</strong>
+                        <span id="admin-market-date">Trading-day watchpoints</span>
+                    </div>
+                    <div class="market-ribbon-links">
+                        <a href="https://www.nseindia.com/products-services/indices-nifty50-index" target="_blank" rel="noopener noreferrer">NSE Nifty 50</a>
+                        <a href="https://m.bseindia.com/IndicesView_New.aspx/Sensex.aspx" target="_blank" rel="noopener noreferrer">BSE Sensex</a>
+                        <a href="https://www.mcxindia.com/market-data/market-watch" target="_blank" rel="noopener noreferrer">MCX Market Watch</a>
+                    </div>
+                </div>
+                <div class="market-ribbon-track">
+                    <div class="market-ribbon-marquee" id="admin-market-marquee"></div>
+                </div>
+            </section>
 
             <!-- Dashboard Tab -->
             <div id="dashboard" class="content-section active">
@@ -708,6 +798,12 @@
     <script src="settings.js"></script><!-- Add this to the <head> section for proper chart library loading -->
     <script>
         const chartInstances = {};
+        const MARKET_HIGHLIGHTS = [
+            "Srishti Wealth focus: track Nifty leadership, Sensex breadth, and MCX commodity direction together before sizing fresh trades.",
+            "Watch today's exchange bulletins for earnings outcomes, corporate actions, and sudden sector rotation before client calls.",
+            "Use MCX gold and crude tone as a quick risk signal when equity momentum begins to stretch or cool.",
+            "Keep live benchmark checks anchored to official NSE, BSE, and MCX pages for session-level confirmation."
+        ];
     
         document.addEventListener('DOMContentLoaded', async () => {
             requireAuth();
@@ -718,10 +814,27 @@
             }
             const user = getCurrentUser();
             document.getElementById('admin-info').textContent = `👑 Admin: ${user.name}`;
+            initializeMarketRibbon('admin-market-date', 'admin-market-marquee');
             setDefaultDates();
             await loadAdminDashboard();
             await populateCustomerSelect();
         });
+
+        function initializeMarketRibbon(dateElementId, marqueeElementId) {
+            const dateElement = document.getElementById(dateElementId);
+            const marqueeElement = document.getElementById(marqueeElementId);
+            if (!dateElement || !marqueeElement) {
+                return;
+            }
+
+            const now = new Date();
+            dateElement.textContent = `Trading-day watchpoints • ${now.toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            })}`;
+            marqueeElement.textContent = MARKET_HIGHLIGHTS.join('   •   ');
+        }
     
         function setDefaultDates() {
             const today = new Date();

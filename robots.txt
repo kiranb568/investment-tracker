@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://svarnafinexa.in/sitemap.xml
+Sitemap: https://srishtiwealth.in/sitemap.xml
