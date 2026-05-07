@@ -129,7 +129,7 @@ function handleThemeToggle(isDarkTheme) {
     }
 }
 
-function saveAdminContactSettings() {
+async function saveAdminContactSettings() {
     const emailInput = document.getElementById("admin-contact-email");
     const phoneInput = document.getElementById("admin-contact-phone");
 
@@ -151,7 +151,12 @@ function saveAdminContactSettings() {
     }
 
     if (typeof saveAppContactDetails === "function") {
-        saveAppContactDetails({ email, phone });
+        try {
+            await saveAppContactDetails({ email, phone });
+        } catch (error) {
+            alert("Unable to save contact details remotely. Please check Supabase permissions.");
+            return;
+        }
     }
 
     loadUserSettings();

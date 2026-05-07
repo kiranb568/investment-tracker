@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline | SvarnaFiNexa</title>
+    <meta name="theme-color" content="#081223">
+    <link rel="icon" href="svarnafinexa-logo.png" type="image/png">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            box-sizing: border-box;
+            font-family: "Space Grotesk", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(97, 232, 255, 0.16), transparent 30%),
+                linear-gradient(180deg, #040914 0%, #091323 100%);
+            color: #f4f8ff;
+        }
+        .card {
+            width: min(560px, 100%);
+            padding: 32px;
+            border-radius: 28px;
+            border: 1px solid rgba(123, 206, 255, 0.2);
+            background: rgba(10, 18, 36, 0.84);
+            box-shadow: 0 0 40px rgba(97, 232, 255, 0.08);
+            text-align: center;
+        }
+        img {
+            width: 96px;
+            height: 96px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 30px rgba(255, 190, 80, 0.22));
+        }
+        h1 {
+            margin: 18px 0 12px;
+            font-size: clamp(2rem, 5vw, 3rem);
+        }
+        p {
+            color: rgba(225, 235, 255, 0.78);
+            line-height: 1.8;
+        }
+        button {
+            margin-top: 14px;
+            min-height: 48px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #04111f;
+            background: linear-gradient(135deg, #61e8ff, #7d9cff, #9762ff);
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <img src="svarnafinexa-logo.png" alt="SvarnaFiNexa logo">
+        <h1>You’re offline.</h1>
+        <p>SvarnaFiNexa is still available for core app-shell access, but this page needs a network connection. Reconnect and try again.</p>
+        <button type="button" onclick="window.location.reload()">Try Again</button>
+    </div>
+</body>
+</html>

@@ -8,6 +8,7 @@ const APP_SHELL = [
     "/terms.html",
     "/admin.html",
     "/dashboard.html",
+    "/offline.html",
     "/styles.css",
     "/aurora-ui.css",
     "/ui-preferences.js",
@@ -21,6 +22,12 @@ const APP_SHELL = [
     "/icons/icon-192.png",
     "/icons/icon-512.png"
 ];
+
+self.addEventListener("message", (event) => {
+    if (event.data?.type === "SKIP_WAITING") {
+        self.skipWaiting();
+    }
+});
 
 self.addEventListener("install", (event) => {
     event.waitUntil(
@@ -43,7 +50,7 @@ self.addEventListener("fetch", (event) => {
 
     if (event.request.mode === "navigate") {
         event.respondWith(
-            fetch(event.request).catch(() => caches.match("/index.html"))
+            fetch(event.request).catch(() => caches.match("/offline.html"))
         );
         return;
     }
