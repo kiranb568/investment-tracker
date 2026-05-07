@@ -640,7 +640,7 @@
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeSettingsModal()">&times;</span>
-            <h2 style="color: #0f3460; margin-bottom: 20px;">🔐 Change Password</h2>
+            <h2 class="modal-title" style="margin-bottom: 20px;">🔐 Change Password</h2>
             
             <div id="settingsStep1">
                 <div class="form-group" style="margin-bottom: 20px;">
@@ -651,7 +651,7 @@
             </div>
             
             <div id="settingsStep2" style="display: none;">
-                <p style="color: #0f3460; margin-bottom: 15px;">📧 Enter the 6-digit OTP sent to your email:</p>
+                <p class="modal-subtitle" style="margin-bottom: 15px;">📧 Enter the 6-digit OTP sent to your email:</p>
                 <div class="otp-input">
                     <input type="text" id="otp1" maxlength="1" placeholder="0" onkeyup="moveToNextOTP(this, 'otp2')"/>
                     <input type="text" id="otp2" maxlength="1" placeholder="0" onkeyup="moveToNextOTP(this, 'otp3')"/>
@@ -822,7 +822,7 @@
                     tbody.innerHTML += `
                         <tr>
                             <td><strong>₹${inv.amount.toLocaleString('en-IN')}</strong></td>
-                            <td><span style="background: #00d4ff; color: #0f3460; padding: 4px 10px; border-radius: 4px; font-weight: 600;">${inv.multiplier}x</span></td>
+                            <td><span style="padding: 4px 10px; font-weight: 600;">${inv.multiplier}x</span></td>
                             <td>₹${inv.dailyReturn.toLocaleString('en-IN')}</td>
                             <td>₹${inv.monthlyReturn.toLocaleString('en-IN')}</td>
                             <td>${inv.date}</td>
@@ -866,9 +866,9 @@
             `;
 
             document.getElementById('performance-summary').innerHTML = `
-                <p style="color: #0f3460; font-weight: 600; margin: 15px 0;">💰 Total Investments: <span style="color: #00d4ff; font-size: 1.2em;">₹${totalAmount.toLocaleString('en-IN')}</span></p>
-                <p style="color: #0f3460; font-weight: 600; margin: 15px 0;">📅 Projected Annual Return: <span style="color: #00d4ff; font-size: 1.2em;">₹${(totalMonthly * 12).toLocaleString('en-IN')}</span></p>
-                <p style="color: #0f3460; font-weight: 600; margin: 15px 0;">📈 Average Monthly Gain: <span style="color: #00d4ff; font-size: 1.2em;">${totalAmount > 0 ? ((totalMonthly / totalAmount) * 100).toFixed(2) : '0'}%</span></p>
+                <p class="summary-row">💰 Total Investments: <span>₹${totalAmount.toLocaleString('en-IN')}</span></p>
+                <p class="summary-row">📅 Projected Annual Return: <span>₹${(totalMonthly * 12).toLocaleString('en-IN')}</span></p>
+                <p class="summary-row">📈 Average Monthly Gain: <span>${totalAmount > 0 ? ((totalMonthly / totalAmount) * 100).toFixed(2) : '0'}%</span></p>
             `;
 
             // Create Charts

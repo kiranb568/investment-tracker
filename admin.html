@@ -751,7 +751,7 @@
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeSettingsModal()">&times;</span>
-            <h2 style="color: #0f3460; margin-bottom: 20px;">🔐 Change Password</h2>
+            <h2 class="modal-title" style="margin-bottom: 20px;">🔐 Change Password</h2>
             
             <div id="settingsStep1">
                 <div class="form-group" style="margin-bottom: 20px;">
@@ -762,7 +762,7 @@
             </div>
             
             <div id="settingsStep2" style="display: none;">
-                <p style="color: #0f3460; margin-bottom: 15px;">📧 Enter the 6-digit OTP sent to your email:</p>
+                <p class="modal-subtitle" style="margin-bottom: 15px;">📧 Enter the 6-digit OTP sent to your email:</p>
                 <div class="otp-input">
                     <input type="text" id="otp1" maxlength="1" placeholder="0" onkeyup="moveToNextOTP(this, 'otp2')"/>
                     <input type="text" id="otp2" maxlength="1" placeholder="0" onkeyup="moveToNextOTP(this, 'otp3')"/>
@@ -1130,7 +1130,7 @@
                             <td>₹${detail.investment.toLocaleString('en-IN')}</td>
                             <td>₹${detail.daily.toLocaleString('en-IN')}</td>
                             <td>₹${detail.monthly.toLocaleString('en-IN')}</td>
-                            <td><span style="color: #00d4ff; font-weight: 600;">${detail.roi}%</span></td>
+                            <td><span style="font-weight: 600;">${detail.roi}%</span></td>
                         </tr>
                     `;
                 });
