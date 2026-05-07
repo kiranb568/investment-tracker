@@ -162,6 +162,9 @@ function setPreferredTheme(theme) {
     const nextTheme = theme === "light" ? "light" : "dark";
     localStorage.setItem(APP_THEME_STORAGE_KEY, nextTheme);
     applyPreferredTheme(nextTheme);
+    window.dispatchEvent(new CustomEvent("srishti:themechange", {
+        detail: { theme: nextTheme }
+    }));
     return nextTheme;
 }
 

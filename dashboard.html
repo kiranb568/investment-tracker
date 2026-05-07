@@ -709,7 +709,23 @@
             setDefaultUserDates();
             loadUserInvestments();
             loadUserSettings();
+            initializeThemeLiveChartRefresh();
         });
+
+        function initializeThemeLiveChartRefresh() {
+            const rerenderCharts = () => {
+                if (typeof loadUserAnalytics === 'function') {
+                    loadUserAnalytics();
+                }
+            };
+
+            window.addEventListener('srishti:themechange', rerenderCharts);
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'srishtiWealthTheme') {
+                    rerenderCharts();
+                }
+            });
+        }
 
         function initializeMarketRibbon(dateElementId, marqueeElementId) {
             const dateElement = document.getElementById(dateElementId);
@@ -927,8 +943,25 @@
 
     <!-- Chart Creation Functions -->
     <script>
+        function getChartTheme() {
+            const rootStyles = getComputedStyle(document.documentElement);
+            return {
+                legendText: rootStyles.getPropertyValue('--app-text').trim() || '#eaf4ff',
+                axisText: rootStyles.getPropertyValue('--app-muted').trim() || 'rgba(214, 228, 255, 0.82)',
+                grid: 'rgba(88, 238, 255, 0.16)',
+                tooltipBg: 'rgba(3, 10, 20, 0.92)',
+                investmentLine: '#1fa5ff',
+                investmentFill: 'rgba(31, 165, 255, 0.16)',
+                returnLine: '#ffc857',
+                returnFill: 'rgba(255, 200, 87, 0.14)',
+                dailyBar: '#1fa5ff',
+                monthlyBar: '#ffc857'
+            };
+        }
+
         function createMonthlyPerformanceChart(canvas, performanceData) {
             const ctx = canvas.getContext('2d');
+            const chartTheme = getChartTheme();
 
             const months = performanceData.map(item => item.month);
             const dailyReturn = performanceData.map(item => item.dailyReturn);
@@ -942,14 +975,14 @@
                         {
                             label: 'Daily Return',
                             data: dailyReturn,
-                            backgroundColor: '#667eea',
+                            backgroundColor: chartTheme.dailyBar,
                             borderRadius: 5,
                             borderSkipped: false
                         },
                         {
                             label: 'Monthly Return',
                             data: monthlyReturn,
-                            backgroundColor: '#00d4ff',
+                            backgroundColor: chartTheme.monthlyBar,
                             borderRadius: 5,
                             borderSkipped: false
                         }
@@ -962,12 +995,12 @@
                         legend: {
                             labels: {
                                 font: { size: 12, weight: 600 },
-                                color: '#333',
+                                color: chartTheme.legendText,
                                 padding: 15
                             }
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            backgroundColor: chartTheme.tooltipBg,
                             padding: 12,
                             callbacks: {
                                 label: function(context) {
@@ -983,14 +1016,14 @@
                                 callback: function(value) {
                                     return '₹' + (value / 1000).toFixed(0) + 'K';
                                 },
-                                color: '#666',
+                                color: chartTheme.axisText,
                                 font: { size: 10 }
                             },
-                            grid: { color: '#f0f0f0' }
+                            grid: { color: chartTheme.grid }
                         },
                         x: {
                             ticks: {
-                                color: '#666',
+                                color: chartTheme.axisText,
                                 font: { size: 10 }
                             },
                             grid: { display: false }
@@ -1002,6 +1035,7 @@
 
         function createInvestmentGrowthChart(canvas, chartData) {
             const ctx = canvas.getContext('2d');
+            const chartTheme = getChartTheme();
 
             const months = chartData.map(item => item.month);
             const investments = chartData.map(item => item.investment);
@@ -1015,12 +1049,12 @@
                         {
                             label: 'Investment Amount',
                             data: investments,
-                            borderColor: '#0f3460',
-                            backgroundColor: 'rgba(15, 52, 96, 0.1)',
+                            borderColor: chartTheme.investmentLine,
+                            backgroundColor: chartTheme.investmentFill,
                             borderWidth: 3,
                             fill: true,
                             tension: 0.4,
-                            pointBackgroundColor: '#0f3460',
+                            pointBackgroundColor: chartTheme.investmentLine,
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2,
                             pointRadius: 5
@@ -1028,12 +1062,12 @@
                         {
                             label: 'Returns Generated',
                             data: returns,
-                            borderColor: '#00d4ff',
-                            backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                            borderColor: chartTheme.returnLine,
+                            backgroundColor: chartTheme.returnFill,
                             borderWidth: 3,
                             fill: true,
                             tension: 0.4,
-                            pointBackgroundColor: '#00d4ff',
+                            pointBackgroundColor: chartTheme.returnLine,
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2,
                             pointRadius: 5
@@ -1047,12 +1081,12 @@
                         legend: {
                             labels: {
                                 font: { size: 12, weight: 600 },
-                                color: '#333',
+                                color: chartTheme.legendText,
                                 padding: 15
                             }
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            backgroundColor: chartTheme.tooltipBg,
                             padding: 12,
                             callbacks: {
                                 label: function(context) {
@@ -1068,17 +1102,17 @@
                                 callback: function(value) {
                                     return '₹' + (value / 1000).toFixed(0) + 'K';
                                 },
-                                color: '#666',
+                                color: chartTheme.axisText,
                                 font: { size: 10 }
                             },
-                            grid: { color: '#f0f0f0' }
+                            grid: { color: chartTheme.grid }
                         },
                         x: {
                             ticks: {
-                                color: '#666',
+                                color: chartTheme.axisText,
                                 font: { size: 10 }
                             },
-                            grid: { color: '#f0f0f0' }
+                            grid: { color: chartTheme.grid }
                         }
                     }
                 }
