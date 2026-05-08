@@ -221,3 +221,198 @@ tbody tr:hover {
 button:hover {
     transform: translateY(-3px);
 }
+
+/* Srishti Wealth 2026 identity refresh */
+:root {
+    --q-bg: #03040a;
+    --q-bg-2: #07101d;
+    --q-surface: rgba(7, 14, 28, 0.76);
+    --q-surface-strong: rgba(5, 11, 24, 0.94);
+    --q-border: rgba(63, 225, 255, 0.28);
+    --q-border-soft: rgba(255, 207, 84, 0.16);
+    --q-text: #f6fbff;
+    --q-muted: rgba(210, 226, 245, 0.74);
+    --q-cyan: #35e7ff;
+    --q-blue: #2f74ff;
+    --q-violet: #9d4dff;
+    --q-gold: #ffd057;
+    --q-success: #3effb0;
+    --q-danger: #ff5f85;
+    --q-shadow: 0 26px 70px rgba(0, 0, 0, 0.48), 0 0 42px rgba(53, 231, 255, 0.08);
+}
+
+:root[data-theme="light"] {
+    --q-bg: #f4f8ff;
+    --q-bg-2: #eaf1ff;
+    --q-surface: rgba(255, 255, 255, 0.84);
+    --q-surface-strong: rgba(255, 255, 255, 0.96);
+    --q-border: rgba(32, 145, 235, 0.24);
+    --q-border-soft: rgba(218, 152, 18, 0.2);
+    --q-text: #07172b;
+    --q-muted: rgba(7, 23, 43, 0.68);
+    --q-cyan: #0c9fff;
+    --q-blue: #245bdb;
+    --q-violet: #7139e8;
+    --q-gold: #d99b10;
+    --q-success: #078a55;
+    --q-danger: #c73c62;
+    --q-shadow: 0 24px 58px rgba(24, 74, 138, 0.15);
+}
+
+html,
+body {
+    background:
+        linear-gradient(120deg, rgba(53, 231, 255, 0.12), transparent 28%),
+        linear-gradient(235deg, rgba(255, 208, 87, 0.12), transparent 28%),
+        linear-gradient(180deg, var(--q-bg) 0%, var(--q-bg-2) 52%, #02030a 100%) !important;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, rgba(53, 231, 255, 0.05), transparent 18%, transparent 82%, rgba(255, 208, 87, 0.04)),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 110px);
+    opacity: 0.85;
+    z-index: -1;
+}
+
+.brand-logo,
+.brand-panel img,
+.auth-brand img,
+.support-brand img,
+.pwa-overlay-logo,
+.pwa-install-button img {
+    object-fit: contain;
+    filter: drop-shadow(0 0 18px rgba(255, 208, 87, 0.22)) drop-shadow(0 0 28px rgba(53, 231, 255, 0.14));
+}
+
+.brand-logo {
+    border-radius: 16px;
+}
+
+.brand-panel img,
+.auth-brand img,
+.support-brand img {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(53, 231, 255, 0.04));
+    border: 1px solid rgba(255, 208, 87, 0.18);
+}
+
+.topbar {
+    background: rgba(3, 8, 18, 0.72) !important;
+    border-bottom: 1px solid rgba(53, 231, 255, 0.18);
+}
+
+.hero {
+    min-height: 82vh;
+    align-items: center;
+}
+
+.copy,
+.visual,
+.panel,
+.service,
+.market-card,
+footer {
+    background:
+        linear-gradient(145deg, rgba(7, 16, 34, 0.82), rgba(3, 8, 18, 0.92)) !important;
+    border-color: rgba(53, 231, 255, 0.2) !important;
+    box-shadow: var(--q-shadow) !important;
+}
+
+.copy::before,
+.visual::before,
+.panel::before,
+.service::before,
+.market-card::before {
+    background: linear-gradient(90deg, var(--q-cyan), var(--q-gold), var(--q-violet));
+}
+
+.tag,
+.panel span,
+.service span,
+.market-card span {
+    background: rgba(53, 231, 255, 0.08) !important;
+    border: 1px solid rgba(53, 231, 255, 0.18);
+    color: #aef7ff !important;
+}
+
+.primary,
+.signin,
+.btn,
+button {
+    background: linear-gradient(135deg, var(--q-gold), var(--q-cyan) 52%, var(--q-blue)) !important;
+    color: #06101c !important;
+}
+
+.secondary,
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.055) !important;
+    border: 1px solid rgba(53, 231, 255, 0.24) !important;
+    color: var(--q-text) !important;
+}
+
+.market-board,
+.tv-widget-shell {
+    min-height: 600px;
+}
+
+.tv-widget-shell {
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(53, 231, 255, 0.18);
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.tradingview-widget-container,
+.tradingview-widget-container__widget {
+    min-height: 560px;
+}
+
+.live-market-strip {
+    min-height: 74px;
+    border: 1px solid rgba(53, 231, 255, 0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.live-market-fallback {
+    display: grid;
+    gap: 10px;
+    min-height: 100%;
+    place-items: center;
+    padding: 24px;
+    text-align: center;
+    color: var(--q-text);
+}
+
+.live-market-fallback.compact {
+    grid-template-columns: auto 1fr auto;
+    min-height: 74px;
+    place-items: center start;
+    text-align: left;
+}
+
+.live-market-fallback span {
+    color: var(--q-muted);
+}
+
+.live-market-fallback a {
+    display: inline-flex;
+    margin: 4px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(53, 231, 255, 0.22);
+    color: var(--q-text);
+}
+
+@media (max-width: 760px) {
+    .live-market-fallback.compact {
+        grid-template-columns: 1fr;
+        text-align: center;
+        place-items: center;
+    }
+}

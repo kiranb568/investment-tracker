@@ -1,15 +1,15 @@
 {
   "name": "Srishti Wealth",
   "short_name": "Srishti",
-  "description": "Futuristic investment intelligence, investor support, and portfolio analytics.",
+  "description": "Futuristic trading, investment, live-market, and wealth-management intelligence.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui", "browser"],
   "orientation": "portrait-primary",
-  "background_color": "#081223",
-  "theme_color": "#081223",
+  "background_color": "#03040a",
+  "theme_color": "#03040a",
   "categories": ["finance", "business", "productivity"],
   "prefer_related_applications": false,
   "icons": [
