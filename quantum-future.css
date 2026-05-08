@@ -1,0 +1,223 @@
+:root {
+    --q-bg: #03050d;
+    --q-bg-2: #090f1f;
+    --q-surface: rgba(10, 18, 40, 0.7);
+    --q-surface-strong: rgba(8, 15, 32, 0.9);
+    --q-border: rgba(119, 245, 255, 0.24);
+    --q-border-soft: rgba(119, 245, 255, 0.12);
+    --q-text: #f1f7ff;
+    --q-muted: rgba(205, 222, 255, 0.74);
+    --q-cyan: #57f3ff;
+    --q-indigo: #7a86ff;
+    --q-violet: #9e63ff;
+    --q-success: #6bffb8;
+    --q-danger: #ff8ea5;
+    --q-shadow: 0 30px 80px rgba(8, 14, 30, 0.5);
+}
+
+:root[data-theme="light"] {
+    --q-bg: #eef4ff;
+    --q-bg-2: #e4ecff;
+    --q-surface: rgba(255, 255, 255, 0.78);
+    --q-surface-strong: rgba(255, 255, 255, 0.93);
+    --q-border: rgba(76, 145, 255, 0.24);
+    --q-border-soft: rgba(76, 145, 255, 0.14);
+    --q-text: #0f2240;
+    --q-muted: rgba(19, 38, 73, 0.68);
+    --q-cyan: #129dff;
+    --q-indigo: #3f66ff;
+    --q-violet: #7d4dff;
+    --q-success: #12995f;
+    --q-danger: #cf4766;
+    --q-shadow: 0 24px 60px rgba(31, 79, 154, 0.16);
+}
+
+html,
+body {
+    background:
+        radial-gradient(circle at 12% -10%, rgba(84, 243, 255, 0.23), transparent 34%),
+        radial-gradient(circle at 86% 0%, rgba(158, 99, 255, 0.18), transparent 28%),
+        linear-gradient(180deg, var(--q-bg) 0%, var(--q-bg-2) 100%) !important;
+    color: var(--q-text) !important;
+}
+
+body {
+    font-family: "Space Grotesk", "Segoe UI", sans-serif !important;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 58px 58px;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+}
+
+.container,
+.card,
+.panel,
+.page-header,
+.metric,
+.chart-container,
+.modal-content,
+.brand-panel,
+.auth-container,
+.hero,
+.service,
+.market-card,
+.copy,
+.visual,
+.stat,
+.pulse-stat,
+.signal-card,
+.settings-row,
+.settings-form input,
+.settings-form select,
+.settings-form textarea {
+    border: 1px solid var(--q-border) !important;
+    background: var(--q-surface) !important;
+    backdrop-filter: blur(16px);
+    box-shadow: var(--q-shadow) !important;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, rgba(7, 15, 35, 0.96) 0%, rgba(4, 11, 25, 0.98) 100%) !important;
+    border-right: 1px solid var(--q-border-soft);
+}
+
+.sidebar-brand {
+    border-bottom: 1px solid var(--q-border) !important;
+}
+
+.sidebar-brand-logo {
+    width: 74px !important;
+    height: 74px !important;
+    object-fit: contain;
+    filter: drop-shadow(0 0 22px rgba(255, 197, 96, 0.18));
+}
+
+.sidebar-menu a {
+    border-radius: 0 999px 999px 0;
+    margin-right: 10px;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: linear-gradient(90deg, rgba(87, 243, 255, 0.14), rgba(158, 99, 255, 0.09)) !important;
+    color: var(--q-text) !important;
+    border-left-color: var(--q-cyan) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+strong,
+th,
+td,
+label,
+p,
+span {
+    color: var(--q-text);
+}
+
+p,
+.page-header p,
+.card p,
+.toggle-link,
+.summary-row,
+.settings-value,
+.contact-links,
+.legal-note {
+    color: var(--q-muted) !important;
+}
+
+.btn,
+button,
+.signin,
+.primary,
+.btn-primary,
+.btn-success {
+    background: linear-gradient(135deg, var(--q-cyan), var(--q-indigo) 52%, var(--q-violet)) !important;
+    color: #05111f !important;
+    border: none !important;
+    border-radius: 14px !important;
+    box-shadow: 0 16px 34px rgba(76, 230, 255, 0.24) !important;
+}
+
+.btn-secondary,
+.secondary {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: var(--q-text) !important;
+    border: 1px solid var(--q-border) !important;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--q-danger), #ffb06b) !important;
+    color: #2d0c16 !important;
+}
+
+input,
+select,
+textarea,
+.form-group input,
+.form-group select {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: var(--q-text) !important;
+    border: 1px solid var(--q-border) !important;
+    border-radius: 12px !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--q-muted) !important;
+}
+
+table,
+.investments-table,
+.customers-table {
+    background: transparent !important;
+}
+
+thead {
+    background: linear-gradient(135deg, rgba(18, 37, 69, 0.95), rgba(28, 61, 108, 0.95)) !important;
+}
+
+tbody tr:hover {
+    background: rgba(87, 243, 255, 0.08) !important;
+}
+
+.topbar,
+.market-ribbon,
+.ticker-ribbon,
+.market-ribbon-track {
+    background: var(--q-surface-strong) !important;
+    border: 1px solid var(--q-border) !important;
+}
+
+.card,
+.panel,
+.service,
+.market-card,
+.metric,
+.page-header,
+.modal-content,
+.hero,
+.brand-panel,
+.auth-container {
+    border-radius: 22px !important;
+}
+
+.service:hover,
+.market-card:hover,
+.card:hover,
+.panel:hover,
+.metric:hover,
+.btn:hover,
+button:hover {
+    transform: translateY(-3px);
+}

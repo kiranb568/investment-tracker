@@ -30,6 +30,7 @@
     <script src="ui-preferences.js"></script>
     <script defer src="pwa.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="quantum-future.css">
     <style>
         :root {
             --page-grad-1: radial-gradient(circle at top, rgba(88, 238, 255, 0.26), transparent 35%);
@@ -392,10 +393,8 @@
             }
 
             if (await loginUser(email, password)) {
-                showMessage("Login successful. Redirecting...", "success");
-                setTimeout(() => {
-                    window.location.href = "dashboard.html";
-                }, 1200);
+                showMessage("Login successful.", "success");
+                window.location.href = "dashboard.html";
             }
         }
 

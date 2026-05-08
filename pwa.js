@@ -350,7 +350,6 @@ function setupInstallPrompt() {
     }
 }
 
-showSplashScreen();
 registerServiceWorker();
 setupInstallPrompt();
 monitorServiceWorkerUpdates();
