@@ -195,7 +195,7 @@ tbody tr:hover {
 .benchmark-grid {
     display: grid;
     gap: 14px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
 }
 
 .benchmark-widget {
@@ -301,7 +301,7 @@ tbody tr:hover {
 .ai-insight-cards {
     display: grid;
     gap: 14px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .ai-insight-card {
@@ -353,6 +353,46 @@ tbody tr:hover {
     font-size: 0.84rem;
 }
 
+.fno-connector-status {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.75fr) minmax(280px, 1.5fr) auto;
+    align-items: center;
+    gap: 16px;
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px solid #e3d0a0;
+    border-radius: 8px;
+    background: #fff8e7;
+}
+
+.fno-connector-status strong {
+    display: block;
+    color: var(--sw-blue-deep) !important;
+}
+
+.fno-connector-status span {
+    display: block;
+    margin-top: 5px;
+    color: var(--sw-saffron) !important;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.fno-connector-status p {
+    margin: 0;
+    color: var(--sw-muted) !important;
+    font-size: 0.86rem;
+    line-height: 1.55;
+}
+
+.fno-connector-status a {
+    color: var(--sw-blue);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
 @media (max-width: 1100px) {
     .benchmark-grid,
     .ai-insight-cards {
@@ -367,5 +407,340 @@ tbody tr:hover {
 
     .ai-insight-status {
         min-width: 0;
+    }
+
+    .fno-connector-status {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Balanced Srishti Wealth spectrum */
+:root,
+:root[data-theme="dark"],
+:root[data-theme="light"] {
+    --sw-page: #123d82;
+    --sw-page-alt: #1d58a7;
+    --sw-panel: #fffdf8;
+    --sw-panel-soft: #f5f8ff;
+    --sw-text: #10244b;
+    --sw-muted: #556984;
+    --sw-blue: #145fc3;
+    --sw-blue-deep: #0b3476;
+    --sw-gold: #d49a18;
+    --sw-gold-soft: #fff0bd;
+    --sw-saffron: #ed8c1b;
+    --sw-violet: #7540b8;
+    --sw-violet-soft: #f0e7ff;
+    --sw-line: #d8e0ec;
+    --sw-shadow: 0 18px 42px rgba(5, 34, 82, 0.18);
+}
+
+html,
+body {
+    background:
+        linear-gradient(120deg, rgba(255, 184, 55, 0.26), transparent 28%),
+        linear-gradient(235deg, rgba(117, 64, 184, 0.28), transparent 32%),
+        linear-gradient(150deg, #0b3476 0%, #145fc3 52%, #4a42a5 100%) !important;
+}
+
+body::before {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px) !important;
+    background-size: 72px 72px !important;
+}
+
+.topbar {
+    background: rgba(9, 46, 111, 0.96) !important;
+    border-bottom-color: rgba(255, 213, 116, 0.5) !important;
+}
+
+.topbar a,
+.topbar strong,
+.topbar small {
+    color: #ffffff !important;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, #0c397f, #165aa9 70%, #533c99) !important;
+    border-right-color: rgba(255, 213, 116, 0.45) !important;
+}
+
+.sidebar-brand,
+.sidebar-menu li {
+    border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.sidebar-brand h2,
+.sidebar-brand-copy p,
+.sidebar-menu a {
+    color: #ffffff !important;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: linear-gradient(90deg, rgba(255, 202, 69, 0.3), rgba(255, 255, 255, 0.16)) !important;
+    border-color: rgba(255, 220, 132, 0.74) !important;
+    color: #ffffff !important;
+}
+
+.main-content {
+    padding: 34px !important;
+}
+
+.hero {
+    gap: 30px !important;
+    padding: 54px 0 42px !important;
+}
+
+section {
+    padding: 42px 0;
+}
+
+.copy,
+.visual,
+.panel,
+.service,
+.market-card,
+.page-header,
+.card,
+.metric,
+.chart-container,
+.modal-content,
+.market-ribbon,
+.ai-market-section {
+    background: rgba(255, 253, 248, 0.97) !important;
+    border-color: rgba(216, 224, 236, 0.96) !important;
+    box-shadow: var(--sw-shadow) !important;
+}
+
+.copy,
+.visual,
+.panel,
+.service,
+.market-card {
+    padding: 28px !important;
+}
+
+.market-grid {
+    gap: 26px !important;
+    grid-template-columns: minmax(0, 1.38fr) minmax(320px, 0.62fr) !important;
+}
+
+.market-board,
+.tv-widget-shell {
+    min-height: 0 !important;
+}
+
+.benchmark-grid {
+    gap: 18px;
+}
+
+.benchmark-widget {
+    border-top: 4px solid var(--sw-gold);
+    background: #ffffff;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.benchmark-widget:nth-child(2) {
+    border-top-color: var(--sw-saffron);
+}
+
+.benchmark-widget:nth-child(3) {
+    border-top-color: var(--sw-violet);
+}
+
+.benchmark-widget:hover,
+.ai-insight-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 36px rgba(5, 34, 82, 0.16);
+}
+
+.benchmark-quote {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 14px 4px;
+}
+
+.benchmark-quote strong {
+    color: var(--sw-blue-deep) !important;
+    font-size: 1.55rem;
+}
+
+.benchmark-quote span {
+    color: var(--sw-muted) !important;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.benchmark-widget.is-positive {
+    color: #137349;
+}
+
+.benchmark-widget.is-negative {
+    color: #b34359;
+}
+
+.benchmark-sparkline {
+    display: block;
+    width: 100%;
+    height: 160px;
+    padding: 18px 12px;
+}
+
+.benchmark-line {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 5;
+}
+
+.benchmark-widget footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px 14px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--sw-line);
+    background: #f7f9fd;
+}
+
+.benchmark-widget footer span {
+    color: var(--sw-muted) !important;
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+.benchmark-widget footer a {
+    margin-left: auto;
+}
+
+.market-loading {
+    grid-column: 1 / -1;
+    min-height: 260px;
+    display: grid;
+    place-items: center;
+    color: var(--sw-blue);
+    font-weight: 700;
+}
+
+.delayed-market-ticker {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.delayed-market-ticker a {
+    display: grid;
+    gap: 5px;
+    min-height: 70px;
+    padding: 13px 15px;
+    border-right: 1px solid var(--sw-line);
+    background: #ffffff;
+    text-decoration: none;
+}
+
+.delayed-market-ticker strong {
+    color: var(--sw-blue-deep) !important;
+    font-size: 0.82rem;
+}
+
+.delayed-market-ticker span {
+    color: var(--sw-muted) !important;
+    font-size: 0.8rem;
+}
+
+.delayed-market-ticker .is-positive span {
+    color: #137349 !important;
+}
+
+.delayed-market-ticker .is-negative span {
+    color: #b34359 !important;
+}
+
+.ai-market-section {
+    margin: 34px 0 !important;
+    padding: 28px !important;
+    border-top: 5px solid var(--sw-violet) !important;
+}
+
+.ai-insight-cards {
+    gap: 18px;
+}
+
+.ai-insight-card {
+    border-top: 4px solid var(--sw-blue);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.ai-insight-card:nth-child(2) {
+    border-top-color: var(--sw-gold);
+}
+
+.ai-insight-card:nth-child(3) {
+    border-top-color: var(--sw-violet);
+}
+
+.ai-insight-status {
+    background: var(--sw-violet-soft) !important;
+    border-color: #d9c9ef !important;
+}
+
+.tag,
+.panel span,
+.service span,
+.market-card span {
+    background: var(--sw-gold-soft) !important;
+    border-color: rgba(212, 154, 24, 0.28) !important;
+    color: #875b00 !important;
+}
+
+.ticker-ribbon,
+.market-ribbon-track {
+    background: rgba(255, 248, 228, 0.98) !important;
+    border-color: rgba(212, 154, 24, 0.34) !important;
+}
+
+.pulse-badge {
+    color: var(--sw-violet) !important;
+    background: var(--sw-violet-soft) !important;
+    border-color: #d9c9ef !important;
+}
+
+@keyframes swPanelIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.page-header,
+.market-ribbon,
+.ai-market-section,
+.content-section.active > .card,
+.benchmark-widget {
+    animation: swPanelIn 420ms ease both;
+}
+
+@media (max-width: 1180px) {
+    .market-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .delayed-market-ticker {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .main-content {
+        padding: 18px !important;
+    }
+
+    section {
+        padding: 28px 0;
+    }
+
+    .delayed-market-ticker {
+        grid-template-columns: 1fr;
     }
 }

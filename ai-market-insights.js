@@ -37,6 +37,57 @@ function getDirection(snapshot) {
     return "Range-bound";
 }
 
+function average(values) {
+    const usable = values.filter(Number.isFinite);
+    return usable.length ? usable.reduce((sum, value) => sum + value, 0) / usable.length : undefined;
+}
+
+function standardDeviation(values) {
+    const mean = average(values);
+    if (!Number.isFinite(mean)) return undefined;
+    return Math.sqrt(average(values.map((value) => (value - mean) ** 2)));
+}
+
+function getAdaptiveSignals(snapshot) {
+    const history = snapshot?.history || [];
+    const closes = history.map((point) => point.close).filter(Number.isFinite);
+    const recent = closes.slice(-5);
+    const baseline = closes.slice(-15);
+    const returns = closes.slice(1).map((close, index) => ((close - closes[index]) / closes[index]) * 100);
+    const shortAverage = average(recent);
+    const baselineAverage = average(baseline);
+    const realizedVolatility = Number.isFinite(standardDeviation(returns))
+        ? standardDeviation(returns) * Math.sqrt(252)
+        : undefined;
+    const trend = Number.isFinite(shortAverage) && Number.isFinite(baselineAverage)
+        ? (shortAverage > baselineAverage ? "Uptrend" : shortAverage < baselineAverage ? "Downtrend" : "Sideways")
+        : "Awaiting feed";
+    const divergence = Number.isFinite(shortAverage) && Number.isFinite(snapshot?.close)
+        ? (snapshot.close > shortAverage ? "Price above 5-session mean" : "Price below 5-session mean")
+        : "Awaiting feed";
+
+    return { shortAverage, baselineAverage, realizedVolatility, trend, divergence };
+}
+
+function rememberObservation(instrument, snapshot) {
+    if (!hasCompleteSnapshot(snapshot)) return 0;
+    try {
+        const key = "srishtiWealthAdaptiveObservations";
+        const memory = JSON.parse(localStorage.getItem(key) || "{}");
+        const observations = memory[instrument] || [];
+        const signature = `${snapshot.fetchedAt || ""}:${snapshot.close}`;
+        if (!observations.some((item) => item.signature === signature)) {
+            observations.push({ signature, close: snapshot.close, recordedAt: new Date().toISOString() });
+        }
+        memory[instrument] = observations.slice(-60);
+        localStorage.setItem(key, JSON.stringify(memory));
+        return memory[instrument].length;
+    } catch (error) {
+        console.warn("Unable to retain adaptive market observations:", error);
+        return 0;
+    }
+}
+
 function getBuildUp(snapshot) {
     if (!Number.isFinite(snapshot?.futuresPriceChange) || !Number.isFinite(snapshot?.oiChange)) {
         return "Awaiting feed";
@@ -71,6 +122,8 @@ function getRuntimeSnapshots() {
 function renderInsightCard(instrument, snapshot) {
     const levels = calculateLevels(snapshot);
     const connected = hasCompleteSnapshot(snapshot);
+    const adaptive = getAdaptiveSignals(snapshot);
+    const observations = rememberObservation(instrument, snapshot);
     return `
         <article class="ai-insight-card ${connected ? "is-connected" : "is-pending"}">
             <header>
@@ -84,15 +137,17 @@ function renderInsightCard(instrument, snapshot) {
                 <div><small>Prev. Close</small><strong>${formatNumber(snapshot?.previousClose)}</strong></div>
                 <div><small>Open</small><strong>${formatNumber(snapshot?.open)}</strong></div>
                 <div><small>High / Low</small><strong>${formatNumber(snapshot?.high)} / ${formatNumber(snapshot?.low)}</strong></div>
-                <div><small>Direction</small><strong>${getDirection(snapshot)}</strong></div>
+                <div><small>Trend / Direction</small><strong>${adaptive.trend} · ${getDirection(snapshot)}</strong></div>
                 <div><small>F&O OI Change</small><strong>${formatMetric(snapshot?.oiChange, "%")}</strong></div>
                 <div><small>PCR</small><strong>${formatMetric(snapshot?.pcr)}</strong></div>
                 <div><small>Build-up</small><strong>${getBuildUp(snapshot)}</strong></div>
-                <div><small>Volatility / VIX</small><strong>${formatMetric(snapshot?.volatility, "%")} / ${formatMetric(snapshot?.vix)}</strong></div>
+                <div><small>Volatility / VIX</small><strong>${formatMetric(adaptive.realizedVolatility, "%")} / ${formatMetric(snapshot?.vix)}</strong></div>
                 <div><small>Greeks</small><strong>${escapeHtml(snapshot?.greeks || "Awaiting option-chain feed")}</strong></div>
-                <div><small>Divergence</small><strong>${escapeHtml(snapshot?.divergence || "Awaiting feed")}</strong></div>
+                <div><small>Divergence</small><strong>${escapeHtml(snapshot?.divergence || adaptive.divergence)}</strong></div>
                 <div><small>Support / Resistance</small><strong>${levels.support} / ${levels.resistance}</strong></div>
                 <div><small>Possible Entry / Exit</small><strong>${connected ? `${levels.entry}. ${levels.exit}.` : "Withheld until live inputs are connected"}</strong></div>
+                <div><small>Adaptive Memory</small><strong>${observations ? `${observations} verified observation${observations === 1 ? "" : "s"}` : "Awaiting feed"}</strong></div>
+                <div><small>Data Source</small><strong>${escapeHtml(snapshot?.source || "Awaiting feed")}</strong></div>
             </div>
         </article>
     `;
@@ -105,7 +160,7 @@ function renderAiInsights(container) {
             <div>
                 <span>AI-ready Market Intelligence</span>
                 <h2>Self-learning insight console</h2>
-                <p>Designed to evaluate previous-day OHLC, direction, Greeks, futures and options OI, PCR, build-up, volatility, divergence, VIX, support, resistance, and review levels when a licensed market snapshot is connected.</p>
+                <p>Adaptive delayed-market analytics evaluate OHLC history, direction, realized volatility, divergence, VIX, support, resistance, and scenario levels. F&O fields remain visibly pending until a licensed option-chain connector is added.</p>
             </div>
             <div class="ai-insight-status">
                 <strong>${Object.keys(snapshots).length ? "Runtime snapshot detected" : "Live data connector required"}</strong>
@@ -115,7 +170,15 @@ function renderAiInsights(container) {
         <div class="ai-insight-cards">
             ${INSIGHT_INSTRUMENTS.map((instrument) => renderInsightCard(instrument, snapshots[instrument])).join("")}
         </div>
-        <p class="ai-insight-note">The console intentionally withholds predictions when required exchange and option-chain inputs are unavailable. Connect a licensed NSE/BSE data provider and model API through <code>window.__SRISHTI_MARKET_SNAPSHOT__</code> to activate live analysis.</p>
+        <div class="fno-connector-status">
+            <div>
+                <strong>Stock F&O intelligence connector</strong>
+                <span>Ready for licensed option-chain integration</span>
+            </div>
+            <p>Stock-level Greeks, OI, PCR, expiry analysis, build-up classification, and contract-level scenarios are intentionally pending. NSE treats these analytics and delayed F&O feeds as licensed data products.</p>
+            <a href="https://www.nseindia.com/market-data/analytical-products" target="_blank" rel="noopener noreferrer">Review NSE analytical products</a>
+        </div>
+        <p class="ai-insight-note">Delayed benchmark history is used for adaptive technical scenarios, not guaranteed predictions. Greeks, OI, PCR, and F&O build-up remain withheld until a licensed option-chain connector supplies them. This is decision support, not investment advice.</p>
     `;
 }
 
