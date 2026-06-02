@@ -744,3 +744,439 @@ section {
         grid-template-columns: 1fr;
     }
 }
+
+/* Final professional visual system: blue, gold, violet, saffron, white */
+:root,
+:root[data-theme="dark"],
+:root[data-theme="light"] {
+    color-scheme: light;
+    --sw-ink: #102141;
+    --sw-ink-2: #263b60;
+    --sw-muted: #65738a;
+    --sw-canvas: #e8eefb;
+    --sw-canvas-2: #d9e4f6;
+    --sw-blue: #174ea6;
+    --sw-blue-deep: #092f72;
+    --sw-blue-rich: #0f438e;
+    --sw-gold: #c88a10;
+    --sw-gold-2: #f0c768;
+    --sw-saffron: #ed8a1c;
+    --sw-violet: #6f3bb2;
+    --sw-violet-2: #8c61d4;
+    --sw-white: #fffdf8;
+    --sw-panel: rgba(255, 253, 248, 0.94);
+    --sw-panel-strong: #ffffff;
+    --sw-panel-blue: #eef5ff;
+    --sw-line: rgba(35, 70, 120, 0.18);
+    --sw-line-strong: rgba(9, 47, 114, 0.24);
+    --sw-shadow: 0 22px 52px rgba(6, 38, 96, 0.18);
+    --sw-shadow-soft: 0 12px 28px rgba(6, 38, 96, 0.12);
+    --q-text: var(--sw-ink);
+    --q-muted: var(--sw-muted);
+    --q-surface: var(--sw-panel);
+    --q-surface-strong: var(--sw-panel-strong);
+    --q-border: var(--sw-line);
+    --q-blue: var(--sw-blue);
+    --q-violet: var(--sw-violet);
+    --q-gold: var(--sw-gold);
+    --app-text: var(--sw-ink);
+    --app-muted: var(--sw-muted);
+    --app-surface: var(--sw-panel);
+    --app-surface-2: var(--sw-panel-blue);
+    --app-border: var(--sw-line);
+    --app-accent: var(--sw-blue);
+    --app-accent-2: var(--sw-gold);
+    --app-accent-3: var(--sw-violet);
+}
+
+html,
+body {
+    min-height: 100%;
+    background:
+        linear-gradient(115deg, rgba(237, 138, 28, 0.18), transparent 24%),
+        linear-gradient(250deg, rgba(111, 59, 178, 0.22), transparent 28%),
+        linear-gradient(160deg, #dfe8f8 0%, #eef3fb 46%, #d5e1f5 100%) !important;
+    color: var(--sw-ink) !important;
+    font-family: "Space Grotesk", "Segoe UI", sans-serif !important;
+}
+
+body::before {
+    opacity: 0.55 !important;
+    background-image:
+        linear-gradient(rgba(23, 78, 166, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 78, 166, 0.08) 1px, transparent 1px) !important;
+    background-size: 80px 80px !important;
+    mask-image: linear-gradient(180deg, black, transparent 92%) !important;
+}
+
+body::after {
+    opacity: 0.5 !important;
+    background:
+        linear-gradient(90deg, rgba(9, 47, 114, 0.1), transparent 30%, rgba(200, 138, 16, 0.11)),
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0 1px, transparent 1px 16px) !important;
+}
+
+.shell {
+    width: min(1280px, calc(100% - 56px)) !important;
+}
+
+.topbar {
+    background: linear-gradient(90deg, rgba(9, 47, 114, 0.96), rgba(23, 78, 166, 0.94), rgba(68, 55, 151, 0.92)) !important;
+    border-bottom: 1px solid rgba(240, 199, 104, 0.52) !important;
+    box-shadow: 0 10px 34px rgba(9, 47, 114, 0.22) !important;
+}
+
+.topbar .shell {
+    padding: 14px 0 !important;
+}
+
+.topbar a,
+.topbar strong,
+.topbar small,
+.nav a {
+    color: #ffffff !important;
+}
+
+.brand-logo,
+.sidebar-brand-logo,
+.hero-brand img,
+.auth-brand img,
+.support-brand img {
+    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    border: 1px solid rgba(240, 199, 104, 0.52) !important;
+    box-shadow: 0 14px 30px rgba(9, 47, 114, 0.16) !important;
+    filter: none !important;
+}
+
+.hero {
+    min-height: auto !important;
+    padding: 58px 0 46px !important;
+    gap: 36px !important;
+    align-items: center !important;
+}
+
+.copy {
+    flex: 1.08 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+h1 {
+    color: var(--sw-blue-deep) !important;
+    font-size: clamp(2.8rem, 5.2vw, 5rem) !important;
+    line-height: 0.98 !important;
+    letter-spacing: 0 !important;
+}
+
+h2,
+h3,
+h4,
+.page-header h1,
+.card h3 {
+    color: var(--sw-blue-deep) !important;
+    letter-spacing: 0 !important;
+}
+
+p,
+li,
+.copy p,
+.head p,
+.panel p,
+.service p,
+.market-card p,
+.contact p,
+.page-header p,
+.card p,
+.settings-value {
+    color: var(--sw-muted) !important;
+}
+
+.visual,
+.panel,
+.service,
+.market-card,
+.page-header,
+.card,
+.metric,
+.chart-container,
+.modal-content,
+.market-ribbon,
+.ai-market-section,
+.auth-container,
+.brand-panel,
+.settings-row,
+.support-card,
+.card {
+    background: var(--sw-panel) !important;
+    border: 1px solid var(--sw-line) !important;
+    border-radius: 18px !important;
+    box-shadow: var(--sw-shadow-soft) !important;
+    backdrop-filter: blur(12px);
+}
+
+.visual,
+.panel,
+.service,
+.market-card {
+    padding: 30px !important;
+}
+
+.visual {
+    border-top: 5px solid var(--sw-gold) !important;
+}
+
+.pulse-box {
+    background: linear-gradient(145deg, #ffffff, #f4f7ff) !important;
+    border: 1px solid var(--sw-line) !important;
+    border-radius: 18px !important;
+}
+
+.pulse-icon,
+.stat,
+.pulse-stat {
+    background: #f6f8fe !important;
+    border: 1px solid var(--sw-line) !important;
+    border-radius: 14px !important;
+}
+
+.pulse-badge,
+.tag,
+.panel span,
+.service span,
+.market-card span {
+    background: linear-gradient(135deg, rgba(240, 199, 104, 0.28), rgba(255, 255, 255, 0.86)) !important;
+    border: 1px solid rgba(200, 138, 16, 0.34) !important;
+    color: #7a5207 !important;
+}
+
+.primary,
+.signin,
+.btn-primary,
+.btn-success,
+.btn,
+button {
+    min-height: 46px;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, var(--sw-blue-deep), var(--sw-blue) 58%, var(--sw-violet)) !important;
+    color: #ffffff !important;
+    box-shadow: 0 12px 26px rgba(9, 47, 114, 0.24) !important;
+}
+
+.secondary,
+.btn-secondary {
+    min-height: 46px;
+    border-radius: 12px !important;
+    background: #fffaf0 !important;
+    border: 1px solid rgba(200, 138, 16, 0.36) !important;
+    color: var(--sw-blue-deep) !important;
+}
+
+.market-grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.7fr) !important;
+    gap: 28px !important;
+}
+
+.services,
+.about,
+.watch-grid {
+    gap: 22px !important;
+}
+
+.market-ribbon {
+    background: linear-gradient(135deg, #ffffff, #f6f8ff) !important;
+    border-top: 5px solid var(--sw-gold) !important;
+}
+
+.market-ribbon-track,
+.ticker-ribbon {
+    background: linear-gradient(90deg, #fff8e6, #f5f0ff) !important;
+    border-color: rgba(200, 138, 16, 0.32) !important;
+}
+
+.market-ribbon-marquee,
+.ticker-track {
+    color: var(--sw-blue-deep) !important;
+}
+
+.market-ribbon-links a,
+.market-links a,
+.contact-links a,
+.legal-links a {
+    color: var(--sw-blue-deep) !important;
+}
+
+.benchmark-grid {
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)) !important;
+    gap: 20px !important;
+}
+
+.benchmark-widget,
+.ai-insight-card {
+    border-radius: 16px !important;
+    border: 1px solid var(--sw-line) !important;
+    background: #ffffff !important;
+    overflow: hidden;
+    box-shadow: var(--sw-shadow-soft) !important;
+}
+
+.benchmark-widget {
+    border-top: 5px solid var(--sw-gold) !important;
+}
+
+.benchmark-widget:nth-child(2) {
+    border-top-color: var(--sw-saffron) !important;
+}
+
+.benchmark-widget:nth-child(3) {
+    border-top-color: var(--sw-violet) !important;
+}
+
+.benchmark-widget header,
+.ai-insight-card header {
+    background: linear-gradient(90deg, #f7f9ff, #fff8eb) !important;
+    border-bottom: 1px solid var(--sw-line) !important;
+}
+
+.benchmark-quote strong,
+.metric .value,
+.summary-row span {
+    color: var(--sw-blue-deep) !important;
+}
+
+.benchmark-sparkline {
+    height: 190px !important;
+}
+
+.ai-market-section {
+    padding: 32px !important;
+    border-top: 5px solid var(--sw-violet) !important;
+    background: linear-gradient(145deg, #ffffff, #f7f9ff) !important;
+}
+
+.ai-insight-cards {
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)) !important;
+    gap: 20px !important;
+}
+
+.ai-insight-grid div {
+    background: #ffffff !important;
+}
+
+.ai-insight-status,
+.fno-connector-status {
+    background: linear-gradient(135deg, #fff8e8, #f2ebff) !important;
+    border-color: rgba(111, 59, 178, 0.22) !important;
+}
+
+.sidebar {
+    width: 288px !important;
+    background: linear-gradient(180deg, var(--sw-blue-deep), var(--sw-blue-rich) 62%, #4c348f) !important;
+    border-right: 1px solid rgba(240, 199, 104, 0.45) !important;
+    box-shadow: 14px 0 34px rgba(9, 47, 114, 0.2) !important;
+}
+
+.main-content {
+    margin-left: 288px !important;
+    padding: 36px !important;
+}
+
+.sidebar-menu a {
+    border-radius: 12px !important;
+    color: rgba(255, 255, 255, 0.86) !important;
+    margin: 4px 12px !important;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: linear-gradient(90deg, rgba(240, 199, 104, 0.3), rgba(255, 255, 255, 0.16)) !important;
+    border-color: rgba(240, 199, 104, 0.72) !important;
+    color: #ffffff !important;
+}
+
+thead,
+.customers-table thead,
+.investments-table thead {
+    background: linear-gradient(90deg, var(--sw-blue-deep), var(--sw-blue), var(--sw-violet)) !important;
+}
+
+input,
+select,
+textarea,
+.form-group input,
+.form-group select {
+    background: #ffffff !important;
+    border: 1px solid var(--sw-line) !important;
+    color: var(--sw-ink) !important;
+    border-radius: 10px !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 3px solid rgba(237, 138, 28, 0.18) !important;
+    border-color: var(--sw-saffron) !important;
+}
+
+footer {
+    background: linear-gradient(135deg, var(--sw-blue-deep), var(--sw-blue-rich), var(--sw-violet)) !important;
+    border-radius: 28px 28px 0 0 !important;
+}
+
+footer h2,
+footer p,
+footer strong,
+footer a,
+footer .footer-note {
+    color: #ffffff !important;
+}
+
+.reveal.visible,
+.page-header,
+.market-ribbon,
+.ai-market-section,
+.benchmark-widget,
+.content-section.active > .card {
+    animation: swRise 520ms cubic-bezier(.2,.8,.2,1) both !important;
+}
+
+@keyframes swRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1180px) {
+    .market-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .shell {
+        width: min(100% - 32px, 1280px) !important;
+    }
+
+    .sidebar {
+        width: 100% !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        padding: 22px !important;
+    }
+
+    .hero,
+    .topbar .shell,
+    .head,
+    .footer-wrap {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+    }
+
+    .ai-insight-cards,
+    .benchmark-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
