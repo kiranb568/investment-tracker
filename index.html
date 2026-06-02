@@ -12,7 +12,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#081223">
+    <meta name="theme-color" content="#f7f9ff">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://srishtiwealth.in/">
     <meta property="og:type" content="website">
@@ -30,8 +30,10 @@
     <link rel="manifest" href="site.webmanifest">
     <script src="ui-preferences.js"></script>
     <script defer src="live-markets.js"></script>
+    <script defer src="ai-market-insights.js"></script>
     <script defer src="pwa.js"></script>
     <link rel="stylesheet" href="quantum-future.css">
+    <link rel="stylesheet" href="srishti-light.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
@@ -166,21 +168,21 @@
                                 <div class="pulse-label">Market Pulse</div>
                                 <h2 style="margin-top:8px;">Srishti Wealth Pulse Board</h2>
                             </div>
-                            <div id="pulse-badge" class="pulse-badge bullish">Bullish Bias</div>
+                            <div id="pulse-badge" class="pulse-badge">AI Feed Pending</div>
                         </div>
                         <div class="pulse-core" style="margin-top:20px;">
                             <div>
-                                <h2 id="pulse-title" style="font-size:2rem; margin-bottom:12px;">Momentum expanding across benchmark risk assets.</h2>
-                                <p id="pulse-text">Srishti Wealth highlights constructive market tone when benchmark participation broadens, sector strength improves, and commodity leadership remains supportive.</p>
+                                <h2 id="pulse-title" style="font-size:2rem; margin-bottom:12px;">Connect a licensed live-market feed to activate Market Pulse.</h2>
+                                <p id="pulse-text">The AI-ready pulse intentionally withholds sentiment, predictions, and trade levels until verified NSE/BSE inputs are available.</p>
                             </div>
                             <div id="pulse-icon" class="pulse-icon" style="color:var(--green);">
                                 <svg viewBox="0 0 64 64"><path d="M10 42c6-12 12-18 22-18 7 0 13 3 22 11"></path><path d="M14 44h8l6-8 8 4 8-12 6 4"></path><path d="M46 22h8v8"></path></svg>
                             </div>
                         </div>
                         <div class="pulse-stats">
-                            <div class="pulse-stat"><small>Benchmarks</small><strong id="pulse-bench">Tracking</strong></div>
-                            <div class="pulse-stat"><small>Commodities</small><strong id="pulse-commodities">Active</strong></div>
-                            <div class="pulse-stat"><small>Risk Tone</small><strong id="pulse-risk">Measured</strong></div>
+                            <div class="pulse-stat"><small>Benchmarks</small><strong id="pulse-bench">Awaiting feed</strong></div>
+                            <div class="pulse-stat"><small>Commodities</small><strong id="pulse-commodities">Official MCX link</strong></div>
+                            <div class="pulse-stat"><small>Risk Tone</small><strong id="pulse-risk">Not scored</strong></div>
                         </div>
                     </div>
                     <div class="ticker-ribbon"><div class="ticker-track" id="highlights-track"></div></div>
@@ -199,7 +201,7 @@
                         <span>Live Trend Board</span>
                         <h3>Real-time benchmarks and contract watch</h3>
                         <div class="tv-widget-shell">
-                            <div class="tradingview-widget-container" data-live-market-overview></div>
+                            <div class="benchmark-grid" data-live-benchmark-grid></div>
                         </div>
                         <div class="market-note">Live widgets are market-session dependent and supplement the official exchange pages linked below.</div>
                     </div>
@@ -232,6 +234,12 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <section id="ai-insights">
+            <div class="shell">
+                <div class="ai-market-section reveal" data-ai-market-insights></div>
             </div>
         </section>
 
@@ -294,33 +302,14 @@
     </footer>
 
     <script>
-        const pulseStates = [
-            { mode:"bullish", badge:"Bullish Bias", title:"Momentum expanding across benchmark risk assets.", text:"Srishti Wealth highlights constructive market tone when benchmark participation broadens, sector strength improves, and commodity leadership remains supportive.", bench:"Tracking", commodities:"Active", risk:"Measured", color:"#71ffb5", icon:'<svg viewBox="0 0 64 64"><path d="M10 42c6-12 12-18 22-18 7 0 13 3 22 11"></path><path d="M14 44h8l6-8 8 4 8-12 6 4"></path><path d="M46 22h8v8"></path></svg>' },
-            { mode:"bearish", badge:"Defensive Tone", title:"Risk control taking priority over momentum chasing.", text:"When appetite cools, Srishti Wealth pivots toward defense, capital preservation, and tighter opportunity selection across trading and portfolio decisions.", bench:"Guarded", commodities:"Volatile", risk:"Elevated", color:"#ff7d96", icon:'<svg viewBox="0 0 64 64"><path d="M12 24c8 3 14 9 18 18"></path><path d="M12 40c7-10 16-16 30-18"></path><path d="M46 22l8-2-2 8"></path><path d="M26 42h18"></path></svg>' }
-        ];
         const scrollingHighlights = [
             "Today's market watchpoints for " + new Date().toLocaleDateString("en-IN", { day:"numeric", month:"long", year:"numeric" }),
-            "NSE official pages continue to surface live Nifty benchmark context during market hours",
-            "NSE investor-relations announcements list includes the board-meeting outcome dated 5 May 2026",
-            "BSE official Sensex index-watch pages remain a core breadth and benchmark reference",
-            "MCX Market Watch remains the official source path for gold, crude oil, natural gas, and metals contracts",
-            "TradingView market widgets on this page add live movement while official links keep research anchored"
+            "Use the independent Nifty 50, Bank Nifty, and Sensex panels for benchmark context",
+            "Review official NSE exchange communications before making session-sensitive decisions",
+            "Use the official BSE Sensex index-watch page as the benchmark breadth reference",
+            "Use MCX Market Watch as the official workflow for gold, crude oil, natural gas, and metals contracts",
+            "AI insight cards withhold predictions until verified market and option-chain inputs are connected"
         ];
-
-        let currentPulse = 0;
-        function renderPulse() {
-            const pulse = pulseStates[currentPulse];
-            document.getElementById("pulse-badge").className = `pulse-badge ${pulse.mode}`;
-            document.getElementById("pulse-badge").textContent = pulse.badge;
-            document.getElementById("pulse-title").textContent = pulse.title;
-            document.getElementById("pulse-text").textContent = pulse.text;
-            document.getElementById("pulse-bench").textContent = pulse.bench;
-            document.getElementById("pulse-commodities").textContent = pulse.commodities;
-            document.getElementById("pulse-risk").textContent = pulse.risk;
-            const icon = document.getElementById("pulse-icon");
-            icon.style.color = pulse.color;
-            icon.innerHTML = pulse.icon;
-        }
 
         document.getElementById("market-date").textContent = new Date().toLocaleDateString("en-IN", {
             day: "numeric",
@@ -328,12 +317,6 @@
             year: "numeric"
         });
         document.getElementById("highlights-track").innerHTML = [...scrollingHighlights, ...scrollingHighlights].map((item) => `<span>${item}</span>`).join("");
-
-        renderPulse();
-        setInterval(() => {
-            currentPulse = (currentPulse + 1) % pulseStates.length;
-            renderPulse();
-        }, 4800);
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {

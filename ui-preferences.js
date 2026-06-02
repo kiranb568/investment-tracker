@@ -150,30 +150,26 @@ function applyContactBindings(root = document) {
 }
 
 function getPreferredTheme() {
-    return localStorage.getItem(APP_THEME_STORAGE_KEY) || "dark";
+    return "light";
 }
 
-function applyPreferredTheme(theme = getPreferredTheme()) {
-    document.documentElement.dataset.theme = theme === "light" ? "light" : "dark";
+function applyPreferredTheme() {
+    document.documentElement.dataset.theme = "light";
     return document.documentElement.dataset.theme;
 }
 
-function setPreferredTheme(theme) {
-    const nextTheme = theme === "light" ? "light" : "dark";
+function setPreferredTheme() {
+    const nextTheme = "light";
     localStorage.setItem(APP_THEME_STORAGE_KEY, nextTheme);
-    applyPreferredTheme(nextTheme);
+    applyPreferredTheme();
     window.dispatchEvent(new CustomEvent("srishti:themechange", {
         detail: { theme: nextTheme }
     }));
     return nextTheme;
 }
 
-function togglePreferredTheme(forceDarkMode) {
-    const nextTheme = typeof forceDarkMode === "boolean"
-        ? (forceDarkMode ? "dark" : "light")
-        : (getPreferredTheme() === "dark" ? "light" : "dark");
-
-    return setPreferredTheme(nextTheme);
+function togglePreferredTheme() {
+    return setPreferredTheme();
 }
 
 applyPreferredTheme();

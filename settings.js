@@ -43,10 +43,6 @@ async function loadUserSettings() {
 
     const contactPhoneDisplay = contactDetails.phone || "Not configured yet";
 
-    const isDarkTheme = typeof getPreferredTheme === "function"
-        ? getPreferredTheme() === "dark"
-        : true;
-
     settingsContent.innerHTML = `
         <div class="card">
             <h3>Profile Information</h3>
@@ -89,10 +85,10 @@ async function loadUserSettings() {
             <h3>Appearance</h3>
             <div class="settings-row">
                 <div>
-                    <strong>Dark Theme</strong>
-                    <p class="settings-value">Switch between the neon dark mode and a brighter glass light mode.</p>
+                    <strong>Srishti Wealth Light Theme</strong>
+                    <p class="settings-value">Professional white, blue, gold, saffron, and violet palette is active across the site and Wealth console.</p>
                 </div>
-                <input class="settings-toggle" type="checkbox" ${isDarkTheme ? "checked" : ""} onchange="handleThemeToggle(this.checked)" />
+                <span class="settings-value">Active</span>
             </div>
         </div>
 
@@ -123,12 +119,6 @@ async function loadUserSettings() {
             ` : ""}
         </div>
     `;
-}
-
-function handleThemeToggle(isDarkTheme) {
-    if (typeof togglePreferredTheme === "function") {
-        togglePreferredTheme(isDarkTheme);
-    }
 }
 
 async function saveAdminContactSettings() {

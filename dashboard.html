@@ -9,12 +9,13 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#081223">
+    <meta name="theme-color" content="#f7f9ff">
     <link rel="icon" href="srishti-wealth-logo.png" type="image/png">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
     <script src="ui-preferences.js"></script>
     <script defer src="live-markets.js"></script>
+    <script defer src="ai-market-insights.js"></script>
     <script defer src="pwa.js"></script>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="quantum-future.css">
@@ -486,6 +487,7 @@
         }
     </style>
     <link rel="stylesheet" href="aurora-ui.css">
+    <link rel="stylesheet" href="srishti-light.css">
 </head>
 <body>
     <div class="user-container">
@@ -533,6 +535,12 @@
                 </div>
                 <div class="live-market-strip" data-live-market-ticker></div>
             </section>
+            <section class="card">
+                <h3>Live NSE / BSE Benchmark Charts</h3>
+                <p>Independent light-theme panels keep Nifty 50, Bank Nifty, and Sensex visible even if one external quote refresh is delayed.</p>
+                <div class="benchmark-grid" data-live-benchmark-grid></div>
+            </section>
+            <section class="ai-market-section" data-ai-market-insights></section>
 
             <!-- Investments Tab -->
             <div id="investments" class="content-section active">

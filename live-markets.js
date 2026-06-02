@@ -1,10 +1,22 @@
-const LIVE_MARKET_SYMBOLS = [
-    { proName: "NSE:NIFTY", title: "Nifty 50" },
-    { proName: "BSE:SENSEX", title: "Sensex" },
-    { proName: "NSE:BANKNIFTY", title: "Bank Nifty" },
-    { proName: "MCX:GOLD1!", title: "MCX Gold" },
-    { proName: "MCX:CRUDEOIL1!", title: "MCX Crude" },
-    { proName: "MCX:NATURALGAS1!", title: "MCX Natural Gas" }
+const LIVE_BENCHMARKS = [
+    {
+        symbol: "NSE:NIFTY",
+        title: "Nifty 50",
+        exchange: "NSE",
+        href: "https://www.tradingview.com/symbols/NSE-NIFTY/"
+    },
+    {
+        symbol: "NSE:BANKNIFTY",
+        title: "Bank Nifty",
+        exchange: "NSE",
+        href: "https://www.tradingview.com/symbols/NSE-BANKNIFTY/"
+    },
+    {
+        symbol: "BSE:SENSEX",
+        title: "Sensex",
+        exchange: "BSE",
+        href: "https://www.tradingview.com/symbols/BSE-SENSEX/"
+    }
 ];
 
 function createTradingViewScript(src, config) {
@@ -16,82 +28,84 @@ function createTradingViewScript(src, config) {
     return script;
 }
 
-function showMarketFallback(container, compact = false) {
-    container.innerHTML = `
-        <div class="${compact ? "live-market-fallback compact" : "live-market-fallback"}">
-            <strong>Live widget unavailable</strong>
-            <span>Use official exchange pages while the market feed reconnects.</span>
-            <div>
-                <a href="https://www.nseindia.com/products-services/indices-nifty50-index" target="_blank" rel="noopener noreferrer">NSE</a>
-                <a href="https://m.bseindia.com/IndicesView_New.aspx/Sensex.aspx" target="_blank" rel="noopener noreferrer">BSE</a>
-                <a href="https://www.mcxindia.com/market-data/market-watch" target="_blank" rel="noopener noreferrer">MCX</a>
-            </div>
+function createBenchmarkFallback(benchmark) {
+    return `
+        <div class="benchmark-fallback">
+            <strong>${benchmark.title} feed is reconnecting</strong>
+            <span>Open the chart source directly while the embedded quote refreshes.</span>
+            <a href="${benchmark.href}" target="_blank" rel="noopener noreferrer">Open ${benchmark.title}</a>
         </div>
     `;
 }
 
-function mountMarketOverview(container) {
-    container.innerHTML = "";
-    const widgetHost = document.createElement("div");
-    widgetHost.className = "tradingview-widget-container__widget";
-    container.appendChild(widgetHost);
-    container.appendChild(createTradingViewScript("https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js", {
-        colorTheme: "dark",
-        dateRange: "1D",
-        showChart: true,
-        locale: "en",
-        isTransparent: true,
-        showSymbolLogo: true,
-        showFloatingTooltip: false,
+function mountBenchmarkChart(host, benchmark) {
+    const widget = document.createElement("article");
+    widget.className = "benchmark-widget";
+    widget.innerHTML = `
+        <header>
+            <div>
+                <small>${benchmark.exchange}</small>
+                <strong>${benchmark.title}</strong>
+            </div>
+            <a href="${benchmark.href}" target="_blank" rel="noopener noreferrer">Full chart</a>
+        </header>
+        <div class="benchmark-widget-frame"></div>
+    `;
+
+    const frame = widget.querySelector(".benchmark-widget-frame");
+    frame.appendChild(createTradingViewScript("https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js", {
+        symbol: benchmark.symbol,
         width: "100%",
-        height: "560",
-        plotLineColorGrowing: "rgba(41, 255, 172, 1)",
-        plotLineColorFalling: "rgba(255, 93, 129, 1)",
-        gridLineColor: "rgba(239, 246, 255, 0.06)",
-        scaleFontColor: "rgba(225, 235, 255, 0.72)",
-        belowLineFillColorGrowing: "rgba(41, 255, 172, 0.12)",
-        belowLineFillColorFalling: "rgba(255, 93, 129, 0.12)",
-        belowLineFillColorGrowingBottom: "rgba(41, 255, 172, 0)",
-        belowLineFillColorFallingBottom: "rgba(255, 93, 129, 0)",
-        symbolActiveColor: "rgba(42, 218, 255, 0.18)",
-        tabs: [
-            {
-                title: "NSE / BSE",
-                symbols: LIVE_MARKET_SYMBOLS.slice(0, 3).map(({ proName, title }) => ({ s: proName, d: title }))
-            },
-            {
-                title: "MCX",
-                symbols: LIVE_MARKET_SYMBOLS.slice(3).map(({ proName, title }) => ({ s: proName, d: title }))
-            }
-        ]
+        height: "100%",
+        locale: "en",
+        dateRange: "1D",
+        colorTheme: "light",
+        isTransparent: true,
+        autosize: true,
+        largeChartUrl: benchmark.href
     }));
+    host.appendChild(widget);
 
     window.setTimeout(() => {
-        if (!container.querySelector("iframe")) {
-            showMarketFallback(container);
+        if (!frame.querySelector("iframe")) {
+            frame.innerHTML = createBenchmarkFallback(benchmark);
         }
     }, 7000);
+}
+
+function mountBenchmarkGrid(container) {
+    container.innerHTML = "";
+    LIVE_BENCHMARKS.forEach((benchmark) => mountBenchmarkChart(container, benchmark));
 }
 
 function mountTickerTape(container) {
     container.innerHTML = "";
     container.appendChild(createTradingViewScript("https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js", {
-        symbols: LIVE_MARKET_SYMBOLS,
+        symbols: LIVE_BENCHMARKS.map(({ symbol, title }) => ({ proName: symbol, title })),
         showSymbolLogo: true,
         isTransparent: true,
         displayMode: "adaptive",
-        colorTheme: "dark",
+        colorTheme: "light",
         locale: "en"
     }));
 
     window.setTimeout(() => {
         if (!container.querySelector("iframe")) {
-            showMarketFallback(container, true);
+            container.innerHTML = `
+                <div class="live-market-fallback compact">
+                    <strong>Benchmark ticker reconnecting</strong>
+                    <span>Open the official exchange pages for the current session snapshot.</span>
+                    <div>
+                        <a href="https://www.nseindia.com/products-services/indices-nifty50-index" target="_blank" rel="noopener noreferrer">NSE</a>
+                        <a href="https://m.bseindia.com/IndicesView_New.aspx/Sensex.aspx" target="_blank" rel="noopener noreferrer">BSE</a>
+                    </div>
+                </div>
+            `;
         }
     }, 7000);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("[data-live-market-overview]").forEach(mountMarketOverview);
+    document.querySelectorAll("[data-live-benchmark-grid]").forEach(mountBenchmarkGrid);
     document.querySelectorAll("[data-live-market-ticker]").forEach(mountTickerTape);
 });

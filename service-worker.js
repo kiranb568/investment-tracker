@@ -1,4 +1,4 @@
-const CACHE_NAME = "srishti-wealth-pwa-v3";
+const CACHE_NAME = "srishti-wealth-pwa-v4";
 const APP_SHELL = [
     "/",
     "/index.html",
@@ -12,11 +12,13 @@ const APP_SHELL = [
     "/styles.css",
     "/quantum-future.css",
     "/aurora-ui.css",
+    "/srishti-light.css",
     "/ui-preferences.js",
     "/auth.js",
     "/settings.js",
     "/reports.js",
     "/live-markets.js",
+    "/ai-market-insights.js",
     "/pwa.js",
     "/site.webmanifest",
     "/srishti-wealth-logo.png",
