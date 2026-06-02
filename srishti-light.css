@@ -982,7 +982,8 @@ button {
 .services,
 .about,
 .watch-grid {
-    gap: 22px !important;
+    gap: 16px !important;
+    grid-template-columns: 1fr !important;
 }
 
 .market-ribbon {
@@ -1178,5 +1179,161 @@ footer .footer-note {
     .ai-insight-cards,
     .benchmark-grid {
         grid-template-columns: 1fr !important;
+    }
+}
+
+/* Market readability and premium accent corrections */
+.watch-card {
+    position: relative;
+    display: grid !important;
+    gap: 8px;
+    min-width: 0;
+    padding: 18px 18px 18px 72px !important;
+    border-left: 4px solid var(--sw-gold) !important;
+    background: linear-gradient(135deg, #ffffff 0%, #fff9ed 100%) !important;
+}
+
+.watch-card:nth-child(2) {
+    border-left-color: var(--sw-violet) !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f4edff 100%) !important;
+}
+
+.watch-card:nth-child(3) {
+    border-left-color: var(--sw-saffron) !important;
+    background: linear-gradient(135deg, #ffffff 0%, #fff2e4 100%) !important;
+}
+
+.watch-accent {
+    position: absolute;
+    left: 16px;
+    top: 18px;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--sw-blue-deep), var(--sw-violet));
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.82rem;
+    box-shadow: 0 12px 22px rgba(9, 47, 114, 0.22);
+}
+
+.watch-card small {
+    color: var(--sw-gold) !important;
+    font-weight: 800;
+}
+
+.watch-card strong {
+    color: var(--sw-blue-deep) !important;
+    overflow-wrap: anywhere;
+}
+
+.watch-card p {
+    margin: 0 !important;
+    color: var(--sw-ink-2) !important;
+}
+
+.market-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+}
+
+.market-actions div {
+    min-width: 0;
+    padding: 20px;
+    border-radius: 18px;
+    background:
+        linear-gradient(135deg, rgba(9, 47, 114, 0.95), rgba(23, 78, 166, 0.9) 58%, rgba(111, 59, 178, 0.9));
+    border: 1px solid rgba(240, 199, 104, 0.32);
+    box-shadow: 0 18px 34px rgba(9, 47, 114, 0.2);
+}
+
+.market-actions strong {
+    display: block;
+    color: #ffffff !important;
+    font-size: 1rem;
+    margin-bottom: 7px;
+}
+
+.market-actions span {
+    color: rgba(255, 255, 255, 0.82) !important;
+    line-height: 1.55;
+    font-size: 0.92rem;
+}
+
+.benchmark-widget.is-positive .benchmark-quote strong,
+.benchmark-widget.is-positive .benchmark-line {
+    color: #0e6c48 !important;
+}
+
+.benchmark-widget.is-negative .benchmark-quote strong,
+.benchmark-widget.is-negative .benchmark-line {
+    color: #a8334f !important;
+}
+
+.benchmark-quote {
+    padding: 20px 16px 6px !important;
+}
+
+.benchmark-quote strong {
+    font-size: clamp(1.55rem, 2.2vw, 2rem) !important;
+    font-weight: 900 !important;
+    letter-spacing: 0 !important;
+}
+
+.benchmark-quote span {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #eef5ff;
+    color: var(--sw-blue-deep) !important;
+}
+
+.benchmark-widget.is-positive .benchmark-quote span {
+    background: #e7f7ef;
+    color: #0e6c48 !important;
+}
+
+.benchmark-widget.is-negative .benchmark-quote span {
+    background: #ffeaf0;
+    color: #a8334f !important;
+}
+
+.benchmark-widget header strong,
+.benchmark-widget header a,
+.benchmark-widget footer a {
+    color: var(--sw-blue-deep) !important;
+}
+
+.benchmark-widget small,
+.benchmark-widget footer span,
+.ai-insight-card small {
+    color: #68768d !important;
+}
+
+.ai-insight-grid strong {
+    color: var(--sw-blue-deep) !important;
+}
+
+.metric .value,
+.summary-row span {
+    color: var(--sw-violet) !important;
+    text-shadow: none !important;
+}
+
+.service-icon {
+    background: linear-gradient(135deg, var(--sw-blue-deep), var(--sw-violet)) !important;
+    border-color: rgba(240, 199, 104, 0.35) !important;
+}
+
+.service-icon svg {
+    stroke: var(--sw-gold-2) !important;
+}
+
+@media (max-width: 1180px) {
+    .market-actions {
+        grid-template-columns: 1fr;
     }
 }
