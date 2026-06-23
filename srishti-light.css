@@ -1752,3 +1752,256 @@ tr:nth-child(even) td {
         min-height: 220px;
     }
 }
+
+/* Screenshot-driven fixes: readable hero/sign-in text, stable benchmark alignment, and functional tools. */
+.copy h1 {
+    max-width: 840px !important;
+    font-size: clamp(2.7rem, 5vw, 4.65rem) !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.055em !important;
+}
+
+.copy > p {
+    max-width: 720px !important;
+    font-size: clamp(1rem, 1.12vw, 1.14rem) !important;
+}
+
+.hero {
+    grid-template-columns: minmax(0, 0.98fr) minmax(390px, 0.86fr) !important;
+}
+
+.brand-panel h1 {
+    max-width: 720px;
+    color: var(--sw-heading) !important;
+    font-size: clamp(2.1rem, 3.4vw, 3.15rem) !important;
+    line-height: 1.04 !important;
+}
+
+.brand-panel p {
+    color: #4f607f !important;
+}
+
+.signal-card {
+    border-color: rgba(21, 89, 214, 0.18) !important;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 248, 237, 0.86)) !important;
+}
+
+.signal-card strong {
+    color: var(--sw-heading) !important;
+}
+
+.signal-card span {
+    color: #536784 !important;
+}
+
+.auth-shell {
+    width: min(1220px, calc(100% - 34px)) !important;
+}
+
+.panel,
+.market-board,
+.benchmark-grid,
+.benchmark-widget,
+.tv-widget-shell,
+.ai-insight-card,
+.tools-panel,
+.calculator-console {
+    min-width: 0 !important;
+    max-width: 100% !important;
+}
+
+.market-grid {
+    grid-template-columns: minmax(0, 1.62fr) minmax(330px, 0.68fr) !important;
+}
+
+.benchmark-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 335px), 1fr)) !important;
+}
+
+.benchmark-widget {
+    padding: clamp(18px, 2vw, 24px) !important;
+}
+
+.benchmark-head,
+.benchmark-widget header {
+    align-items: flex-start !important;
+}
+
+.benchmark-head a,
+.benchmark-widget header a,
+.benchmark-footer a {
+    max-width: 124px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.benchmark-quote {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center !important;
+}
+
+.benchmark-quote strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: clamp(2rem, 3.1vw, 2.85rem) !important;
+}
+
+.benchmark-quote span {
+    max-width: 100%;
+    color: #fff !important;
+    font-size: 0.88rem;
+    text-align: center;
+}
+
+.timeframe-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.timeframe-pill {
+    align-content: start;
+    min-height: 124px;
+    padding: 13px !important;
+}
+
+.timeframe-pill small,
+.timeframe-pill strong,
+.timeframe-pill span {
+    overflow-wrap: anywhere;
+}
+
+.timeframe-pill strong {
+    font-size: 1rem !important;
+}
+
+.timeframe-pill span {
+    border-radius: 999px;
+    padding: 8px 10px;
+    background: rgba(255, 204, 72, 0.13);
+    color: #415173 !important;
+    font-size: 0.78rem !important;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.benchmark-footer span,
+.benchmark-widget footer span {
+    flex: 1 1 220px;
+    border: 1px solid rgba(211, 155, 22, 0.28);
+    border-radius: 999px;
+    padding: 10px 13px;
+    background: rgba(255, 248, 237, 0.74);
+    color: #50617f !important;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.calculator-console {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(285px, 1fr)) !important;
+    gap: 18px !important;
+}
+
+.calculator-card {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    gap: 14px;
+    padding: 22px !important;
+    border: 1px solid rgba(35, 66, 128, 0.16);
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 92% 0, rgba(255, 204, 72, 0.24), transparent 30%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(248, 242, 255, 0.88)) !important;
+    box-shadow: var(--sw-shadow-soft);
+}
+
+.calculator-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: linear-gradient(90deg, var(--sw-blue), var(--sw-gold), var(--sw-saffron), var(--sw-violet));
+}
+
+.calculator-card h3 {
+    margin: 0 !important;
+    color: var(--sw-heading) !important;
+}
+
+.calculator-card p {
+    margin: 0 !important;
+    color: var(--sw-muted) !important;
+}
+
+.calculator-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.calculator-fields label {
+    display: grid;
+    gap: 6px;
+}
+
+.calculator-fields span {
+    color: var(--sw-violet) !important;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+}
+
+.calculator-fields input,
+.calculator-fields select {
+    min-height: 44px;
+    padding: 10px 12px;
+}
+
+.calculator-card output {
+    display: block;
+    min-height: 54px;
+    border: 1px solid rgba(21, 89, 214, 0.18);
+    border-radius: 18px;
+    padding: 13px 14px;
+    color: #fff !important;
+    background: linear-gradient(135deg, var(--sw-blue-2), var(--sw-violet));
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+@media (max-width: 1180px) {
+    .hero,
+    .market-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 720px) {
+    .copy h1 {
+        font-size: clamp(2.15rem, 11vw, 3.05rem) !important;
+        line-height: 1.02 !important;
+    }
+
+    .brand-panel h1 {
+        font-size: clamp(1.95rem, 9vw, 2.55rem) !important;
+    }
+
+    .benchmark-quote {
+        grid-template-columns: 1fr !important;
+    }
+
+    .timeframe-strip,
+    .calculator-fields {
+        grid-template-columns: 1fr !important;
+    }
+
+    .timeframe-pill {
+        min-height: 0;
+    }
+}

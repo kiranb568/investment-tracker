@@ -31,6 +31,7 @@
     <script src="ui-preferences.js"></script>
     <script defer src="live-markets.js"></script>
     <script defer src="ai-market-insights.js"></script>
+    <script defer src="trading-tools.js"></script>
     <script defer src="pwa.js"></script>
     <link rel="stylesheet" href="quantum-future.css">
     <link rel="stylesheet" href="srishti-light.css">
@@ -132,9 +133,10 @@
             <a class="brand" href="#top"><img class="brand-logo" src="srishti-wealth-logo.png" alt="Srishti Wealth logo"><div class="brand-copy"><strong>Srishti Wealth</strong><small>srishtiwealth.in</small></div></a>
             <nav class="nav">
                 <a href="#about">About</a>
+                <a href="#services">Services</a>
                 <a href="#markets">Markets</a>
                 <a href="#ipo-watch">IPO Watch</a>
-                <a href="#services">Services</a>
+                <a href="#tools">Tools</a>
                 <a href="#contact">Contact</a>
                 <a class="signin" href="signin.html">Sign In</a>
             </nav>
@@ -188,6 +190,33 @@
                         </div>
                     </div>
                     <div class="ticker-ribbon"><div class="ticker-track" id="highlights-track"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about">
+            <div class="shell">
+                <div class="head reveal">
+                    <div><span class="tag">About Srishti Wealth</span><h2>Built for active markets and long-term wealth discipline.</h2></div>
+                    <p>Srishti Wealth brings trading visibility, investment decision support, and wealth-management client workflows into one professional operating layer.</p>
+                </div>
+                <div class="about">
+                    <div class="panel reveal"><span>Mission</span><h3>Turn market speed into client-ready clarity.</h3><p>Convert market movement, portfolio status, and risk context into cleaner decisions for traders, investors, and relationship teams.</p></div>
+                    <div class="panel reveal"><span>Vision</span><h3>Create a modern wealth command center.</h3><p>Unify live-market awareness, investment tracking, IPO monitoring, trading tools, and support workflows in a single digital workspace.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services">
+            <div class="shell">
+                <div class="head reveal">
+                    <div><span class="tag">Services Offered</span><h2>Trading, investment, and wealth-management coverage.</h2></div>
+                    <p>The platform language, layout, and interactions are tuned for active market monitoring and relationship-led wealth workflows.</p>
+                </div>
+                <div class="services">
+                    <div class="service reveal"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 19h16"></path><path d="M7 15l3-3 3 2 4-5"></path><path d="M17 10h2v2"></path></svg></div><span>Trading Desk</span><h3>Live Market Tracking</h3><p>Keep benchmark indices and commodity contracts visible while monitoring risk tone, trend, and market leadership.</p></div>
+                    <div class="service reveal"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 20V9"></path><path d="M10 20V4"></path><path d="M16 20v-8"></path><path d="M22 20v-5"></path></svg></div><span>Investments</span><h3>Portfolio & Performance</h3><p>Track invested capital, returns, growth patterns, and client account positioning with cleaner analytics.</p></div>
+                    <a class="service reveal" href="support.html"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M6 18h8"></path><path d="M6 14h12"></path><path d="M6 10h12"></path><path d="M6 6h12"></path></svg></div><span>Wealth Support</span><h3>Advisory & Client Help</h3><p>Move from market awareness into support, onboarding, and wealth-operations follow-up through one support path.</p></a>
                 </div>
             </div>
         </section>
@@ -282,32 +311,16 @@
             </div>
         </section>
 
-        <section id="about">
+        <section id="tools">
             <div class="shell">
                 <div class="head reveal">
-                    <div><span class="tag">About Srishti Wealth</span><h2>Built for active markets and long-term wealth discipline.</h2></div>
-                    <p>Srishti Wealth is positioned around trading visibility, investment decision support, and a stronger wealth-management client workflow.</p>
+                    <div><span class="tag">Tools</span><h2>Functional trading tools and calculators.</h2></div>
+                    <p>Use these pre-trade calculators for position sizing, option breakeven, risk/reward, pivot levels, premium stress, and theta decay.</p>
                 </div>
-                <div class="about">
-                    <div class="panel reveal"><span>Mission</span><h3>Turn market speed into client-ready clarity.</h3><p>Bring live market context, portfolio visibility, and wealth operations into one interface that feels fast, modern, and decision-friendly.</p></div>
-                    <div class="panel reveal"><span>Vision</span><h3>Create a modern wealth command center.</h3><p>Unify trading awareness, investment tracking, market pulse, and support workflows into a single digital operating layer.</p></div>
-                </div>
+                <div class="tools-panel reveal" data-trading-tools></div>
             </div>
         </section>
 
-        <section id="services">
-            <div class="shell">
-                <div class="head reveal">
-                    <div><span class="tag">Services</span><h2>Trading, investment, and wealth-management coverage.</h2></div>
-                    <p>The platform language, layout, and interactions are tuned for active market monitoring and relationship-led wealth workflows.</p>
-                </div>
-                <div class="services">
-                    <div class="service reveal"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 19h16"></path><path d="M7 15l3-3 3 2 4-5"></path><path d="M17 10h2v2"></path></svg></div><span>Trading Desk</span><h3>Live Market Tracking</h3><p>Keep benchmark indices and commodity contracts visible while monitoring risk tone and market leadership.</p></div>
-                    <div class="service reveal"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 20V9"></path><path d="M10 20V4"></path><path d="M16 20v-8"></path><path d="M22 20v-5"></path></svg></div><span>Investments</span><h3>Portfolio & Performance</h3><p>Track invested capital, returns, growth patterns, and client account positioning with cleaner analytics.</p></div>
-                    <a class="service reveal" href="support.html"><div class="service-icon"><svg viewBox="0 0 24 24"><path d="M6 18h8"></path><path d="M6 14h12"></path><path d="M6 10h12"></path><path d="M6 6h12"></path></svg></div><span>Wealth Support</span><h3>Advisory & Client Help</h3><p>Move from market awareness into support, onboarding, and wealth-operations follow-up through one support path.</p></a>
-                </div>
-            </div>
-        </section>
     </main>
 
     <footer id="contact">

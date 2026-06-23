@@ -217,32 +217,16 @@ function renderInsightCard(instrument, snapshot) {
 }
 
 function renderTradingTools() {
-    const tools = [
-        ["Position Size", "Calculate quantity from capital, stop-loss distance, and max risk per trade."],
-        ["Options Breakeven", "Track call/put breakeven, max risk, and reward before execution."],
-        ["Premium Stress", "Model 10%, 20%, and 30% option-premium decay or expansion scenarios."],
-        ["Risk/Reward", "Compare entry, stop, target, and probability before trade approval."],
-        ["Pivot Levels", "Generate pivot, S1/S2 and R1/R2 from verified OHLC."],
-        ["Theta Clock", "Review weekly expiry decay pressure by session and VIX regime."]
-    ];
-
     return `
         <section class="trading-tools-console">
             <div class="ai-insight-heading compact">
                 <div>
                     <span>Trading Toolkit</span>
                     <h2>Required options tools & calculators</h2>
-                    <p>Built for disciplined pre-trade checks. Interactive calculator wiring can be added once the final trading workflow is frozen.</p>
+                    <p>Functional calculators for disciplined pre-trade checks across position sizing, breakeven, pivots, premium stress, risk/reward, and theta decay.</p>
                 </div>
             </div>
-            <div class="tool-grid">
-                ${tools.map(([title, copy]) => `
-                    <article class="tool-card">
-                        <strong>${title}</strong>
-                        <p>${copy}</p>
-                    </article>
-                `).join("")}
-            </div>
+            <div data-trading-tools></div>
         </section>
     `;
 }
@@ -275,6 +259,7 @@ function renderAiInsights(container) {
         ${renderTradingTools()}
         <p class="ai-insight-note">Delayed market history is used for adaptive scenarios, not guaranteed predictions. Verify entries, exits, Greeks, OI, PCR, and strikes with approved market-data sources before trading.</p>
     `;
+    window.initializeTradingTools?.();
 }
 
 function renderAiMarketPulse() {
