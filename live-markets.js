@@ -41,6 +41,10 @@ function formatPercent(value) {
     return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
 }
 
+function getSignalStatus(signal) {
+    return signal?.status || (Number.isFinite(signal?.value) ? "Range" : "Awaiting");
+}
+
 function getChartUrl(symbol, range = "1mo", interval = "1d") {
     return `/api/market-data?symbol=${encodeURIComponent(symbol)}&range=${range}&interval=${interval}`;
 }
@@ -211,13 +215,13 @@ function renderBenchmarkCard(bundle) {
                 ${signals.map((signal) => `
                     <div class="timeframe-pill ${signal.tone}">
                         <small>${signal.label}</small>
-                        <strong>${signal.status}</strong>
+                        <strong>${getSignalStatus(signal)}</strong>
                         <span>${Number.isFinite(signal.value) ? formatPercent(signal.value) : "Pending intraday feed"}</span>
                     </div>
                 `).join("")}
             </div>
             <footer class="benchmark-footer">
-                <span>${signals.map((signal) => `${signal.label}: ${signal.status}`).join(" · ")}</span>
+                <span>${signals.map((signal) => `${signal.label}: ${getSignalStatus(signal)}`).join(" · ")}</span>
                 <a href="${daily.sourceHref}" target="_blank" rel="noopener noreferrer">Delayed source</a>
             </footer>
         </article>

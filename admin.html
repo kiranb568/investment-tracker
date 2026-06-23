@@ -14,9 +14,6 @@
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
     <script src="ui-preferences.js"></script>
-    <script defer src="live-markets.js"></script>
-    <script defer src="ai-market-insights.js"></script>
-    <script defer src="trading-tools.js"></script>
     <script defer src="pwa.js"></script>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="quantum-future.css">
@@ -538,11 +535,11 @@
                 </div>
             </div>
             <ul class="sidebar-menu">
-                <li><a onclick="showAdminTab('dashboard')" class="active">📊 Dashboard</a></li>
-                <li><a onclick="showAdminTab('customers')">👥 Customers</a></li>
-                <li><a onclick="showAdminTab('analytics')">📈 Analytics</a></li>
-                <li><a onclick="showAdminTab('reports')">📄 Reports</a></li>
-                <li><a onclick="showAdminTab('settings')">⚙️ Settings</a></li>
+                <li><a onclick="showAdminTab('dashboard', this)" class="active">📊 Dashboard</a></li>
+                <li><a onclick="showAdminTab('customers', this)">👥 Customers</a></li>
+                <li><a onclick="showAdminTab('analytics', this)">📈 Analytics</a></li>
+                <li><a onclick="showAdminTab('reports', this)">📄 Reports</a></li>
+                <li><a onclick="showAdminTab('settings', this)">⚙️ Settings</a></li>
                 <li style="margin-top: 30px; border-top: 1px solid #00d4ff; padding-top: 30px;">
                     <a onclick="goToDashboard()" style="color: #667eea;">◀ Back to Tracker</a>
                 </li>
@@ -557,30 +554,6 @@
             <div class="top-bar">
                 <div class="user-info" id="admin-info"></div>
             </div>
-            <section class="market-ribbon">
-                <div class="market-ribbon-head">
-                    <div>
-                        <strong>Srishti Wealth Market Command Feed</strong>
-                        <span id="admin-market-date">Trading-day watchpoints</span>
-                    </div>
-                    <div class="market-ribbon-links">
-                        <a href="https://www.nseindia.com/products-services/indices-nifty50-index" target="_blank" rel="noopener noreferrer">NSE Nifty 50</a>
-                        <a href="https://m.bseindia.com/IndicesView_New.aspx/Sensex.aspx" target="_blank" rel="noopener noreferrer">BSE Sensex</a>
-                        <a href="https://www.mcxindia.com/market-data/market-watch" target="_blank" rel="noopener noreferrer">MCX Market Watch</a>
-                    </div>
-                </div>
-                <div class="market-ribbon-track">
-                    <div class="market-ribbon-marquee" id="admin-market-marquee"></div>
-                </div>
-                <div class="live-market-strip" data-live-market-ticker></div>
-            </section>
-            <section class="card">
-                <h3>Live NSE / BSE Benchmark Charts</h3>
-                <p>Delayed benchmark-history panels keep Nifty 50, Bank Nifty, and Sensex visible while official exchange links remain available for confirmation.</p>
-                <div class="benchmark-grid" data-live-benchmark-grid></div>
-            </section>
-            <section class="ai-market-section" data-ai-market-insights></section>
-
             <!-- Dashboard Tab -->
             <div id="dashboard" class="content-section active">
                 <div class="page-header">
@@ -886,7 +859,7 @@
             return newCanvas;
         }
     
-        async function showAdminTab(tabName) {
+        async function showAdminTab(tabName, triggerElement) {
             document.querySelectorAll('.content-section').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -894,7 +867,10 @@
                 link.classList.remove('active');
             });
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            const activeLink = triggerElement || (typeof event !== 'undefined' ? event.target : null);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
             
             if (tabName === 'customers') await loadAdminCustomers();
             if (tabName === 'analytics') {

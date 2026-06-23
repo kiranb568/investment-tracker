@@ -1851,9 +1851,25 @@ tr:nth-child(even) td {
 
 .benchmark-quote span {
     max-width: 100%;
-    color: #fff !important;
+    border: 1px solid rgba(7, 22, 51, 0.10) !important;
+    color: #ffffff !important;
     font-size: 0.88rem;
     text-align: center;
+    text-shadow: 0 1px 3px rgba(7, 22, 51, 0.32);
+}
+
+.benchmark-widget.is-positive .benchmark-quote span {
+    background: linear-gradient(135deg, #08734f, #0c9b68) !important;
+    box-shadow: 0 12px 24px rgba(12, 122, 82, 0.24) !important;
+}
+
+.benchmark-widget.is-negative .benchmark-quote span {
+    background: linear-gradient(135deg, #a81935, #d8445e) !important;
+    box-shadow: 0 12px 24px rgba(197, 54, 79, 0.24) !important;
+}
+
+.benchmark-widget.is-pending .benchmark-quote span {
+    background: linear-gradient(135deg, var(--sw-blue), var(--sw-violet)) !important;
 }
 
 .timeframe-strip {
@@ -1879,12 +1895,14 @@ tr:nth-child(even) td {
 .timeframe-pill span {
     border-radius: 999px;
     padding: 8px 10px;
-    background: rgba(255, 204, 72, 0.13);
-    color: #415173 !important;
+    background: rgba(255, 204, 72, 0.20) !important;
+    color: #243553 !important;
     font-size: 0.78rem !important;
     font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    white-space: normal;
+    word-break: normal;
 }
 
 .benchmark-footer span,
