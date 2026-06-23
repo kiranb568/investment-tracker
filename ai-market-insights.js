@@ -21,22 +21,6 @@ function formatMetric(value, suffix = "") {
     return Number.isFinite(value) ? `${value.toLocaleString("en-IN", { maximumFractionDigits: 2 })}${suffix}` : "Awaiting feed";
 }
 
-function getDirection(snapshot) {
-    if (!hasCompleteSnapshot(snapshot)) {
-        return "Awaiting feed";
-    }
-
-    if (snapshot.close > snapshot.previousClose && snapshot.close > snapshot.open) {
-        return "Positive momentum";
-    }
-
-    if (snapshot.close < snapshot.previousClose && snapshot.close < snapshot.open) {
-        return "Defensive momentum";
-    }
-
-    return "Range-bound";
-}
-
 function average(values) {
     const usable = values.filter(Number.isFinite);
     return usable.length ? usable.reduce((sum, value) => sum + value, 0) / usable.length : undefined;
@@ -46,6 +30,13 @@ function standardDeviation(values) {
     const mean = average(values);
     if (!Number.isFinite(mean)) return undefined;
     return Math.sqrt(average(values.map((value) => (value - mean) ** 2)));
+}
+
+function getDirection(snapshot) {
+    if (!hasCompleteSnapshot(snapshot)) return "Awaiting feed";
+    if (snapshot.close > snapshot.previousClose && snapshot.close > snapshot.open) return "Positive momentum";
+    if (snapshot.close < snapshot.previousClose && snapshot.close < snapshot.open) return "Defensive momentum";
+    return "Range-bound";
 }
 
 function getAdaptiveSignals(snapshot) {
@@ -79,24 +70,13 @@ function rememberObservation(instrument, snapshot) {
         if (!observations.some((item) => item.signature === signature)) {
             observations.push({ signature, close: snapshot.close, recordedAt: new Date().toISOString() });
         }
-        memory[instrument] = observations.slice(-60);
+        memory[instrument] = observations.slice(-90);
         localStorage.setItem(key, JSON.stringify(memory));
         return memory[instrument].length;
     } catch (error) {
         console.warn("Unable to retain adaptive market observations:", error);
         return 0;
     }
-}
-
-function getBuildUp(snapshot) {
-    if (!Number.isFinite(snapshot?.futuresPriceChange) || !Number.isFinite(snapshot?.oiChange)) {
-        return "Awaiting feed";
-    }
-
-    if (snapshot.futuresPriceChange > 0 && snapshot.oiChange > 0) return "Long build-up";
-    if (snapshot.futuresPriceChange < 0 && snapshot.oiChange > 0) return "Short build-up";
-    if (snapshot.futuresPriceChange > 0 && snapshot.oiChange < 0) return "Short covering";
-    return "Long unwinding";
 }
 
 function calculateLevels(snapshot) {
@@ -110,8 +90,8 @@ function calculateLevels(snapshot) {
     return {
         support: formatNumber(support),
         resistance: formatNumber(resistance),
-        entry: `Review only above ${formatNumber(resistance)}`,
-        exit: `Reassess below ${formatNumber(support)}`
+        entry: `Momentum review above ${formatNumber(resistance)}`,
+        exit: `Risk review below ${formatNumber(support)}`
     };
 }
 
@@ -119,37 +99,151 @@ function getRuntimeSnapshots() {
     return window.__SRISHTI_MARKET_SNAPSHOT__ || {};
 }
 
+function getTimeframeSignals(snapshot) {
+    const fallback = [
+        { label: "15m", tone: "neutral", value: undefined, detail: "Awaiting intraday feed" },
+        { label: "1h", tone: "neutral", value: undefined, detail: "Awaiting intraday feed" },
+        { label: "Daily", tone: "neutral", value: undefined, detail: "Awaiting daily feed" }
+    ];
+
+    return (snapshot?.timeframeSignals?.length ? snapshot.timeframeSignals : fallback).map((signal) => ({
+        ...signal,
+        detail: signal.detail || `${signal.label} bias ${signal.label === "Daily" ? "from daily close" : "from 5m delayed feed"}`
+    }));
+}
+
+function getOptionsRead(snapshot, adaptive) {
+    const vix = snapshot?.vix;
+    const trend = adaptive.trend;
+    const isVolHigh = Number.isFinite(vix) && vix >= 18;
+    const isVolLow = Number.isFinite(vix) && vix <= 12;
+    const direction = getDirection(snapshot);
+
+    if (!hasCompleteSnapshot(snapshot)) {
+        return {
+            regime: "Awaiting feed",
+            strategy: "Wait for benchmark and option-chain inputs.",
+            risk: "Do not calculate strikes without verified feed."
+        };
+    }
+
+    if (trend === "Uptrend" && direction !== "Defensive momentum") {
+        return {
+            regime: isVolHigh ? "Bullish with elevated premium" : "Bullish controlled premium",
+            strategy: "Prefer defined-risk bullish structures; confirm option-chain OI before strike selection.",
+            risk: isVolHigh ? "Avoid chasing inflated weekly premiums." : "Watch gamma expansion near resistance."
+        };
+    }
+
+    if (trend === "Downtrend" && direction !== "Positive momentum") {
+        return {
+            regime: isVolHigh ? "Bearish high-volatility" : "Bearish measured-volatility",
+            strategy: "Prefer defined-risk bearish structures; confirm put-side OI and PCR before entry.",
+            risk: "Avoid short premium without stop and event-risk filter."
+        };
+    }
+
+    return {
+        regime: isVolLow ? "Range compression" : "Two-way range",
+        strategy: "Wait for breakout confirmation or use neutral defined-risk spreads only after OI validation.",
+        risk: "False breakouts likely near support/resistance bands."
+    };
+}
+
+function renderTimeframeRail(snapshot) {
+    return `
+        <div class="insight-timeframes">
+            ${getTimeframeSignals(snapshot).map((signal) => `
+                <div class="insight-timeframe ${signal.tone}">
+                    <small>${signal.label}</small>
+                    <strong>${signal.label === "15m" ? "Scalp" : signal.label === "1h" ? "Intraday" : "Swing"}</strong>
+                    <span>${Number.isFinite(signal.value) ? `${signal.label} ${signal.value >= 0 ? "+" : ""}${signal.value.toFixed(2)}%` : signal.detail}</span>
+                </div>
+            `).join("")}
+        </div>
+    `;
+}
+
+function renderGreeksPanel(snapshot, optionsRead) {
+    const greeks = snapshot?.greeks;
+    return `
+        <div class="greeks-panel">
+            <div>
+                <small>Live Greeks Intelligence</small>
+                <strong>${greeks ? escapeHtml(greeks) : "Connector-ready"}</strong>
+                <span>${greeks ? "Using connected option-chain Greeks." : "Delta, Gamma, Theta, Vega, OI, PCR and build-up require a licensed option-chain connector."}</span>
+            </div>
+            <div>
+                <small>Options Regime</small>
+                <strong>${escapeHtml(optionsRead.regime)}</strong>
+                <span>${escapeHtml(optionsRead.strategy)}</span>
+            </div>
+            <div>
+                <small>Premium Risk</small>
+                <strong>VIX ${formatMetric(snapshot?.vix)}</strong>
+                <span>${escapeHtml(optionsRead.risk)}</span>
+            </div>
+        </div>
+    `;
+}
+
 function renderInsightCard(instrument, snapshot) {
     const levels = calculateLevels(snapshot);
     const connected = hasCompleteSnapshot(snapshot);
     const adaptive = getAdaptiveSignals(snapshot);
     const observations = rememberObservation(instrument, snapshot);
+    const optionsRead = getOptionsRead(snapshot, adaptive);
     return `
         <article class="ai-insight-card ${connected ? "is-connected" : "is-pending"}">
-            <header>
+            <header class="ai-card-head">
                 <div>
-                    <small>${instrument === "SENSEX" ? "BSE INDEX" : "NSE INDEX / F&O"}</small>
+                    <small>${instrument === "SENSEX" ? "BSE Index" : "NSE Index / Options Watch"}</small>
                     <h3>${instrument}</h3>
                 </div>
-                <span>${connected ? "Live snapshot connected" : "Awaiting licensed feed"}</span>
+                <span>${connected ? "Adaptive model live" : "Awaiting feed"}</span>
             </header>
-            <div class="ai-insight-grid">
-                <div><small>Prev. Close</small><strong>${formatNumber(snapshot?.previousClose)}</strong></div>
-                <div><small>Open</small><strong>${formatNumber(snapshot?.open)}</strong></div>
-                <div><small>High / Low</small><strong>${formatNumber(snapshot?.high)} / ${formatNumber(snapshot?.low)}</strong></div>
+            ${renderTimeframeRail(snapshot)}
+            ${renderGreeksPanel(snapshot, optionsRead)}
+            <div class="insight-decision-grid">
                 <div><small>Trend / Direction</small><strong>${adaptive.trend} · ${getDirection(snapshot)}</strong></div>
-                <div><small>F&O OI Change</small><strong>${formatMetric(snapshot?.oiChange, "%")}</strong></div>
-                <div><small>PCR</small><strong>${formatMetric(snapshot?.pcr)}</strong></div>
-                <div><small>Build-up</small><strong>${getBuildUp(snapshot)}</strong></div>
-                <div><small>Volatility / VIX</small><strong>${formatMetric(adaptive.realizedVolatility, "%")} / ${formatMetric(snapshot?.vix)}</strong></div>
-                <div><small>Greeks</small><strong>${escapeHtml(snapshot?.greeks || "Awaiting option-chain feed")}</strong></div>
+                <div><small>Volatility</small><strong>${formatMetric(adaptive.realizedVolatility, "%")} realized · VIX ${formatMetric(snapshot?.vix)}</strong></div>
                 <div><small>Divergence</small><strong>${escapeHtml(snapshot?.divergence || adaptive.divergence)}</strong></div>
                 <div><small>Support / Resistance</small><strong>${levels.support} / ${levels.resistance}</strong></div>
                 <div><small>Possible Entry / Exit</small><strong>${connected ? `${levels.entry}. ${levels.exit}.` : "Withheld until live inputs are connected"}</strong></div>
-                <div><small>Adaptive Memory</small><strong>${observations ? `${observations} verified observation${observations === 1 ? "" : "s"}` : "Awaiting feed"}</strong></div>
-                <div><small>Data Source</small><strong>${escapeHtml(snapshot?.source || "Awaiting feed")}</strong></div>
+                <div><small>Adaptive Memory</small><strong>${observations ? `${observations} verified observations` : "Awaiting feed"}</strong></div>
             </div>
         </article>
+    `;
+}
+
+function renderTradingTools() {
+    const tools = [
+        ["Position Size", "Calculate quantity from capital, stop-loss distance, and max risk per trade."],
+        ["Options Breakeven", "Track call/put breakeven, max risk, and reward before execution."],
+        ["Premium Stress", "Model 10%, 20%, and 30% option-premium decay or expansion scenarios."],
+        ["Risk/Reward", "Compare entry, stop, target, and probability before trade approval."],
+        ["Pivot Levels", "Generate pivot, S1/S2 and R1/R2 from verified OHLC."],
+        ["Theta Clock", "Review weekly expiry decay pressure by session and VIX regime."]
+    ];
+
+    return `
+        <section class="trading-tools-console">
+            <div class="ai-insight-heading compact">
+                <div>
+                    <span>Trading Toolkit</span>
+                    <h2>Required options tools & calculators</h2>
+                    <p>Built for disciplined pre-trade checks. Interactive calculator wiring can be added once the final trading workflow is frozen.</p>
+                </div>
+            </div>
+            <div class="tool-grid">
+                ${tools.map(([title, copy]) => `
+                    <article class="tool-card">
+                        <strong>${title}</strong>
+                        <p>${copy}</p>
+                    </article>
+                `).join("")}
+            </div>
+        </section>
     `;
 }
 
@@ -158,9 +252,9 @@ function renderAiInsights(container) {
     container.innerHTML = `
         <div class="ai-insight-heading">
             <div>
-                <span>AI-ready Market Intelligence</span>
-                <h2>Self-learning insight console</h2>
-                <p>Adaptive delayed-market analytics evaluate OHLC history, direction, realized volatility, divergence, VIX, support, resistance, and scenario levels. F&O fields remain visibly pending until a licensed option-chain connector is added.</p>
+                <span>AI Market Intelligence</span>
+                <h2>Self-learning options insight console</h2>
+                <p>Compact 15m, 1h, and daily decision-support signals evaluate delayed benchmark history, trend, volatility, divergence, VIX, support, resistance, and options-regime risk. Licensed Greeks/OI/PCR remain connector-gated so the platform does not display invented live Greeks.</p>
             </div>
             <div class="ai-insight-status">
                 <strong>${Object.keys(snapshots).length ? "Runtime snapshot detected" : "Live data connector required"}</strong>
@@ -172,21 +266,20 @@ function renderAiInsights(container) {
         </div>
         <div class="fno-connector-status">
             <div>
-                <strong>Stock F&O intelligence connector</strong>
-                <span>Ready for licensed option-chain integration</span>
+                <strong>Licensed F&O connector status</strong>
+                <span>Ready for option-chain Greeks, OI, PCR, build-up and expiry analytics</span>
             </div>
-            <p>Stock-level Greeks, OI, PCR, expiry analysis, build-up classification, and contract-level scenarios are intentionally pending. NSE treats these analytics and delayed F&O feeds as licensed data products.</p>
+            <p>Until a licensed NSE/BSE option-chain source is connected, Srishti Wealth uses benchmark and VIX-based options context while keeping live Greeks and contract OI/PCR clearly marked as pending.</p>
             <a href="https://www.nseindia.com/market-data/analytical-products" target="_blank" rel="noopener noreferrer">Review NSE analytical products</a>
         </div>
-        <p class="ai-insight-note">Delayed benchmark history is used for adaptive technical scenarios, not guaranteed predictions. Greeks, OI, PCR, and F&O build-up remain withheld until a licensed option-chain connector supplies them. This is decision support, not investment advice.</p>
+        ${renderTradingTools()}
+        <p class="ai-insight-note">Delayed market history is used for adaptive scenarios, not guaranteed predictions. Verify entries, exits, Greeks, OI, PCR, and strikes with approved market-data sources before trading.</p>
     `;
 }
 
 function renderAiMarketPulse() {
     const badge = document.getElementById("pulse-badge");
-    if (!badge) {
-        return;
-    }
+    if (!badge) return;
 
     const snapshots = Object.values(getRuntimeSnapshots()).filter(hasCompleteSnapshot);
     const title = document.getElementById("pulse-title");
@@ -199,12 +292,12 @@ function renderAiMarketPulse() {
     if (!snapshots.length) {
         badge.className = "pulse-badge";
         badge.textContent = "AI Feed Pending";
-        title.textContent = "Connect a licensed live-market feed to activate Market Pulse.";
-        text.textContent = "The AI-ready pulse intentionally withholds sentiment, predictions, and trade levels until verified NSE/BSE inputs are available.";
+        title.textContent = "Connect verified market feeds to activate Market Pulse.";
+        text.textContent = "Market Pulse withholds sentiment, predictions, and trade levels until verified NSE/BSE inputs are available.";
         benchmarks.textContent = "Awaiting feed";
         commodities.textContent = "Official MCX link";
         risk.textContent = "Not scored";
-        icon.style.color = "#6d43c7";
+        icon.style.color = "#6d37cf";
         icon.innerHTML = '<svg viewBox="0 0 64 64"><path d="M18 22h28"></path><path d="M18 32h20"></path><path d="M18 42h14"></path><path d="M46 38v10"></path><path d="M41 43h10"></path></svg>';
         return;
     }
@@ -214,11 +307,11 @@ function renderAiMarketPulse() {
     badge.className = `pulse-badge ${isConstructive ? "bullish" : "bearish"}`;
     badge.textContent = isConstructive ? "Constructive Bias" : "Defensive Bias";
     title.textContent = isConstructive ? "Verified benchmark inputs indicate constructive participation." : "Verified benchmark inputs indicate a defensive market posture.";
-    text.textContent = "Market Pulse is generated from connected runtime snapshots. Review the detailed insight cards and official exchange sources before acting.";
+    text.textContent = "Market Pulse is generated from connected runtime snapshots. Review the insight cards and official exchange sources before acting.";
     benchmarks.textContent = `${snapshots.length} connected`;
     commodities.textContent = "Official MCX link";
     risk.textContent = isConstructive ? "Measured" : "Elevated";
-    icon.style.color = isConstructive ? "#11734b" : "#b93d5a";
+    icon.style.color = isConstructive ? "#0c7a52" : "#c5364f";
     icon.innerHTML = isConstructive
         ? '<svg viewBox="0 0 64 64"><path d="M12 45l12-12 9 7 18-22"></path><path d="M42 18h9v9"></path></svg>'
         : '<svg viewBox="0 0 64 64"><path d="M12 19l12 12 9-7 18 22"></path><path d="M42 46h9v-9"></path></svg>';

@@ -30,6 +30,8 @@ const VIX_SOURCE = {
     sourceHref: "https://finance.yahoo.com/quote/%5EINDIAVIX/history/"
 };
 
+let marketDataPromise;
+
 function formatMarketNumber(value) {
     return Number.isFinite(value) ? value.toLocaleString("en-IN", { maximumFractionDigits: 2 }) : "--";
 }
@@ -39,12 +41,12 @@ function formatPercent(value) {
     return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
 }
 
-function getChartUrl(symbol) {
-    return `/api/market-data?symbol=${encodeURIComponent(symbol)}`;
+function getChartUrl(symbol, range = "1mo", interval = "1d") {
+    return `/api/market-data?symbol=${encodeURIComponent(symbol)}&range=${range}&interval=${interval}`;
 }
 
-async function fetchDelayedHistory(source) {
-    const response = await fetch(getChartUrl(source.symbol), { cache: "no-store" });
+async function fetchDelayedHistory(source, range = "1mo", interval = "1d") {
+    const response = await fetch(getChartUrl(source.symbol, range, interval), { cache: "no-store" });
     if (!response.ok) {
         throw new Error(`${source.title || source.symbol} feed returned ${response.status}`);
     }
@@ -71,6 +73,8 @@ async function fetchDelayedHistory(source) {
 
     return {
         ...source,
+        range,
+        interval,
         history,
         currency: result.meta?.currency || "INR",
         exchangeTimezoneName: result.meta?.exchangeTimezoneName || "Asia/Kolkata",
@@ -78,8 +82,35 @@ async function fetchDelayedHistory(source) {
     };
 }
 
-function createPolyline(history, width = 520, height = 180) {
-    const closes = history.map((point) => point.close);
+function calculateWindowMove(history, points) {
+    const usable = history.filter((point) => Number.isFinite(point.close));
+    if (usable.length < 2) return undefined;
+    const latest = usable.at(-1);
+    const anchor = usable.at(Math.max(0, usable.length - 1 - points));
+    if (!anchor || !Number.isFinite(anchor.close)) return undefined;
+    return ((latest.close - anchor.close) / anchor.close) * 100;
+}
+
+function classifySignal(value) {
+    if (!Number.isFinite(value)) return { status: "Awaiting", tone: "neutral" };
+    if (value > 0.18) return { status: "Bullish", tone: "positive" };
+    if (value < -0.18) return { status: "Bearish", tone: "negative" };
+    return { status: "Range", tone: "neutral" };
+}
+
+function getTimeframeSignals(dailyHistory, intradayHistory) {
+    const dayMove = calculateWindowMove(dailyHistory, 1);
+    const fifteenMove = calculateWindowMove(intradayHistory, 3);
+    const hourlyMove = calculateWindowMove(intradayHistory, 12);
+    return [
+        { label: "15m", value: fifteenMove, ...classifySignal(fifteenMove) },
+        { label: "1h", value: hourlyMove, ...classifySignal(hourlyMove) },
+        { label: "Daily", value: dayMove, ...classifySignal(dayMove) }
+    ];
+}
+
+function createTrendLine(history, width = 620, height = 250) {
+    const closes = history.map((point) => point.close).filter(Number.isFinite);
     const min = Math.min(...closes);
     const max = Math.max(...closes);
     const spread = max - min || 1;
@@ -90,9 +121,39 @@ function createPolyline(history, width = 520, height = 180) {
     }).join(" ");
 }
 
-function createSnapshot(data, vix) {
-    const latest = data.history.at(-1);
-    const previous = data.history.at(-2);
+function renderCandles(history, width = 620, height = 250) {
+    const candles = history.slice(-18);
+    const highs = candles.map((point) => point.high);
+    const lows = candles.map((point) => point.low);
+    const min = Math.min(...lows);
+    const max = Math.max(...highs);
+    const spread = max - min || 1;
+    const slot = width / candles.length;
+    const candleWidth = Math.max(8, Math.min(20, slot * 0.46));
+    const y = (value) => height - (((value - min) / spread) * height);
+
+    return candles.map((point, index) => {
+        const x = (index * slot) + (slot / 2);
+        const openY = y(point.open);
+        const closeY = y(point.close);
+        const highY = y(point.high);
+        const lowY = y(point.low);
+        const bodyY = Math.min(openY, closeY);
+        const bodyHeight = Math.max(4, Math.abs(openY - closeY));
+        const tone = point.close >= point.open ? "up" : "down";
+        return `
+            <g class="candle ${tone}">
+                <line x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${highY.toFixed(1)}" y2="${lowY.toFixed(1)}"></line>
+                <rect x="${(x - candleWidth / 2).toFixed(1)}" y="${bodyY.toFixed(1)}" width="${candleWidth.toFixed(1)}" height="${bodyHeight.toFixed(1)}" rx="3"></rect>
+            </g>
+        `;
+    }).join("");
+}
+
+function createSnapshot(dailyData, intradayData, vix) {
+    const latest = dailyData.history.at(-1);
+    const previous = dailyData.history.at(-2);
+    const signals = getTimeframeSignals(dailyData.history, intradayData?.history || []);
     return {
         previousClose: previous.close,
         open: latest.open,
@@ -101,46 +162,63 @@ function createSnapshot(data, vix) {
         close: latest.close,
         volume: latest.volume,
         vix,
-        history: data.history,
+        timeframeSignals: signals,
+        intradayHistory: intradayData?.history || [],
+        history: dailyData.history,
         source: "Yahoo Finance delayed chart endpoint",
-        sourceHref: data.sourceHref,
-        fetchedAt: data.fetchedAt
+        sourceHref: dailyData.sourceHref,
+        fetchedAt: dailyData.fetchedAt
     };
 }
 
-function renderBenchmarkCard(data) {
-    const latest = data.history.at(-1);
-    const previous = data.history.at(-2);
+function renderBenchmarkCard(bundle) {
+    const { daily, intraday } = bundle;
+    const latest = daily.history.at(-1);
+    const previous = daily.history.at(-2);
     const change = latest.close - previous.close;
     const changePercent = (change / previous.close) * 100;
     const isPositive = change >= 0;
+    const signals = getTimeframeSignals(daily.history, intraday?.history || []);
+    const chartHistory = intraday?.history?.length > 8 ? intraday.history : daily.history;
     return `
         <article class="benchmark-widget ${isPositive ? "is-positive" : "is-negative"}">
-            <header>
+            <header class="benchmark-head">
                 <div>
-                    <small>${data.exchange} · Delayed feed</small>
-                    <strong>${data.title}</strong>
+                    <small>${daily.exchange} delayed market feed</small>
+                    <strong>${daily.title}</strong>
                 </div>
-                <a href="${data.officialHref}" target="_blank" rel="noopener noreferrer">Official page</a>
+                <a href="${daily.officialHref}" target="_blank" rel="noopener noreferrer">Official</a>
             </header>
             <div class="benchmark-quote">
                 <strong>${formatMarketNumber(latest.close)}</strong>
                 <span>${change >= 0 ? "+" : ""}${formatMarketNumber(change)} · ${formatPercent(changePercent)}</span>
             </div>
-            <svg class="benchmark-sparkline" viewBox="0 0 520 180" role="img" aria-label="${data.title} delayed one-month trend chart">
-                <defs>
-                    <linearGradient id="${data.instrument}-fill" x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="0%" stop-color="currentColor" stop-opacity=".22"></stop>
-                        <stop offset="100%" stop-color="currentColor" stop-opacity="0"></stop>
-                    </linearGradient>
-                </defs>
-                <polyline class="benchmark-line" points="${createPolyline(data.history)}"></polyline>
-            </svg>
-            <footer>
-                <span>O ${formatMarketNumber(latest.open)}</span>
-                <span>H ${formatMarketNumber(latest.high)}</span>
-                <span>L ${formatMarketNumber(latest.low)}</span>
-                <a href="${data.sourceHref}" target="_blank" rel="noopener noreferrer">Delayed source</a>
+            <div class="benchmark-chart-shell">
+                <svg class="benchmark-candles" viewBox="0 0 620 250" role="img" aria-label="${daily.title} delayed trend and candlestick chart" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="${daily.instrument}-chart-bg" x1="0" x2="0" y1="0" y2="1">
+                            <stop offset="0%" stop-color="rgba(21,89,214,.18)"></stop>
+                            <stop offset="100%" stop-color="rgba(255,204,72,.08)"></stop>
+                        </linearGradient>
+                    </defs>
+                    <rect class="chart-plane" x="0" y="0" width="620" height="250" rx="24"></rect>
+                    <path class="chart-grid" d="M0 62.5H620M0 125H620M0 187.5H620"></path>
+                    ${renderCandles(chartHistory)}
+                    <polyline class="benchmark-line" points="${createTrendLine(chartHistory)}"></polyline>
+                </svg>
+            </div>
+            <div class="timeframe-strip">
+                ${signals.map((signal) => `
+                    <div class="timeframe-pill ${signal.tone}">
+                        <small>${signal.label}</small>
+                        <strong>${signal.status}</strong>
+                        <span>${Number.isFinite(signal.value) ? formatPercent(signal.value) : "Pending intraday feed"}</span>
+                    </div>
+                `).join("")}
+            </div>
+            <footer class="benchmark-footer">
+                <span>${signals.map((signal) => `${signal.label}: ${signal.status}`).join(" · ")}</span>
+                <a href="${daily.sourceHref}" target="_blank" rel="noopener noreferrer">Delayed source</a>
             </footer>
         </article>
     `;
@@ -148,10 +226,10 @@ function renderBenchmarkCard(data) {
 
 function renderBenchmarkError(source) {
     return `
-        <article class="benchmark-widget">
-            <header>
+        <article class="benchmark-widget is-pending">
+            <header class="benchmark-head">
                 <div><small>${source.exchange}</small><strong>${source.title}</strong></div>
-                <a href="${source.officialHref}" target="_blank" rel="noopener noreferrer">Official page</a>
+                <a href="${source.officialHref}" target="_blank" rel="noopener noreferrer">Official</a>
             </header>
             <div class="benchmark-fallback">
                 <strong>Delayed chart unavailable</strong>
@@ -161,10 +239,27 @@ function renderBenchmarkError(source) {
     `;
 }
 
+async function fetchMarketBundle(source) {
+    const [daily, intraday] = await Promise.all([
+        fetchDelayedHistory(source, "1mo", "1d"),
+        fetchDelayedHistory(source, "1d", "5m").catch(() => undefined)
+    ]);
+    return { daily, intraday };
+}
+
 async function loadDelayedMarketData() {
+    if (marketDataPromise) {
+        return marketDataPromise;
+    }
+
+    marketDataPromise = loadDelayedMarketDataOnce();
+    return marketDataPromise;
+}
+
+async function loadDelayedMarketDataOnce() {
     const results = await Promise.allSettled([
-        ...DELAYED_MARKET_SOURCES.map(fetchDelayedHistory),
-        fetchDelayedHistory({ ...VIX_SOURCE, title: "India VIX" })
+        ...DELAYED_MARKET_SOURCES.map(fetchMarketBundle),
+        fetchDelayedHistory({ ...VIX_SOURCE, title: "India VIX" }, "1mo", "1d")
     ]);
     const vixData = results.at(-1);
     const vix = vixData.status === "fulfilled" ? vixData.value.history.at(-1).close : undefined;
@@ -172,7 +267,8 @@ async function loadDelayedMarketData() {
 
     results.slice(0, -1).forEach((result, index) => {
         if (result.status === "fulfilled") {
-            snapshots[DELAYED_MARKET_SOURCES[index].instrument] = createSnapshot(result.value, vix);
+            const { daily, intraday } = result.value;
+            snapshots[DELAYED_MARKET_SOURCES[index].instrument] = createSnapshot(daily, intraday, vix);
         }
     });
 
@@ -182,7 +278,7 @@ async function loadDelayedMarketData() {
 }
 
 async function mountBenchmarkGrid(container) {
-    container.innerHTML = '<div class="market-loading">Loading delayed benchmark charts...</div>';
+    container.innerHTML = '<div class="market-loading">Loading benchmark candlestick board...</div>';
     const { results, vix } = await loadDelayedMarketData();
     container.innerHTML = results.map((result, index) => result.status === "fulfilled"
         ? renderBenchmarkCard(result.value)
@@ -197,10 +293,10 @@ async function mountTickerTape(container) {
         if (result.status !== "fulfilled") {
             return `<a href="${DELAYED_MARKET_SOURCES[index].officialHref}" target="_blank" rel="noopener noreferrer"><strong>${DELAYED_MARKET_SOURCES[index].title}</strong><span>Feed reconnecting</span></a>`;
         }
-        const latest = result.value.history.at(-1);
-        const previous = result.value.history.at(-2);
+        const latest = result.value.daily.history.at(-1);
+        const previous = result.value.daily.history.at(-2);
         const percent = ((latest.close - previous.close) / previous.close) * 100;
-        return `<a href="${result.value.officialHref}" class="${percent >= 0 ? "is-positive" : "is-negative"}" target="_blank" rel="noopener noreferrer"><strong>${result.value.title}</strong><span>${formatMarketNumber(latest.close)} · ${formatPercent(percent)}</span></a>`;
+        return `<a href="${result.value.daily.officialHref}" class="${percent >= 0 ? "is-positive" : "is-negative"}" target="_blank" rel="noopener noreferrer"><strong>${result.value.daily.title}</strong><span>${formatMarketNumber(latest.close)} · ${formatPercent(percent)}</span></a>`;
     });
 
     items.push(`<a href="${VIX_SOURCE.sourceHref}" target="_blank" rel="noopener noreferrer"><strong>India VIX</strong><span>${formatMarketNumber(vix)}</span></a>`);
